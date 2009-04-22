@@ -1,0 +1,34 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    i18n_domain="plone.app.blocks">
+
+    <include package="plone.transformchain" />
+    <include package="plone.tiles" />
+
+    <include package=".demo" />
+
+    <!-- Chain: convert to lxml (order 8000), then invoke other transforms, and serialize (at 8999) -->
+    
+    <adapter
+        name="plone.app.blocks.parsexml"
+        factory=".transform.ParseXML"
+        />
+    
+    <adapter
+        name="plone.app.blocks.tilepage"
+        factory=".transform.TilePage"
+        />
+    
+    <adapter
+        name="plone.app.blocks.xslt"
+        factory=".transform.XSLT"
+        />
+
+    <adapter
+        name="plone.app.blocks.serializexml"
+        factory=".transform.SerializeXML"
+        />
+
+</configure>

@@ -1,0 +1,33 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    i18n_domain="plone.app.blocks">
+
+    <include package="plone.tiles" file="meta.zcml" />
+    <include package="plone.tiles" />
+
+    <browser:page
+        for="*"
+        name="blocks-demo-page"
+        template="page.pt"
+        permission="zope.Public"
+        />
+    
+    <browser:page
+        for="*"
+        name="blocks-demo-layout"
+        template="layout.pt"
+        permission="zope.Public"
+        />
+    
+    <plone:tile
+        name="plone.app.blocks.demo1"
+        title="Demo tile 1"
+        add_permission="cmf.ManagePortal"
+        template="tile.pt"
+        permission="zope.Public"
+        schema=".demo.IDemoTile"
+        />
+        
+</configure>
