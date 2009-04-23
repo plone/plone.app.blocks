@@ -1,13 +1,3 @@
-# XXX: This is incomplete.
-# 
-# The idea is that some pages will opt into a strict separation of static
-# content and dynamic tiles. A page full of tiles is generated on each
-# request, and an XSLT-driven transform wraps this into the static content.
-# Dynamic and static content can thus be cached and invalidated separately.
-
-# This transform produces the tile page. It works, but the content.xsl
-# transform is missing. It should be implemented as a generic view.
-
 from plone.app.blocks import utils
 
 from lxml import etree
@@ -36,7 +26,9 @@ def create_tilepage(request, tree):
     if published is not None and hasattr(published, '__parent__') and hasattr(published.__parent__, '_p_mtime'):
         unique_xsl_name = published.__parent__._p_mtime
     
-    xsl_url = "%s/@@blocks-static-content/%s.xsl" % (request.getURL(), unique_xsl_name,)
+    # The URL should include the modification time to make cache invalidation easier,
+    # and the original query string, which will be used when the composite page is rendered
+    xsl_url = "%s/@@blocks-static-content/%s.xsl?%s" % (request.getURL(), unique_xsl_name, request['QUERY_STRING'])
     
     stylesheet_declaration = etree.ProcessingInstruction('xml-stylesheet type="text/xsl" href="%s"' % xsl_url)
     html_node.addprevious(stylesheet_declaration)
@@ -63,10 +55,12 @@ def create_tilepage(request, tree):
             # add tile body
             tile_body = tile_root.find('body')
             new_tile_node = E.DIV()
-            new_tile_node.attrib['id'] = "__blocks__%s" % tile_id
+            new_tile_node.attrib['id'] = tile_id
             for tile_body_child in tile_body:
                 new_tile_node.append(tile_body_child)
             
             body_node.append(new_tile_node)
-
+    
+    # Make the tile page XSLT
+    request.response.setHeader('Content-Type', 'text/xml')
     return tree

@@ -130,5 +130,9 @@ class SerializeXML(object):
     def __call__(self, result, encoding):
         if not isinstance(result, etree._ElementTree):
             return None
-            
-        return html.tostring(result, pretty_print=PRETTY_PRINT)
+        
+        content_type = self.request.response.getHeader('Content-Type')
+        if content_type.startswith('text/html'):
+            return html.tostring(result, pretty_print=PRETTY_PRINT)
+        else:
+            return etree.tostring(result)

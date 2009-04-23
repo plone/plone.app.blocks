@@ -9,6 +9,8 @@
 
     <include package=".demo" />
 
+    <!-- The transform pipeline -->
+
     <!-- 8000: Turn the response into an lxml tree for further manipulation -->
     <adapter
         for="* *"
@@ -49,4 +51,13 @@
         factory=".transform.SerializeXML"
         />
 
+    <!-- The content XSLT view -->
+    
+    <browser:page
+        name="blocks-static-content"
+        for="*"
+        permission="zope.Public"
+        class=".contentxsl.ContentXSL"
+        />
+        
 </configure>
