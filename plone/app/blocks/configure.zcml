@@ -9,24 +9,42 @@
 
     <include package=".demo" />
 
-    <!-- Chain: convert to lxml (order 8000), then invoke other transforms, and serialize (at 8999) -->
-    
+    <!-- 8000: Turn the response into an lxml tree for further manipulation -->
     <adapter
+        for="* *"
         name="plone.app.blocks.parsexml"
         factory=".transform.ParseXML"
         />
-    
+
+    <!-- 8100: Locate the site layout and merge panels -->
     <adapter
-        name="plone.app.blocks.tilepage"
-        factory=".transform.TilePage"
+        for="* *"
+        name="plone.app.blocks.mergepanels"
+        factory=".transform.MergePanels"
         />
     
+    <!-- 8500a: If the published view opts into it, render a tilepage with only
+         the dynamic elements and reference a content.xsl that will include
+         the static elements
+     -->
     <adapter
-        name="plone.app.blocks.xslt"
-        factory=".transform.XSLT"
+        for=".interfaces.ITilePageRendered *"
+        name="plone.app.blocks.tilepage"
+        factory=".transform.CreateTilePage"
         />
 
+    <!-- 8500b: Simpler transform that just finds and includes tiles in the
+         output
+      -->
     <adapter
+        for="* *"
+        name="plone.app.blocks.tilepage"
+        factory=".transform.IncludeTiles"
+        />
+
+    <!-- 8999: Turn the lxml tree into a string -->
+    <adapter
+        for="* *"
         name="plone.app.blocks.serializexml"
         factory=".transform.SerializeXML"
         />

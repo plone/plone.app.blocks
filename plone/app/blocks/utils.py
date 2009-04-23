@@ -1,4 +1,4 @@
-from urlparse import urlsplit
+from urlparse import urlsplit, urljoin
 
 import logging
 
@@ -111,6 +111,10 @@ def resolve(request, url):
 def xpath1(xpath, node, strict=True):
     """Return a single node matched by the given etree.XPath object.
     """
+    
+    if isinstance(xpath, basestring):
+        xpath = etree.XPath(xpath)
+    
     result = xpath(node)
     if len(result) == 1:
         return result[0]
@@ -150,3 +154,36 @@ def merge_head(src_tree, dest_tree, header_replace, header_append):
     for append_xpath in header_append:
         for src_tag in append_xpath(src_tree):
             dest_head.append(src_tag)
+
+def find_tiles(request, tree, remove=False):
+    """Given a request and an lxml tree with the body, return a dict of
+    tile id to absolute tile href (including query string).
+    
+    If remove is true, tile links are removed once complete.
+    """
+    
+    tiles = {}
+    base_url = request.getURL()
+    to_remove = []
+    
+    # Find all tiles that exist in the page
+    for tile_node in tile_xpath(tree):
+        
+        tile_id = tile_node.get('target', None)
+        tile_href = tile_node.get('href', None)
+        
+        if tile_id is not None and tile_href is not None:
+            tile_href = urljoin(base_url, tile_href)
+            
+            tile_target_xpath = etree.XPath("//*[@id='%s']" % tile_id)
+            tile_target_node = xpath1(tile_target_xpath, tree)
+            if tile_target_node is not None:
+                tiles[tile_id] = tile_href
+        
+        to_remove.append(tile_node)
+        
+    if remove:
+        for tile_node in to_remove:
+            tile_node.getparent().remove(tile_node)
+        
+    return tiles

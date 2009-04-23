@@ -7,9 +7,19 @@
     <include package="plone.tiles" file="meta.zcml" />
     <include package="plone.tiles" />
 
+    <!-- uses standard rendering -->
     <browser:page
         for="*"
         name="blocks-demo-page"
+        template="page.pt"
+        permission="zope.Public"
+        />
+    
+    <!-- uses tilepage rendering -->
+    <browser:page
+        for="*"
+        name="blocks-demo-tile-page"
+        class=".demo.DemoTilePageView"
         template="page.pt"
         permission="zope.Public"
         />

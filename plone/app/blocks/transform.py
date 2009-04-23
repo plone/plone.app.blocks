@@ -2,11 +2,9 @@ from lxml import etree, html
 
 from plone.transformchain.interfaces import ITransform
 
-from zope.interface import implements, Interface
-from zope.component import adapts
+from zope.interface import implements
 
-from plone.app.blocks import tilepage
-from plone.app.blocks import contentxsl
+from plone.app.blocks import tilepage, panel, tiles
 
 from Globals import DevelopmentMode
 PRETTY_PRINT = bool(DevelopmentMode)
@@ -18,7 +16,6 @@ class ParseXML(object):
     """
     
     implements(ITransform)
-    adapts(Interface, Interface)
     
     order = 8000
     
@@ -48,13 +45,11 @@ class ParseXML(object):
             
         return root.getroottree()
 
-class TilePage(object):
-    """Turn a published page into a tile page. Assumes the input result is
-    an lxml tree and returns an lxml tree for later serialization.
+class MergePanels(object):
+    """Find the site layout and merge panels.
     """
     
     implements(ITransform)
-    adapts(Interface, Interface)
     
     order = 8100
     
@@ -66,14 +61,21 @@ class TilePage(object):
         if not isinstance(result, etree._ElementTree):
             return None
         
-        return tilepage.intercept(self.request, result)
+        tree = panel.merge(self.request, result)
+        if tree is None:
+            return None
+    
+        # Set a marker in the request to let subsequent steps know the merging has happened
+        self.request['plone.app.blocks.merged'] = True
+    
+        return tree
 
-class XSLT(object):
-    """Parse XSLT processing instructions and process them.
+class CreateTilePage(object):
+    """Turn a panel-merged page into a tile page. Assumes the input result is
+    an lxml tree and returns an lxml tree for later serialization.
     """
     
     implements(ITransform)
-    adapts(Interface, Interface)
     
     order = 8500
     
@@ -85,14 +87,39 @@ class XSLT(object):
         if not isinstance(result, etree._ElementTree):
             return None
         
-        return contentxsl.intercept(self.request, result)
+        if not self.request.get('plone.app.blocks.merged', False):
+            return None
+        
+        return tilepage.create_tilepage(self.request, result)
+
+class IncludeTiles(object):
+    """Turn a panel-merged page into the final composition by including tiles.
+    Assumes the input result is an lxml tree and returns an lxml tree for
+    later serialization.
+    """
+    
+    implements(ITransform)
+    
+    order = 8500
+    
+    def __init__(self, published, request):
+        self.published = published
+        self.request = request
+    
+    def __call__(self, result, encoding):
+        if not isinstance(result, etree._ElementTree):
+            return None
+        
+        if not self.request.get('plone.app.blocks.merged', False):
+            return None
+        
+        return tiles.render_tiles(self.request, result)
 
 class SerializeXML(object):
     """Serialize an lxml tree to an encoded string.
     """
     
     implements(ITransform)
-    adapts(Interface, Interface)
     
     order = 8999
     

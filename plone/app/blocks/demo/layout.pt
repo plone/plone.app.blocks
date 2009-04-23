@@ -5,6 +5,14 @@
         <script type="text/javascript">alert('layout');</script>
         <meta http-equiv="generator" value="layout" />
         
+        <style type="text/css">
+        div {
+            margin: 5px;
+            border: dotted black 1px;
+            padding: 5px;
+        }
+        </style>
+        
         <link rel="panel" rev="panel1" target="panel1" />
         <link rel="panel" rev="panel2" target="panel2" />
         <link rel="panel" rev="panel3" target="panel3" />
