@@ -39,17 +39,10 @@
          output
       -->
     <adapter
-        for="* *"
-        name="plone.app.blocks.tilepage"
-        factory=".transform.IncludeTiles"
-        />
-
-    <!-- 8999: Turn the lxml tree into a string -->
-    <adapter
-        for="* *"
-        name="plone.app.blocks.serializexml"
-        factory=".transform.SerializeXML"
-        />
+       for="* *"
+       name="plone.app.blocks.tilepage"
+       factory=".transform.IncludeTiles"
+       />
 
     <!-- The content XSLT view -->
     

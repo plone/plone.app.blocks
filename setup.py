@@ -27,8 +27,8 @@ setup(name='plone.app.blocks',
           'setuptools',
           'plone.transformchain',
           'lxml',
+          'repoze.xmliter',
       ],
       entry_points="""
-      # -*- Entry points: -*-
       """,
       )

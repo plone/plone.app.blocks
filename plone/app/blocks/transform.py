@@ -1,4 +1,7 @@
-from lxml import etree, html
+from lxml import etree
+
+from repoze.xmliter.utils import getHTMLSerializer
+from repoze.xmliter.serializer import XMLSerializer
 
 from plone.transformchain.interfaces import ITransform
 
@@ -10,9 +13,13 @@ from Globals import DevelopmentMode
 PRETTY_PRINT = bool(DevelopmentMode)
 
 class ParseXML(object):
-    """First stage in the 8000's chain: parse the content to an lxml tree.
-    The subsequent steps until 8999 will assume their result inputs are lxml
-    trees as well.
+    """First stage in the 8000's chain: parse the content to an lxml tree
+    encapsulated in an XMLSerializer.
+    
+    The subsequent steps in this package will assume their result inputs are
+    XMLSerializer iterables, and do nothing if it is not. This also gives us
+    the option to parse the content here, and if we decide it's not HTML,
+    we can avoid trying to parse it again.
     """
     
     implements(ITransform)
@@ -23,7 +30,13 @@ class ParseXML(object):
         self.published = published
         self.request = request
     
-    def __call__(self, result, encoding):
+    def transformString(self, result, encoding):
+        return None
+    
+    def transformUnicode(self, result, encoding):
+        return None
+    
+    def transformIterable(self, result, encoding):
         content_type = self.request.response.getHeader('Content-Type')
         if content_type is None or not content_type.startswith('text/html'):
             return None
@@ -32,18 +45,10 @@ class ParseXML(object):
         if content_encoding and content_encoding in ('zip', 'deflate', 'compress',):
             return None
         
-        parser = html.HTMLParser()
-        for chunk in result:
-            try:
-                parser.feed(chunk)
-            except (TypeError, etree.ParseError):
-                return None
         try:
-            root = parser.close()
+            return getHTMLSerializer(result, pretty_print=PRETTY_PRINT, encoding=encoding)
         except (TypeError, etree.ParseError):
             return None
-            
-        return root.getroottree()
 
 class MergePanels(object):
     """Find the site layout and merge panels.
@@ -57,18 +62,25 @@ class MergePanels(object):
         self.published = published
         self.request = request
     
-    def __call__(self, result, encoding):
-        if not isinstance(result, etree._ElementTree):
+    def transformString(self, result, encoding):
+        return None
+    
+    def transformUnicode(self, result, encoding):
+        return None
+    
+    def transformIterable(self, result, encoding):
+        if not isinstance(result, XMLSerializer):
             return None
         
-        tree = panel.merge(self.request, result)
+        tree = panel.merge(self.request, result.tree)
         if tree is None:
             return None
-    
+        
         # Set a marker in the request to let subsequent steps know the merging has happened
-        self.request['plone.app.blocks.merged'] = True
+        self.request['plonee.app.blocks.merged'] = True
     
-        return tree
+        result.tree = tree
+        return result
 
 class CreateTilePage(object):
     """Turn a panel-merged page into a tile page. Assumes the input result is
@@ -83,14 +95,21 @@ class CreateTilePage(object):
         self.published = published
         self.request = request
     
-    def __call__(self, result, encoding):
-        if not isinstance(result, etree._ElementTree):
+    def transformString(self, result, encoding):
+        return None
+    
+    def transformUnicode(self, result, encoding):
+        return None
+    
+    def transformIterable(self, result, encoding):
+        if not isinstance(result, XMLSerializer):
             return None
         
         if not self.request.get('plone.app.blocks.merged', False):
             return None
         
-        return tilepage.create_tilepage(self.request, result)
+        result.tree = tilepage.create_tilepage(self.request, result.tree)
+        return result
 
 class IncludeTiles(object):
     """Turn a panel-merged page into the final composition by including tiles.
@@ -106,33 +125,18 @@ class IncludeTiles(object):
         self.published = published
         self.request = request
     
-    def __call__(self, result, encoding):
-        if not isinstance(result, etree._ElementTree):
+    def transformString(self, result, encoding):
+        return None
+    
+    def transformUnicode(self, result, encoding):
+        return None
+    
+    def transformIterable(self, result, encoding):
+        if not isinstance(result, XMLSerializer):
             return None
         
         if not self.request.get('plone.app.blocks.merged', False):
             return None
         
-        return tiles.render_tiles(self.request, result)
-
-class SerializeXML(object):
-    """Serialize an lxml tree to an encoded string.
-    """
-    
-    implements(ITransform)
-    
-    order = 8999
-    
-    def __init__(self, published, request):
-        self.published = published
-        self.request = request
-    
-    def __call__(self, result, encoding):
-        if not isinstance(result, etree._ElementTree):
-            return None
-        
-        content_type = self.request.response.getHeader('Content-Type')
-        if content_type.startswith('text/html'):
-            return html.tostring(result, pretty_print=PRETTY_PRINT)
-        else:
-            return etree.tostring(result)
+        result.tree = tiles.render_tiles(self.request, result.tree)
+        return result
