@@ -28,6 +28,7 @@ setup(name='plone.app.blocks',
           'plone.transformchain',
           'lxml',
           'repoze.xmliter',
+          'collective.testcaselayer',
       ],
       entry_points="""
       [z3c.autoinclude.plugin]

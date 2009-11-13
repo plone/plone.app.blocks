@@ -1,26 +1,31 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     xmlns:zcml="http://namespaces.zope.org/zcml"
     i18n_domain="plone.app.blocks">
 
     <include package="plone.transformchain" />
-    <include package="plone.tiles" />
-
-    <include package=".demo" />
+    <include zcml:condition="installed plone.tiles" package=".demo" />
+    
+    <genericsetup:registerProfile
+        name="default"
+        directory="profiles/default"
+        
+        />
 
     <!-- The transform pipeline -->
 
     <!-- 8000: Turn the response into an lxml tree for further manipulation -->
     <adapter
-        for="* *"
+        for="* .interfaces.IBlocksLayer"
         name="plone.app.blocks.parsexml"
         factory=".transform.ParseXML"
         />
 
     <!-- 8100: Locate the site layout and merge panels -->
     <adapter
-        for="* *"
+        for="* .interfaces.IBlocksLayer"
         name="plone.app.blocks.mergepanels"
         factory=".transform.MergePanels"
         />
@@ -30,7 +35,7 @@
          the static elements
      -->
     <adapter
-        for=".interfaces.ITilePageRendered *"
+        for=".interfaces.ITilePageRendered .interfaces.IBlocksLayer"
         name="plone.app.blocks.tilepage"
         factory=".transform.CreateTilePage"
         />
@@ -39,7 +44,7 @@
          output
       -->
     <adapter
-       for="* *"
+       for="* .interfaces.IBlocksLayer"
        name="plone.app.blocks.tilepage"
        factory=".transform.IncludeTiles"
        />
@@ -49,6 +54,7 @@
     <browser:page
         name="blocks-static-content"
         for="*"
+        layer=".interfaces.IBlocksLayer"
         permission="zope.Public"
         class=".contentxsl.ContentXSL"
         />
