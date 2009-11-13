@@ -30,5 +30,7 @@ setup(name='plone.app.blocks',
           'repoze.xmliter',
       ],
       entry_points="""
+      [z3c.autoinclude.plugin]
+      target = plone
       """,
       )

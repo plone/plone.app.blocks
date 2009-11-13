@@ -46,7 +46,9 @@ class ParseXML(object):
             return None
         
         try:
-            return getHTMLSerializer(result, pretty_print=PRETTY_PRINT, encoding=encoding)
+            result = getHTMLSerializer(result, pretty_print=PRETTY_PRINT, encoding=encoding)
+            self.request['plone.app.blocks.enabled'] = True
+            return result
         except (TypeError, etree.ParseError):
             return None
 
@@ -69,7 +71,7 @@ class MergePanels(object):
         return None
     
     def transformIterable(self, result, encoding):
-        if not isinstance(result, XMLSerializer):
+        if not self.request.get('plone.app.blocks.enabled', False) or not isinstance(result, XMLSerializer):
             return None
         
         tree = panel.merge(self.request, result.tree)
@@ -77,7 +79,7 @@ class MergePanels(object):
             return None
         
         # Set a marker in the request to let subsequent steps know the merging has happened
-        self.request['plonee.app.blocks.merged'] = True
+        self.request['plone.app.blocks.merged'] = True
     
         result.tree = tree
         return result
@@ -102,7 +104,7 @@ class CreateTilePage(object):
         return None
     
     def transformIterable(self, result, encoding):
-        if not isinstance(result, XMLSerializer):
+        if not self.request.get('plone.app.blocks.enabled', False) or not isinstance(result, XMLSerializer):
             return None
         
         if not self.request.get('plone.app.blocks.merged', False):
@@ -132,7 +134,7 @@ class IncludeTiles(object):
         return None
     
     def transformIterable(self, result, encoding):
-        if not isinstance(result, XMLSerializer):
+        if not self.request.get('plone.app.blocks.enabled', False) or not isinstance(result, XMLSerializer):
             return None
         
         if not self.request.get('plone.app.blocks.merged', False):
