@@ -44,4 +44,4 @@ the sub-path. The tilepage transform stage will append the object's ``mtime``
 and a ``.xsl`` suffix to the style sheet to aid caching and file type
 recognition.
 
-See http://code.google.com/p/plone-deco/wiki/blocks for more details.
+See ``rendering.txt`` for detailed examples of how the processing is applied.

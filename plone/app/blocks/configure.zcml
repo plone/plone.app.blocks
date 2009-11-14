@@ -6,12 +6,18 @@
     i18n_domain="plone.app.blocks">
 
     <include package="plone.transformchain" />
-    <include zcml:condition="installed plone.tiles" package=".demo" />
+    <include package="plone.tiles" />
+    
+    <!-- TODO: Remove demo -->
+    <include package=".demo" />
     
     <genericsetup:registerProfile
         name="default"
+        title="Blocks rendering engine"
+        description="Installs transformation steps to apply the Blocks rendering algorithm for Plone pages."
         directory="profiles/default"
-        
+        for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+        provides="Products.GenericSetup.interfaces.EXTENSION"
         />
 
     <!-- The transform pipeline -->

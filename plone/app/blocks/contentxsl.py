@@ -51,7 +51,7 @@ class ContentXSL(object):
             raise TypeError("Page could not be merged")
         
         # Find tiles
-        tiles = utils.find_tiles(self.request, tree, remove=True)
+        tiles = utils.findTiles(self.request, tree, remove=True)
         
         # Build the stylesheet
         xslt_root = etree.fromstring(XSLT_BOILERPLATE)

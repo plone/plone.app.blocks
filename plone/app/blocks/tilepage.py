@@ -3,7 +3,7 @@ from plone.app.blocks import utils
 from lxml import etree
 from lxml.html import builder as E
 
-def create_tilepage(request, tree):
+def createTilePage(request, tree):
     """Transform the response represented by the lxml tree `tree` for the
     given request into a tile page.
     
@@ -11,7 +11,7 @@ def create_tilepage(request, tree):
     """
     
     # Find tiles in the merged document.
-    tiles = utils.find_tiles(request, tree)
+    tiles = utils.findTiles(request, tree)
     
     # Change the merged document into a tile page (rather forcefully)
 

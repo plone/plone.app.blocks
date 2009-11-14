@@ -9,9 +9,6 @@ from zope.interface import implements
 
 from plone.app.blocks import tilepage, panel, tiles
 
-from Globals import DevelopmentMode
-PRETTY_PRINT = bool(DevelopmentMode)
-
 class ParseXML(object):
     """First stage in the 8000's chain: parse the content to an lxml tree
     encapsulated in an XMLSerializer.
@@ -31,22 +28,22 @@ class ParseXML(object):
         self.request = request
     
     def transformString(self, result, encoding):
-        return None
+        return self.transformIterable([result], encoding)
     
     def transformUnicode(self, result, encoding):
-        return None
+        return self.transformIterable([result], encoding)
     
     def transformIterable(self, result, encoding):
         content_type = self.request.response.getHeader('Content-Type')
         if content_type is None or not content_type.startswith('text/html'):
             return None
         
-        content_encoding = self.request.response.getHeader('Content-Encoding')
-        if content_encoding and content_encoding in ('zip', 'deflate', 'compress',):
+        contentEncoding = self.request.response.getHeader('Content-Encoding')
+        if contentEncoding and contentEncoding in ('zip', 'deflate', 'compress',):
             return None
         
         try:
-            result = getHTMLSerializer(result, pretty_print=PRETTY_PRINT, encoding=encoding)
+            result = getHTMLSerializer(result, pretty_print=True, encoding=encoding)
             self.request['plone.app.blocks.enabled'] = True
             return result
         except (TypeError, etree.ParseError):
@@ -110,7 +107,7 @@ class CreateTilePage(object):
         if not self.request.get('plone.app.blocks.merged', False):
             return None
         
-        result.tree = tilepage.create_tilepage(self.request, result.tree)
+        result.tree = tilepage.createTilePage(self.request, result.tree)
         return result
 
 class IncludeTiles(object):
@@ -140,5 +137,5 @@ class IncludeTiles(object):
         if not self.request.get('plone.app.blocks.merged', False):
             return None
         
-        result.tree = tiles.render_tiles(self.request, result.tree)
+        result.tree = tiles.renderTiles(self.request, result.tree)
         return result

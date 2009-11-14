@@ -1,4 +1,5 @@
 import unittest
+from zope.testing import doctest
 
 from Testing import ZopeTestCase as ztc
 from Products.PloneTestCase import ptc
@@ -7,8 +8,11 @@ from Products.Five import zcml
 import collective.testcaselayer.ptc
 
 import plone.app.blocks
+import plone.tiles
 
 ptc.setupPloneSite()
+
+optionflags = (doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
 
 class IntegrationTestLayer(collective.testcaselayer.ptc.BasePTCLayer):
 
@@ -26,5 +30,6 @@ def test_suite():
         ztc.FunctionalDocFileSuite(
             'rendering.txt',
             package='plone.app.blocks',
-            test_class=FunctionalTestCase),
+            test_class=FunctionalTestCase,
+            optionflags=optionflags),
         ))

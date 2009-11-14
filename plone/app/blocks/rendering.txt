@@ -1,5 +1,5 @@
-Blocks rendering
-================
+Blocks rendering in detail
+==========================
 
 This test illustrates the blocks rendering process. At a high level, it
 consists of the following steps:
@@ -66,6 +66,389 @@ content (i.e. the layout as applied to the content page) is changed.
 Rendering step-by-step
 ----------------------
 
-Let us now illustrate the rendering process. We will do this by calling the
-various transform utilities registered by this package one-by-one.
+Let us now illustrate the rendering process. To keep things simple, we will
+do so with hardcoded, global browser views. However, it is important to
+realise that ``plone.app.blocks`` works by post-processing responses rendered
+by Zope. The content and layout pages could just as easily be created by views
+of content objects.
 
+First, we will create a page representing the layout, with panels. This
+includes some resources and other elements in the ``<head />``, ``<link />``
+tags which identify tile placeholders and panels, as well as content inside
+and outside panels. The tiles in this case are managed by ``plone.tiles``,
+and are both of the same type.
+
+    >>> layoutHTML = u"""\
+    ... <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    ... <html>
+    ...     <head>
+    ...         <title>Layout title</title>
+    ...         <link rel="stylesheet" href="/layout/style.css" />
+    ...         <script type="text/javascript">alert('layout');</script>
+    ... 
+    ...         <style type="text/css">
+    ...         div {
+    ...             margin: 5px;
+    ...             border: dotted black 1px;
+    ...             padding: 5px;
+    ...         }
+    ...         </style>
+    ... 
+    ...         <link rel="panel" rev="panel1" target="panel1" />
+    ...         <link rel="panel" rev="panel2" target="panel2" />
+    ...         <link rel="panel" rev="panel3" target="panel3" />
+    ... 
+    ...         <link rel="tile" target="layout-tile1" href="./++tile++tile1/test.tile1" />
+    ...         <link rel="tile" target="layout-tile2" href="./++tile++tile2/test.tile1" />
+    ...     </head>
+    ...     <body>
+    ...         <h1>Welcome!</h1>
+    ...         <div id="panel1">Layout panel 1</div>
+    ...         <div id="panel2">
+    ...             Layout panel 2
+    ...             <div id="layout-tile1">Layout tile 1 placeholder</div>
+    ...         </div>
+    ...         <div id="panel3">
+    ...             Layout panel 3
+    ...             <div id="layout-tile2">Layout tile 2 placeholder</div>
+    ...         </div>
+    ...     </body>
+    ... </html>
+    ... """
+
+Next, we will define the markup of a content page that uses this layout.
+
+    >>> pageHTML = u"""\
+    ... <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    ... <html>
+    ...     <head>
+    ...         <title>Page title</title>
+    ...         <link rel="stylesheet" href="/layout/page.css" />
+    ...         <script type="text/javascript">alert('page');</script>
+    ...         
+    ...         <link rel="layout" href="./@@test-layout"/>
+    ...         
+    ...         <link rel="tile" target="page-tile2" href="./++tile++tile2/test.tile1?magicNumber:int=2" />
+    ...         <link rel="tile" target="page-tile3" href="./++tile++tile3/test.tile1" />
+    ...         <link rel="tile" target="page-tile4" href="./++tile++tile4/test.tile1" />
+    ...     </head>
+    ...     <body>
+    ...         <h1>Welcome!</h1>
+    ...         <div id="panel1">
+    ...             Page panel 1
+    ...             <div id="page-tile2">Page tile 2 placeholder</div>
+    ...         </div>
+    ...         <div id="panel2">
+    ...             Page panel 2
+    ...             <div id="page-tile3">Page tile 3 placeholder</div>
+    ...         </div>
+    ...         <div id="panel4">
+    ...             Page panel 4 (ignored)
+    ...             <div id="page-tile4">Page tile 4 placeholder</div>
+    ...         </div>
+    ...     </body>
+    ... </html>
+    ... """
+
+We will now register two views that simply return this HTML, and a tile type
+which we can use to test tile rendering. We do this in code for the purposes
+of the test, and we have to apply security because we will shortly render
+those pages using the test publisher. In real life, these could be registered
+using the standard ``<browser:page />`` and ``<plone:tile />`` directives.
+
+    >>> from Products.Five.browser import BrowserView
+
+    >>> class Layout(BrowserView):
+    ...     __name__ = 'test-layout'
+    ...     def __call__(self):
+    ...         return layoutHTML
+
+    >>> class Page(BrowserView):
+    ...     __name__ = 'test-page'
+    ...     def __call__(self):
+    ...         return pageHTML
+
+    >>> from zope.interface import Interface, implements
+    >>> from zope import schema
+    >>> from plone.tiles import Tile
+
+    >>> class ITestTile(Interface):
+    ...     magicNumber = schema.Int(title=u"Magic number", required=False)
+
+    >>> from plone.tiles import Tile
+    >>> class TestTile(Tile):
+    ...
+    ...     def __call__(self):
+    ...         # fake a page template to keep things simple in the test
+    ...         return """\
+    ... <html>
+    ...     <head>
+    ...         <meta name="tile-name" content="%(name)s" />
+    ...     </head>
+    ...     <body>
+    ...         <p>
+    ...             This is a demo tile with id %(name)s
+    ...         </p>
+    ...         <p>
+    ...             Magic number: %(number)d; Form: %(form)s; Query string: %(queryString)s
+    ...         </p>
+    ...     </body>
+    ... </html>""" % dict(name=self.__name__, number=self.data['magicNumber'] or -1,
+    ...                   form=sorted(self.request.form.items()), queryString=self.request['QUERY_STRING'])
+
+    >>> from plone.tiles.type import TileType
+    >>> testTileType = TileType(
+    ...     name=u'test.tile1',
+    ...     title=u"Test tile",
+    ...     description=u"A tile used for testing",
+    ...     add_permission="cmf.ManagePortal",
+    ...     schema=ITestTile)
+
+Register these in the same way that the ZCML handlers would, more or less.
+
+    >>> from Products.Five.security import protectClass
+    >>> protectClass(Layout, 'zope2.View')
+    >>> protectClass(Page, 'zope2.View')
+    >>> protectClass(TestTile, 'zope2.View')
+
+    >>> from App.class_init import InitializeClass
+    >>> InitializeClass(Layout)
+    >>> InitializeClass(Page)
+    >>> InitializeClass(TestTile)
+
+    >>> from zope.component import provideAdapter, provideUtility
+    >>> from zope.interface import Interface
+    >>> from plone.tiles.interfaces import IBasicTile
+    >>> provideAdapter(Layout, (Interface, Interface,), Interface, u'test-layout')
+    >>> provideAdapter(Page, (Interface, Interface,), Interface, u'test-page')
+    >>> provideAdapter(TestTile, (Interface, Interface,), IBasicTile, u'test.tile1',)
+    >>> provideUtility(testTileType, name=u'test.tile1')
+
+We can now render the page. Provided ``plone.app.blocks`` is installed and
+working, it should perform its magic. We make sure that Zope is in
+"development mode" to get pretty-printed output.
+
+    >>> from Products.Five.testbrowser import Browser
+    >>> browser = Browser()
+
+    >>> browser.open(self.portal.absolute_url() + '/@@test-page')
+    >>> print browser.contents
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html>
+        <head>
+            <link rel="stylesheet" href="/layout/style.css">
+            <script type="text/javascript">alert('layout');</script><style type="text/css">
+                div {
+                    margin: 5px;
+                    border: dotted black 1px;
+                    padding: 5px;
+                }
+            </style>
+            <link rel="panel" rev="panel1" target="panel1">
+            <link rel="panel" rev="panel2" target="panel2">
+            <link rel="panel" rev="panel3" target="panel3">
+            <title>Page title</title>
+            <link rel="stylesheet" href="/layout/page.css">
+            <link rel="layout" href="./@@test-layout">
+            <script type="text/javascript">alert('page');</script><meta name="tile-name" content="tile2">
+            <meta name="tile-name" content="tile2">
+            <meta name="tile-name" content="tile3">
+        </head>
+        <body>
+            <h1>Welcome!</h1>
+            <div id="panel1">
+                Page panel 1
+                <div id="page-tile2">
+                    <p>
+                        This is a demo tile with id tile2
+                    </p>
+                    <p>
+                        Magic number: 2; Form: [('magicNumber', 2)]; Query string: magicNumber:int=2
+                    </p>
+                </div>
+            </div>
+            <div id="panel2">
+                Page panel 2
+                <div id="page-tile3">
+                    <p>
+                        This is a demo tile with id tile3
+                    </p>
+                    <p>
+                        Magic number: -1; Form: []; Query string: 
+                    </p>
+                </div>
+            </div>
+            <div id="panel3">
+                Layout panel 3
+                <div id="layout-tile2">
+                    <p>
+                        This is a demo tile with id tile2
+                    </p>
+                    <p>
+                        Magic number: -1; Form: []; Query string: 
+                    </p>
+                </div>
+            </div>
+        </body>
+    </html>
+
+Notice how:
+
+  * Panels from the page have been merged into the layout, replacing the
+    corresponding panels there.
+  * The ``<head />`` sections of the two documents have been merged
+  * The rest of the layout page is intact
+  * The rest of the content page is discarded
+  * The tiles have been rendered, replacing the relevant placeholders
+  * The ``<head />`` section from the rendered tiles has been merged into the
+    ``<head />`` of the output page.
+
+Let's now see how the page rendering would work if the content page indicated
+that it wanted to use tile rendering.
+
+First, we mark the view with the relevant marker interface.
+
+    >>> from plone.app.blocks.interfaces import ITilePageRendered
+    >>> from zope.interface import classImplements
+    >>> classImplements(Page, ITilePageRendered)
+
+We then try to access the same page again.
+
+    >>> browser.open(self.portal.absolute_url() + '/@@test-page')
+    >>> tilePageContents = browser.contents
+    >>> print tilePageContents
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <?xml-stylesheet type="text/xsl" href="http://nohost/plone/@@test-page/@@blocks-static-content/....xsl?" ?>
+    <html>
+        <head>
+            <meta name="tile-name" content="tile2">
+            <meta name="tile-name" content="tile2">
+            <meta name="tile-name" content="tile3">
+        </head>
+        <body>
+            <div id="layout-tile2">
+                <p>
+                    This is a demo tile with id tile2
+                </p>
+                <p>
+                    Magic number: -1; Form: []; Query string: 
+                </p>
+            </div>
+            <div id="page-tile2">
+                <p>
+                    This is a demo tile with id tile2
+                </p>
+                <p>
+                    Magic number: 2; Form: [('magicNumber', 2)]; Query string: magicNumber:int=2
+                </p>
+            </div>
+            <div id="page-tile3">
+                <p>
+                    This is a demo tile with id tile3
+                </p>
+                <p>
+                    Magic number: -1; Form: []; Query string: 
+                </p>
+            </div>
+        </body>
+    </html>
+
+Notice how this page contains all the dynamic tile content (including the
+``<head />`` portions), but none of the static content or panels from the 
+layout.
+
+When the XML stylesheet processing instruction is fulfilled, it will fetch
+a URL like this. Note that the ellipsis is used because the modification time
+of the context object (the portal in this case) is added on the traversal
+path. This is not actually used, but allows aggressive caching of the XSLT
+file in a caching proxy. Once the context is modified, the tile page will
+reference a URL with a different number, forcing a fresh copy to be fetched.
+
+    >>> browser.open(self.portal.absolute_url() + '/@@test-page/@@blocks-static-content/1258209736.89.xsl')
+    >>> tilePageXSLTContents = browser.contents
+    >>> print tilePageXSLTContents
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+    <xsl:template match="/">
+    <html><head><link rel="stylesheet" href="/layout/style.css"/><script type="text/javascript">alert('layout');</script><style type="text/css">
+            div {
+                margin: 5px;
+                border: dotted black 1px;
+                padding: 5px;
+            }
+            </style><link rel="panel" rev="panel1" target="panel1"/><link rel="panel" rev="panel2" target="panel2"/><link rel="panel" rev="panel3" target="panel3"/><title>Page title</title><link rel="stylesheet" href="/layout/page.css"/><link rel="layout" href="./@@test-layout"/><script type="text/javascript">alert('page');</script></head><body>
+            <h1>Welcome!</h1>
+            <div id="panel1">
+                Page panel 1
+                <xsl:copy-of select="/html/body/div[@id='page-tile2']"/></div>
+            <div id="panel2">
+                Page panel 2
+                <xsl:copy-of select="/html/body/div[@id='page-tile3']"/></div>
+            <div id="panel3">
+                Layout panel 3
+                <xsl:copy-of select="/html/body/div[@id='layout-tile2']"/></div>
+        </body></html></xsl:template>
+    </xsl:stylesheet>
+    <BLANKLINE>
+
+For the sake of completeness, let's show what would happen if this XSLT was
+applied to the content.
+
+    >>> from lxml import etree, html
+    >>> tilePageTransform = etree.XSLT(etree.fromstring(tilePageXSLTContents))
+    >>> tilePageResult = tilePageTransform(html.fromstring(tilePageContents))
+    >>> print html.tostring(tilePageResult, pretty_print=True)
+    <html>
+        <head>
+            <link rel="stylesheet" href="/layout/style.css">
+            <script type="text/javascript">alert('layout');</script><style type="text/css">
+                    div {
+                        margin: 5px;
+                        border: dotted black 1px;
+                        padding: 5px;
+                    }
+            </style>
+            <link rel="panel" rev="panel1" target="panel1">
+            <link rel="panel" rev="panel2" target="panel2">
+            <link rel="panel" rev="panel3" target="panel3">
+            <title>Page title</title>
+            <link rel="stylesheet" href="/layout/page.css">
+            <link rel="layout" href="./@@test-layout">
+            <script type="text/javascript">alert('page');</script>
+        </head>
+        <body>
+            <h1>Welcome!</h1>
+            <div id="panel1">
+                Page panel 1
+                <div id="page-tile2">
+                    <p>
+                        This is a demo tile with id tile2
+                    </p>
+                    <p>
+                        Magic number: 2; Form: [('magicNumber', 2)]; Query string: magicNumber:int=2
+                    </p>
+                </div>
+            </div>
+            <div id="panel2">
+                Page panel 2
+                <div id="page-tile3">
+                    <p>
+                        This is a demo tile with id tile3
+                    </p>
+                    <p>
+                        Magic number: -1; Form: []; Query string: 
+                    </p>
+                </div>
+            </div>
+            <div id="panel3">
+                Layout panel 3
+                <div id="layout-tile2">
+                    <p>
+                        This is a demo tile with id tile2
+                    </p>
+                    <p>
+                        Magic number: -1; Form: []; Query string: 
+                    </p>
+                </div>
+            </div>
+        </body>
+    </html>

@@ -23,7 +23,7 @@ layout_xpath = etree.XPath("/html/head/link[@rel='layout']")
 tile_xpath   = etree.XPath("/html/head/link[@rel='tile']")
 panel_xpath  = etree.XPath("/html/head/link[@rel='panel']")
 
-def clone_request(request, url):
+def cloneRequest(request, url):
     """Clone the given request for use in traversal to the given URL.
     
     This will set up request.form as well.
@@ -55,8 +55,6 @@ def traverse(request, path):
     """Traverse to the given URL, simulating URL traversal.
     
     Returns the traversed-to object. May raise Unauthorized or NotFound.
-    
-    If invoke is true, the object will be called
     """
     
     return request.traverse(path)
@@ -79,7 +77,7 @@ def resolve(request, url):
     """Resolve the given URL to an lxml tree.
     """
     
-    request_clone = clone_request(request, url)
+    request_clone = cloneRequest(request, url)
     path = '/'.join(request_clone.physicalPathFromURL(url.split('?')[0]))
     
     try:
@@ -124,7 +122,7 @@ def xpath1(xpath, node, strict=True):
         else:
             return result
 
-def merge_head(src_tree, dest_tree, header_replace, header_append):
+def mergeHead(src_tree, dest_tree, header_replace, header_append):
     """Merge the <head /> sections.
     
      - Any node in the source matching an xpath in the list header_replace
@@ -155,7 +153,7 @@ def merge_head(src_tree, dest_tree, header_replace, header_append):
         for src_tag in append_xpath(src_tree):
             dest_head.append(src_tag)
 
-def find_tiles(request, tree, remove=False):
+def findTiles(request, tree, remove=False):
     """Given a request and an lxml tree with the body, return a dict of
     tile id to absolute tile href (including query string).
     

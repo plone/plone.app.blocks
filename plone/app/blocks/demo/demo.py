@@ -8,7 +8,7 @@ class IDemoTile(Interface):
     magic_number = schema.Int(title=u"Magic number", required=False)
 
 class DemoTilePageView(object):
-    # implements(ITilePageRendered)
+    implements(ITilePageRendered)
     
     def __init__(self, context, request):
         self.context = context

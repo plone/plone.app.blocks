@@ -47,6 +47,6 @@ def merge(request, page_tree):
                 layout_panel_node.getparent().replace(layout_panel_node, page_panel_node)
     
     # Merge the head of both documents
-    utils.merge_head(page_tree, layout_tree, header_replace, header_append)
+    utils.mergeHead(page_tree, layout_tree, header_replace, header_append)
     
     return layout_tree
