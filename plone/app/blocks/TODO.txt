@@ -11,8 +11,8 @@ Functionality:
 
 Integration:
 
-  * Deco theme, where main_template enables tile rendering, common
-    functionality is exposed via tiles.
+  * Deco theme, where main_template just selects a layout and fills a few
+    panels; common functionality is exposed via tiles.
   * Deco editing of layouts and panels
   * Deco UI for selectively overriding panels when working with layouts
 
