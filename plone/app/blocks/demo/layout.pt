@@ -17,8 +17,8 @@
         <link rel="panel" rev="panel2" target="panel2" />
         <link rel="panel" rev="panel3" target="panel3" />
         
-        <link rel="tile" target="layout-tile1" href="./++tile++tile1/plone.app.blocks.demo1" />
-        <link rel="tile" target="layout-tile2" href="./++tile++tile2/plone.app.blocks.demo1" />
+        <link rel="tile" target="layout-tile1" href="./@@plone.app.blocks.demo1?id=tile1" />
+        <link rel="tile" target="layout-tile2" href="./@@plone.app.blocks.demo1?id=tile2" />
         
     </head>
     <body>

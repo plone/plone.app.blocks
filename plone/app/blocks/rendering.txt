@@ -98,8 +98,8 @@ and are both of the same type.
     ...         <link rel="panel" rev="panel2" target="panel2" />
     ...         <link rel="panel" rev="panel3" target="panel3" />
     ... 
-    ...         <link rel="tile" target="layout-tile1" href="./++tile++tile1/test.tile1" />
-    ...         <link rel="tile" target="layout-tile2" href="./++tile++tile2/test.tile1" />
+    ...         <link rel="tile" target="layout-tile1" href="./@@test.tile1?id=tile1" />
+    ...         <link rel="tile" target="layout-tile2" href="./@@test.tile1?id=tile2" />
     ...     </head>
     ...     <body>
     ...         <h1>Welcome!</h1>
@@ -128,9 +128,9 @@ Next, we will define the markup of a content page that uses this layout.
     ...         
     ...         <link rel="layout" href="./@@test-layout"/>
     ...         
-    ...         <link rel="tile" target="page-tile2" href="./++tile++tile2/test.tile1?magicNumber:int=2" />
-    ...         <link rel="tile" target="page-tile3" href="./++tile++tile3/test.tile1" />
-    ...         <link rel="tile" target="page-tile4" href="./++tile++tile4/test.tile1" />
+    ...         <link rel="tile" target="page-tile2" href="./@@test.tile1?id=tile2&magicNumber:int=2" />
+    ...         <link rel="tile" target="page-tile3" href="./@@test.tile1?id=tile3" />
+    ...         <link rel="tile" target="page-tile4" href="./@@test.tile1?id=tile4" />
     ...     </head>
     ...     <body>
     ...         <h1>Welcome!</h1>
@@ -177,6 +177,7 @@ using the standard ``<browser:page />`` and ``<plone:tile />`` directives.
 
     >>> from plone.tiles import Tile
     >>> class TestTile(Tile):
+    ...     __name__ = 'test.tile1' # normally set by ZCML handler
     ...
     ...     def __call__(self):
     ...         # fake a page template to keep things simple in the test
@@ -193,7 +194,7 @@ using the standard ``<browser:page />`` and ``<plone:tile />`` directives.
     ...             Magic number: %(number)d; Form: %(form)s; Query string: %(queryString)s
     ...         </p>
     ...     </body>
-    ... </html>""" % dict(name=self.__name__, number=self.data['magicNumber'] or -1,
+    ... </html>""" % dict(name=self.id, number=self.data['magicNumber'] or -1,
     ...                   form=sorted(self.request.form.items()), queryString=self.request['QUERY_STRING'])
 
     >>> from plone.tiles.type import TileType
@@ -218,10 +219,9 @@ Register these in the same way that the ZCML handlers would, more or less.
 
     >>> from zope.component import provideAdapter, provideUtility
     >>> from zope.interface import Interface
-    >>> from plone.tiles.interfaces import IBasicTile
     >>> provideAdapter(Layout, (Interface, Interface,), Interface, u'test-layout')
     >>> provideAdapter(Page, (Interface, Interface,), Interface, u'test-page')
-    >>> provideAdapter(TestTile, (Interface, Interface,), IBasicTile, u'test.tile1',)
+    >>> provideAdapter(TestTile, (Interface, Interface,), Interface, u'test.tile1',)
     >>> provideUtility(testTileType, name=u'test.tile1')
 
 We can now render the page. Provided ``plone.app.blocks`` is installed and
@@ -230,6 +230,7 @@ working, it should perform its magic. We make sure that Zope is in
 
     >>> from Products.Five.testbrowser import Browser
     >>> browser = Browser()
+    >>> browser.handleErrors = False
 
     >>> browser.open(self.portal.absolute_url() + '/@@test-page')
     >>> print browser.contents
@@ -263,7 +264,7 @@ working, it should perform its magic. We make sure that Zope is in
                         This is a demo tile with id tile2
                     </p>
                     <p>
-                        Magic number: 2; Form: [('magicNumber', 2)]; Query string: magicNumber:int=2
+                        Magic number: 2; Form: [('id', 'tile2'), ('magicNumber', 2)]; Query string: id=tile2&amp;magicNumber:int=2
                     </p>
                 </div>
             </div>
@@ -274,7 +275,7 @@ working, it should perform its magic. We make sure that Zope is in
                         This is a demo tile with id tile3
                     </p>
                     <p>
-                        Magic number: -1; Form: []; Query string: 
+                        Magic number: -1; Form: [('id', 'tile3')]; Query string: id=tile3
                     </p>
                 </div>
             </div>
@@ -285,7 +286,7 @@ working, it should perform its magic. We make sure that Zope is in
                         This is a demo tile with id tile2
                     </p>
                     <p>
-                        Magic number: -1; Form: []; Query string: 
+                        Magic number: -1; Form: [('id', 'tile2')]; Query string: id=tile2
                     </p>
                 </div>
             </div>
@@ -331,7 +332,7 @@ We then try to access the same page again.
                     This is a demo tile with id tile2
                 </p>
                 <p>
-                    Magic number: -1; Form: []; Query string: 
+                    Magic number: -1; Form: [('id', 'tile2')]; Query string: id=tile2
                 </p>
             </div>
             <div id="page-tile2">
@@ -339,7 +340,7 @@ We then try to access the same page again.
                     This is a demo tile with id tile2
                 </p>
                 <p>
-                    Magic number: 2; Form: [('magicNumber', 2)]; Query string: magicNumber:int=2
+                    Magic number: 2; Form: [('id', 'tile2'), ('magicNumber', 2)]; Query string: id=tile2&amp;magicNumber:int=2
                 </p>
             </div>
             <div id="page-tile3">
@@ -347,7 +348,7 @@ We then try to access the same page again.
                     This is a demo tile with id tile3
                 </p>
                 <p>
-                    Magic number: -1; Form: []; Query string: 
+                    Magic number: -1; Form: [('id', 'tile3')]; Query string: id=tile3
                 </p>
             </div>
         </body>
@@ -424,7 +425,7 @@ applied to the content.
                         This is a demo tile with id tile2
                     </p>
                     <p>
-                        Magic number: 2; Form: [('magicNumber', 2)]; Query string: magicNumber:int=2
+                        Magic number: 2; Form: [('id', 'tile2'), ('magicNumber', 2)]; Query string: id=tile2&amp;magicNumber:int=2
                     </p>
                 </div>
             </div>
@@ -435,7 +436,7 @@ applied to the content.
                         This is a demo tile with id tile3
                     </p>
                     <p>
-                        Magic number: -1; Form: []; Query string: 
+                        Magic number: -1; Form: [('id', 'tile3')]; Query string: id=tile3 
                     </p>
                 </div>
             </div>
@@ -446,7 +447,7 @@ applied to the content.
                         This is a demo tile with id tile2
                     </p>
                     <p>
-                        Magic number: -1; Form: []; Query string: 
+                        Magic number: -1; Form: [('id', 'tile2')]; Query string: id=tile2
                     </p>
                 </div>
             </div>

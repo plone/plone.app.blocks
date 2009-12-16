@@ -13,9 +13,9 @@
             tal:attributes="href string:${portal_state/navigation_root_url}/@@blocks-demo-layout"
             />
         
-        <link rel="tile" target="page-tile2" href="./++tile++tile2/plone.app.blocks.demo1?magic_number:int=2" />
-        <link rel="tile" target="page-tile3" href="./++tile++tile3/plone.app.blocks.demo1" />
-        <link rel="tile" target="page-tile4" href="./++tile++tile4/plone.app.blocks.demo1" />
+        <link rel="tile" target="page-tile2" href="./plone.app.blocks.demo1?id=tile2&magic_number:int=2" />
+        <link rel="tile" target="page-tile3" href="./plone.app.blocks.demo1id=tile3" />
+        <link rel="tile" target="page-tile4" href="./plone.app.blocks.demo1?id=tile4" />
         
     </head>
     <body>
