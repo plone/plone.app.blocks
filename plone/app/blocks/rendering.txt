@@ -4,58 +4,58 @@ Blocks rendering in detail
 This test illustrates the blocks rendering process. At a high level, it
 consists of the following steps:
 
-  0. Obtain the content page, an HTML document.
-  1. Look for a page layout link in the content page ``<head />``. This
-     takes the form of a tag like ``<link rel="layout" href="..." />``.
-  2. Resolve and obtain the page layout. This is another HTML document.
-  3. Extract panels from the layout. A panel is an element (usually a
-     ``<div />``) in the layout page with a particular id. That id is
-     identified by a ``<link />`` tag in the head of the layout page, which
-     looks like this: ``<link rel="panel" rev="panel1" target="panel1" />``.
-     Here, the ``target`` attribute specifies the id of an element in the
-     layout page, and the ``rev`` attribute specifies an id which *may* be
-     used in the content page.
-  4. Merge panels. This is the process which applies the layout to the
-     unstyled page. All panels in the layout page that have a matching
-     element in the content page, are replaced by the content page element.
-     The ``<head />`` of the content page is merged into the layout page.
-     The rest of the content page is discarded.
-  5. Resolve and obtain tiles. A tile is a placeholder element in the page
-     which will be replaced by the contents of a document referenced by a URL.
-     Again, the tile is identified by a ``<link />`` element in the head of
-     the rendered page.
-     
-     Note that at this point, panel merging has taken place, so if a panel in
-     the content page contains tiles, the associated ``<link >`` tags will be
-     carried over into the merged page. Also note that it is possible to have
-     tiles outside of panels - the two concepts are not directly related.
-     
-     The format of a tile link is: ``<link rel="tile" target="..."
-     href="..." />``. The ``target`` attribute indicates the id of the
-     placeholder element. The ``href`` indicates the URL of the tile.
-     
-     The ``plone.tiles`` package provides a framework for writing tiles,
-     although in reality a tile can be any HTML page.
-  6. Place tiles into the page. The tile should resolve to a full HTML
-     document. Any content found in the ``<head />`` of the tile content will
-     be merged into the ``<head />`` of the rendered content. The contents of
-     the ``<body />`` of the tile content are put into the rendered document
-     at the tile placeholder.
+0. Obtain the content page, an HTML document.
+1. Look for a page layout link in the content page ``<head />``. This
+   takes the form of a tag like ``<link rel="layout" href="..." />``.
+2. Resolve and obtain the page layout. This is another HTML document.
+3. Extract panels from the layout. A panel is an element (usually a
+   ``<div />``) in the layout page with a particular id. That id is
+   identified by a ``<link />`` tag in the head of the layout page, which
+   looks like this: ``<link rel="panel" rev="panel1" target="panel1" />``.
+   Here, the ``target`` attribute specifies the id of an element in the
+   layout page, and the ``rev`` attribute specifies an id which *may* be
+   used in the content page.
+4. Merge panels. This is the process which applies the layout to the
+   unstyled page. All panels in the layout page that have a matching
+   element in the content page, are replaced by the content page element.
+   The ``<head />`` of the content page is merged into the layout page.
+   The rest of the content page is discarded.
+5. Resolve and obtain tiles. A tile is a placeholder element in the page
+   which will be replaced by the contents of a document referenced by a URL.
+   Again, the tile is identified by a ``<link />`` element in the head of
+   the rendered page.
+   
+   Note that at this point, panel merging has taken place, so if a panel in
+   the content page contains tiles, the associated ``<link >`` tags will be
+   carried over into the merged page. Also note that it is possible to have
+   tiles outside of panels - the two concepts are not directly related.
+   
+   The format of a tile link is: ``<link rel="tile" target="..."
+   href="..." />``. The ``target`` attribute indicates the id of the
+   placeholder element. The ``href`` indicates the URL of the tile.
+   
+   The ``plone.tiles`` package provides a framework for writing tiles,
+   although in reality a tile can be any HTML page.
+6. Place tiles into the page. The tile should resolve to a full HTML
+   document. Any content found in the ``<head />`` of the tile content will
+   be merged into the ``<head />`` of the rendered content. The contents of
+   the ``<body />`` of the tile content are put into the rendered document
+   at the tile placeholder.
 
 There is one slight variation of steps 5-6, which can be used to render pages
 more efficiently in some cases where a caching proxy (such as Squid or
 Varnish) is used. This involves the following steps:
 
-  * If the view or resource being published is marked with the marker
-    interface ``plone.app.blocks.interfaces.ITilePageRendered``, a simple page
-    is produced containing the rendered version of all tiles, but none of the
-    other static content. This "tile page" has an ``<?xml-stylesheet ?>``
-    processing instruction referencing a view ``@@blocks-static-content`` in
-    the context of the original resource.
-  * When this XSL stylesheet is applied (either client-side by the browser, or
-    by a processing step in front of Zope, say in Apache), the
-    ``@@blocks-static-content`` view generates an XSLT document which can
-    transform the tile page into the final rendered output.
+* If the view or resource being published is marked with the marker
+  interface ``plone.app.blocks.interfaces.ITilePageRendered``, a simple page
+  is produced containing the rendered version of all tiles, but none of the
+  other static content. This "tile page" has an ``<?xml-stylesheet ?>``
+  processing instruction referencing a view ``@@blocks-static-content`` in
+  the context of the original resource.
+* When this XSL stylesheet is applied (either client-side by the browser, or
+  by a processing step in front of Zope, say in Apache), the
+  ``@@blocks-static-content`` view generates an XSLT document which can
+  transform the tile page into the final rendered output.
 
 The idea behind this approach is that the tile page contains all the dynamic
 parts of the page, whilst the content XSLT contains all the static content and
@@ -98,8 +98,8 @@ and are both of the same type.
     ...         <link rel="panel" rev="panel2" target="panel2" />
     ...         <link rel="panel" rev="panel3" target="panel3" />
     ... 
-    ...         <link rel="tile" target="layout-tile1" href="./@@test.tile1?id=tile1" />
-    ...         <link rel="tile" target="layout-tile2" href="./@@test.tile1?id=tile2" />
+    ...         <link rel="tile" target="layout-tile1" href="./@@test.tile1/tile1" />
+    ...         <link rel="tile" target="layout-tile2" href="./@@test.tile1/tile2" />
     ...     </head>
     ...     <body>
     ...         <h1>Welcome!</h1>
@@ -128,9 +128,9 @@ Next, we will define the markup of a content page that uses this layout.
     ...         
     ...         <link rel="layout" href="./@@test-layout"/>
     ...         
-    ...         <link rel="tile" target="page-tile2" href="./@@test.tile1?id=tile2&magicNumber:int=2" />
-    ...         <link rel="tile" target="page-tile3" href="./@@test.tile1?id=tile3" />
-    ...         <link rel="tile" target="page-tile4" href="./@@test.tile1?id=tile4" />
+    ...         <link rel="tile" target="page-tile2" href="./@@test.tile1/tile2?magicNumber:int=2" />
+    ...         <link rel="tile" target="page-tile3" href="./@@test.tile1/tile3" />
+    ...         <link rel="tile" target="page-tile4" href="./@@test.tile1/tile4" />
     ...     </head>
     ...     <body>
     ...         <h1>Welcome!</h1>
@@ -264,7 +264,7 @@ working, it should perform its magic. We make sure that Zope is in
                         This is a demo tile with id tile2
                     </p>
                     <p>
-                        Magic number: 2; Form: [('id', 'tile2'), ('magicNumber', 2)]; Query string: id=tile2&amp;magicNumber:int=2
+                        Magic number: 2; Form: [('magicNumber', 2)]; Query string: magicNumber:int=2
                     </p>
                 </div>
             </div>
@@ -275,7 +275,7 @@ working, it should perform its magic. We make sure that Zope is in
                         This is a demo tile with id tile3
                     </p>
                     <p>
-                        Magic number: -1; Form: [('id', 'tile3')]; Query string: id=tile3
+                        Magic number: -1; Form: []; Query string: 
                     </p>
                 </div>
             </div>
@@ -286,7 +286,7 @@ working, it should perform its magic. We make sure that Zope is in
                         This is a demo tile with id tile2
                     </p>
                     <p>
-                        Magic number: -1; Form: [('id', 'tile2')]; Query string: id=tile2
+                        Magic number: -1; Form: []; Query string: 
                     </p>
                 </div>
             </div>
@@ -332,7 +332,7 @@ We then try to access the same page again.
                     This is a demo tile with id tile2
                 </p>
                 <p>
-                    Magic number: -1; Form: [('id', 'tile2')]; Query string: id=tile2
+                    Magic number: -1; Form: []; Query string: 
                 </p>
             </div>
             <div id="page-tile2">
@@ -340,7 +340,7 @@ We then try to access the same page again.
                     This is a demo tile with id tile2
                 </p>
                 <p>
-                    Magic number: 2; Form: [('id', 'tile2'), ('magicNumber', 2)]; Query string: id=tile2&amp;magicNumber:int=2
+                    Magic number: 2; Form: [('magicNumber', 2)]; Query string: magicNumber:int=2
                 </p>
             </div>
             <div id="page-tile3">
@@ -348,7 +348,7 @@ We then try to access the same page again.
                     This is a demo tile with id tile3
                 </p>
                 <p>
-                    Magic number: -1; Form: [('id', 'tile3')]; Query string: id=tile3
+                    Magic number: -1; Form: []; Query string: 
                 </p>
             </div>
         </body>
@@ -425,7 +425,7 @@ applied to the content.
                         This is a demo tile with id tile2
                     </p>
                     <p>
-                        Magic number: 2; Form: [('id', 'tile2'), ('magicNumber', 2)]; Query string: id=tile2&amp;magicNumber:int=2
+                        Magic number: 2; Form: [('magicNumber', 2)]; Query string: magicNumber:int=2
                     </p>
                 </div>
             </div>
@@ -436,7 +436,7 @@ applied to the content.
                         This is a demo tile with id tile3
                     </p>
                     <p>
-                        Magic number: -1; Form: [('id', 'tile3')]; Query string: id=tile3 
+                        Magic number: -1; Form: []; Query string: 
                     </p>
                 </div>
             </div>
@@ -447,7 +447,7 @@ applied to the content.
                         This is a demo tile with id tile2
                     </p>
                     <p>
-                        Magic number: -1; Form: [('id', 'tile2')]; Query string: id=tile2
+                        Magic number: -1; Form: []; Query string: 
                     </p>
                 </div>
             </div>
