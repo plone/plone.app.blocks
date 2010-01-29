@@ -9,6 +9,33 @@ from zope.interface import implements
 
 from plone.app.blocks import tilepage, panel, tiles
 
+class DisableParsing(object):
+    """A no-op transform which sets flags to stop plone.app.blocks
+    transformations. You may register this for a particular published
+    object or request as required. By default, it's registered for ESI-
+    rendered tiles when they are fetched via ESI.
+    """
+    
+    implements(ITransform)
+    
+    order = 8000
+    
+    def __init__(self, published, request):
+        self.published = published
+        self.request = request
+    
+    def transformString(self, result, encoding):
+        self.request.set('plone.app.blocks.disabled', True)
+        return None
+    
+    def transformUnicode(self, result, encoding):
+        self.request.set('plone.app.blocks.disabled', True)
+        return None
+    
+    def transformIterable(self, result, encoding):
+        self.request.set('plone.app.blocks.disabled', True)
+        return None
+
 class ParseXML(object):
     """First stage in the 8000's chain: parse the content to an lxml tree
     encapsulated in an XMLSerializer.
@@ -34,6 +61,9 @@ class ParseXML(object):
         return self.transformIterable([result], encoding)
     
     def transformIterable(self, result, encoding):
+        if self.request.get('plone.app.blocks.disabled', False):
+            return None
+        
         content_type = self.request.response.getHeader('Content-Type')
         if content_type is None or not content_type.startswith('text/html'):
             return None

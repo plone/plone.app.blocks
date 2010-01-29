@@ -21,7 +21,7 @@
         />
 
     <!-- The transform pipeline -->
-
+    
     <!-- 8000: Turn the response into an lxml tree for further manipulation -->
     <adapter
         for="* .interfaces.IBlocksLayer"
@@ -54,7 +54,19 @@
        name="plone.app.blocks.tilepage"
        factory=".transform.IncludeTiles"
        />
-
+    
+    <!-- 8000: Off switch for ESI tiles -->
+    <adapter
+        for="plone.tiles.esi.ESIHead .interfaces.IBlocksLayer"
+        name="plone.app.blocks.parsexml"
+        factory=".transform.DisableParsing"
+        />
+    <adapter
+        for="plone.tiles.esi.ESIBody .interfaces.IBlocksLayer"
+        name="plone.app.blocks.parsexml"
+        factory=".transform.DisableParsing"
+        />
+    
     <!-- The content XSLT view -->
     
     <browser:page
