@@ -235,61 +235,58 @@ working, it should perform its magic. We make sure that Zope is in
     >>> browser.open(self.portal.absolute_url() + '/@@test-page')
     >>> print browser.contents
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-    <html>
-        <head>
-            <link rel="stylesheet" href="/layout/style.css">
-            <script type="text/javascript">alert('layout');</script><style type="text/css">
-                div {
-                    margin: 5px;
-                    border: dotted black 1px;
-                    padding: 5px;
-                }
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
+        <link rel="stylesheet" href="/layout/style.css" />
+        <script type="text/javascript">alert('layout');</script>
+        <style type="text/css">
+            div {
+                margin: 5px;
+                border: dotted black 1px;
+                padding: 5px;
+            }
             </style>
-            <link rel="panel" rev="panel1" target="panel1">
-            <link rel="panel" rev="panel2" target="panel2">
-            <link rel="panel" rev="panel3" target="panel3">
-            <title>Page title</title>
-            <link rel="stylesheet" href="/layout/page.css">
-            <link rel="layout" href="./@@test-layout">
-            <script type="text/javascript">alert('page');</script><meta name="tile-name" content="tile2">
-            <meta name="tile-name" content="tile2">
-            <meta name="tile-name" content="tile3">
-        </head>
-        <body>
+        <link rel="panel" rev="panel1" target="panel1" />
+        <link rel="panel" rev="panel2" target="panel2" />
+        <link rel="panel" rev="panel3" target="panel3" />
+        <title>Page title</title>
+        <link rel="stylesheet" href="/layout/page.css" />
+        <link rel="layout" href="./@@test-layout" />
+        <script type="text/javascript">alert('page');</script>
+        <meta name="tile-name" content="tile2" />
+        <meta name="tile-name" content="tile2" />
+        <meta name="tile-name" content="tile3" />
+      </head>
+      <body>
             <h1>Welcome!</h1>
             <div id="panel1">
                 Page panel 1
-                <div id="page-tile2">
-                    <p>
-                        This is a demo tile with id tile2
-                    </p>
-                    <p>
-                        Magic number: 2; Form: [('magicNumber', 2)]; Query string: magicNumber:int=2
-                    </p>
-                </div>
-            </div>
+                <div id="page-tile2"><p>
+                This is a demo tile with id tile2
+            </p>
+            <p>
+                Magic number: 2; Form: [('magicNumber', 2)]; Query string: magicNumber:int=2
+            </p>
+        </div></div>
             <div id="panel2">
                 Page panel 2
-                <div id="page-tile3">
-                    <p>
-                        This is a demo tile with id tile3
-                    </p>
-                    <p>
-                        Magic number: -1; Form: []; Query string: 
-                    </p>
-                </div>
-            </div>
+                <div id="page-tile3"><p>
+                This is a demo tile with id tile3
+            </p>
+            <p>
+                Magic number: -1; Form: []; Query string: 
+            </p>
+        </div></div>
             <div id="panel3">
                 Layout panel 3
-                <div id="layout-tile2">
-                    <p>
-                        This is a demo tile with id tile2
-                    </p>
-                    <p>
-                        Magic number: -1; Form: []; Query string: 
-                    </p>
-                </div>
-            </div>
+                <div id="layout-tile2"><p>
+                This is a demo tile with id tile2
+            </p>
+            <p>
+                Magic number: -1; Form: []; Query string: 
+            </p>
+        </div></div>
         </body>
     </html>
 
@@ -319,40 +316,39 @@ We then try to access the same page again.
     >>> tilePageContents = browser.contents
     >>> print tilePageContents
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-    <?xml-stylesheet type="text/xsl" href="http://nohost/plone/@@test-page/@@blocks-static-content/....xsl?" ?>
-    <html>
-        <head>
-            <meta name="tile-name" content="tile2">
-            <meta name="tile-name" content="tile2">
-            <meta name="tile-name" content="tile3">
-        </head>
-        <body>
-            <div id="layout-tile2">
-                <p>
-                    This is a demo tile with id tile2
-                </p>
-                <p>
-                    Magic number: -1; Form: []; Query string: 
-                </p>
-            </div>
-            <div id="page-tile2">
-                <p>
-                    This is a demo tile with id tile2
-                </p>
-                <p>
-                    Magic number: 2; Form: [('magicNumber', 2)]; Query string: magicNumber:int=2
-                </p>
-            </div>
-            <div id="page-tile3">
-                <p>
-                    This is a demo tile with id tile3
-                </p>
-                <p>
-                    Magic number: -1; Form: []; Query string: 
-                </p>
-            </div>
-        </body>
+    <?xml-stylesheet type="text/xsl" href="http://nohost/plone/@@test-page/@@blocks-static-content/...xsl?" ?>
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
+        <meta name="tile-name" content="tile2" />
+        <meta name="tile-name" content="tile2" />
+        <meta name="tile-name" content="tile3" />
+      </head>
+      <body>
+        <div id="layout-tile2"><p>
+                This is a demo tile with id tile2
+            </p>
+            <p>
+                Magic number: -1; Form: []; Query string: 
+            </p>
+        </div>
+        <div id="page-tile2"><p>
+                This is a demo tile with id tile2
+            </p>
+            <p>
+                Magic number: 2; Form: [('magicNumber', 2)]; Query string: magicNumber:int=2
+            </p>
+        </div>
+        <div id="page-tile3"><p>
+                This is a demo tile with id tile3
+            </p>
+            <p>
+                Magic number: -1; Form: []; Query string: 
+            </p>
+        </div>
+      </body>
     </html>
+
 
 Notice how this page contains all the dynamic tile content (including the
 ``<head />`` portions), but none of the static content or panels from the 

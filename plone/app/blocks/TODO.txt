@@ -18,7 +18,6 @@ Integration:
 
 Other:
 
-  * Tile grokking - ``plone.directives.tiles``
   * Support for saving common content templates (e.g. news item, event) in
     Deco
   * Pure-XSLT version

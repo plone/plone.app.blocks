@@ -37,18 +37,18 @@ def cloneRequest(request, url):
     
     # Clone the request so that we can traverse from it.
     
-    request_clone = request.clone()
+    requestClone = request.clone()
     
     # Make sure the new request provides the same markers as our old one
-    directlyProvides(request_clone, *directlyProvidedBy(request))
+    directlyProvides(requestClone, *directlyProvidedBy(request))
     
     # Update the path and query string to reflect the new value
-    request_clone.environ['PATH_INFO'] = url_parts.path
-    request_clone.environ['QUERY_STRING'] = url_parts.query
+    requestClone.environ['PATH_INFO'] = url_parts.path
+    requestClone.environ['QUERY_STRING'] = url_parts.query
     
-    request_clone.processInputs()
+    requestClone.processInputs()
     
-    return request_clone
+    return requestClone
     
 
 def traverse(request, path):
@@ -73,29 +73,35 @@ def invoke(request, traversed):
                   context=request,
                   bind=1)
 
+def extractCharset(response, default='utf-8'):
+    """Get the charset of the given response
+    """
+    
+    charset = default
+    if 'content-type' in response.headers:
+        for item in response.headers['content-type'].split(';'):
+            if item.strip().startswith('charset'):
+                charset = item.split('=')[1].strip()
+                break
+    return charset
+    
 def resolve(request, url):
     """Resolve the given URL to an lxml tree.
     """
     
-    request_clone = cloneRequest(request, url)
-    path = '/'.join(request_clone.physicalPathFromURL(url.split('?')[0]))
+    requestClone = cloneRequest(request, url)
+    path = '/'.join(requestClone.physicalPathFromURL(url.split('?')[0]))
     
     try:
-        traversed = traverse(request_clone, path)
-        resolved = invoke(request_clone, traversed)
+        traversed = traverse(requestClone, path)
+        resolved = invoke(requestClone, traversed)
     except (NotFound, Unauthorized,), e:
         logger.exception("Could not resolve tile with URL %s" % url)
-        request_clone.close()
+        requestClone.close()
         return None
     
-    request_clone.close()
-    
-    charset = 'utf-8'
-    if 'content-type' in request.response.headers:
-        for item in request.response.headers['content-type'].split(';'):
-            if item.strip().startswith('charset'):
-                charset = item.split('=')[1].strip()
-                break
+    charset = extractCharset(requestClone.response)
+    requestClone.close()
     
     parser = html.HTMLParser()
     if isinstance(resolved, unicode):
