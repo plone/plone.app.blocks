@@ -1,0 +1,36 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="plone.app.drafts">
+    
+    <!-- Let all Archetypes objects support drafting -->
+    <class class="Products.Archetypes.BaseContent.BaseContent">
+        <implements interface=".interfaces.IDraftable" />
+    </class>
+    
+    <!-- Event handlers to handle the drafting sequence -->
+    <subscriber
+        for=".interfaces.IDraftable
+             Products.Archetypes.interfaces.IEditBegunEvent"
+        handler=".archetypes.beginDrafting"
+        />
+    
+    <subscriber
+        for=".interfaces.IDraftable
+             Products.Archetypes.interfaces.IEditCancelledEvent"
+        handler=".archetypes.discardDraftsOnCancel"
+        />
+    
+    <subscriber
+        for=".interfaces.IDraftable
+             Products.Archetypes.interfaces.IObjectInitializedEvent"
+        handler=".archetypes.syncDraftOnSave"
+        />
+    
+    <subscriber
+        for=".interfaces.IDraftable
+             Products.Archetypes.interfaces.IObjectEditedEvent"
+        handler=".archetypes.syncDraftOnSave"
+        />
+
+</configure>

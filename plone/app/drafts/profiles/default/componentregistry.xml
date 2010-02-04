@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<componentregistry>
+    <adapters/>
+    <utilities>
+        <utility 
+            interface="plone.app.drafts.interfaces.IDraftStorage"
+            object="portal_drafts"
+            />
+    </utilities>
+</componentregistry>

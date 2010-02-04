@@ -1,0 +1,47 @@
+<tal:block i18n:domain="plone.app.drafts">
+
+<div tal:replace="structure context/manage_page_header" />
+<div tal:replace="structure context/manage_tabs" />
+
+<h2 i18n:translate="heading_drafts">Drafts</h2>
+
+<p i18n:translate="description_drafts">
+    Drafts are created when a page is edited and has not yet been saved.
+    A draft found here represents either a content item currently being
+    edited, an item that has been abandoned, e.g. because of a browser crash.
+</p>
+
+<strong i18n:translate="description_no_drafts" tal:condition="not:context/drafts">
+    No drafts found
+</strong>
+
+<tal:block condition="context/drafts">
+
+    <h3 i18n:translate="heading_users">Users</h3>
+
+    <p i18n:translate="description_users">
+        Drafts are managed per user. Click on a user id below to find drafts for
+        that user.
+    </p>
+
+    <form tal:attributes="action request/getURL" method="post">
+        
+        <div tal:repeat="userId context/drafts">
+            <input type="checkbox" name="userIds:list" tal:attributes="value userId" />
+            <a tal:content="userId"
+               tal:attributes="href string:${context/absolute_url}/@@targets?userId=${userId}"
+               />
+        </div>
+        
+        <div>&nbsp;</div>
+        
+        <div>
+            <input type="submit" name="form.button.PruneUsers" value="Remove drafts for selected users" />
+        </div>
+    </form>
+    
+</tal:block>
+
+<div tal:replace="structure context/manage_page_footer" />
+
+</tal:block>

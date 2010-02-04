@@ -1,0 +1,69 @@
+<tal:block
+    i18n:domain="plone.app.drafts"
+    tal:define="userId request/userId;
+                targets python:context.drafts.get(userId, {})">
+
+<div tal:replace="structure context/manage_page_header" />
+<div tal:replace="structure context/manage_tabs" />
+
+<h2 i18n:translate="heading_drafts">Drafts</h2>
+
+<p i18n:translate="description_drafts">
+    Drafts are created when a page is edited and has not yet been saved.
+    A draft found here represents either a content item currently being
+    edited, an item that has been abandoned, e.g. because of a browser crash.
+</p>
+
+<a tal:attributes="href string:${context/absolute_url}/@@overview"
+   i18n:translate="link_return_to_overview">Return to overview</a>
+
+<strong i18n:translate="description_no_drafts" tal:condition="not:targets">
+    No drafts found
+</strong>
+
+<tal:block condition="targets">
+
+    <h3 i18n:translate="heading_targets">Drafts for <span i18n:name="userId" tal:content="userId" /></h3>
+
+    <p i18n:translate="description_targets">
+        Drafts are organised by the target object. Click on a key below to
+        view drafts for this item.
+    </p>
+
+    <form tal:attributes="action request/getURL" method="post">
+        <input type="hidden" name="userId" tal:attributes="value userId" />
+        <div tal:repeat="targetKey targets">
+            <input type="checkbox" name="targetKeys:list" tal:attributes="value targetKey" />
+            <tal:block define="targetInfo python:view.targetInfo(targetKey)">
+                <span tal:condition="targetInfo/child" i18n:translate="description_not_yet_created">
+                    Object of type <span i18n:name="portal_type" tal:content="targetInfo/portal_type" />
+                    being added to
+                </span>
+                
+                <span tal:content="targetInfo/title" tal:attributes="title targetInfo/url | nothing"/>
+                
+                &mdash;
+                
+                <a tal:attributes="href string:${context/absolute_url}/@@drafts?userId=${userId}&amp;targetKey=${targetKey}">
+                    View drafts
+                </a>
+                
+                <span tal:condition="targetInfo/url">
+                    |
+                    <a tal:condition="targetInfo/url" tal:attributes="href targetInfo/url">View content object</a>
+                </span>
+            </tal:block>
+        </div>
+        
+        <div>&nbsp;</div>
+        
+        <div>
+            <input type="submit" name="form.button.PruneTargets" value="Remove drafts for selected targets" />
+        </div>
+    </form>
+    
+</tal:block>
+
+<div tal:replace="structure context/manage_page_footer" />
+
+</tal:block>

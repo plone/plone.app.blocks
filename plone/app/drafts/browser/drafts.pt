@@ -1,0 +1,60 @@
+<tal:block
+    i18n:domain="plone.app.drafts"
+    tal:define="userId request/userId;
+                targetKey request/targetKey;
+                targetInfo python:view.targetInfo(targetKey);
+                drafts python:context.drafts.get(userId, {}).get(targetKey, {})">
+
+<div tal:replace="structure context/manage_page_header" />
+<div tal:replace="structure context/manage_tabs" />
+
+<h2 i18n:translate="heading_drafts">Drafts</h2>
+
+<p i18n:translate="description_drafts">
+    Drafts are created when a page is edited and has not yet been saved.
+    A draft found here represents either a content item currently being
+    edited, an item that has been abandoned, e.g. because of a browser crash.
+</p>
+
+<a tal:attributes="href string:${context/absolute_url}/@@overview"
+   i18n:translate="link_return_to_overview">Return to overview</a>
+
+<strong i18n:translate="description_no_drafts" tal:condition="not:drafts">
+    No drafts found
+</strong>
+
+<tal:block condition="drafts">
+
+    <h3 i18n:translate="heading_targets">Drafts for <span i18n:name="userId" tal:content="userId" />
+        on <span i18n:name="targetTitle" tal:content="targetInfo/title" /></h3>
+
+    <p i18n:translate="description_current_drafts">
+        The following drafts are in progress.
+    </p>
+
+    <form tal:attributes="action request/getURL" method="post">
+        
+        <input type="hidden" name="userId" tal:attributes="value userId" />
+        <input type="hidden" name="targetKey" tal:attributes="value targetKey" />
+        
+        <div tal:repeat="draft drafts">
+            <tal:block define="draftInfo python:view.draftInfo(drafts[draft])">
+                <input type="checkbox" name="draftNames:list" tal:attributes="value draft" />
+                <span i18n:translate="draft_mtime" tal:condition="draftInfo/mtime">
+                    Last modified: <span i18n:name="mtime" tal:content="python:draftInfo['mtime'].isoformat()" />
+                </span>
+            </tal:block>
+        </div>
+        
+        <div>&nbsp;</div>
+        
+        <div>
+            <input type="submit" name="form.button.PruneDrafts" value="Remove selected drafts" />
+        </div>
+    </form>
+    
+</tal:block>
+
+<div tal:replace="structure context/manage_page_footer" />
+
+</tal:block>

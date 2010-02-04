@@ -1,0 +1,66 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:five="http://namespaces.zope.org/five"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    i18n_domain="plone.app.drafts">
+    
+    <!-- XXX: hack until we have a sane way to install five.intid -->
+    <configure zcml:condition="not-installed plone.app.relations">
+        <includeOverrides package="five.intid" file="overrides.zcml" />
+        <include package="five.intid" file="base.zcml" />
+        <subscriber
+            handler="five.intid.intid.addIntIdSubscriber"
+            for="Products.CMFCore.interfaces.IDynamicType
+                 zope.lifecycleevent.interfaces.IObjectAddedEvent"
+            />
+        <subscriber
+            handler="five.intid.intid.removeIntIdSubscriber"
+            for="Products.CMFCore.interfaces.IDynamicType
+                 zope.lifecycleevent.interfaces.IObjectRemovedEvent"
+            />
+        <subscriber
+            handler="five.intid.intid.moveIntIdSubscriber"
+            for="Products.CMFCore.interfaces.IDynamicType
+                 zope.lifecycleevent.interfaces.IObjectMovedEvent"
+            />
+    </configure>
+    
+    <include package=".browser" />
+    <adapter factory=".proxy.AliasAnnotations" />
+    <adapter factory=".current.DefaultCurrentDraftManagement" />
+    
+    <five:registerClass
+        class=".storage.Storage"
+        meta_type="Plone Drafts Storage"
+        permission="cmf.ManagePortal"
+        icon="plone.app.drafts.gif"
+        />
+    
+    <class class=".storage.Storage">
+        <require
+            permission="cmf.ManagePortal"
+            interface=".interfaces.IDraftStorage"
+            />
+    </class>
+    
+    <genericsetup:registerProfile
+        name="default"
+        title="Drafts support"
+        directory="profiles/default"
+        description="Support for managing content drafts prior to saving"
+        provides="Products.GenericSetup.interfaces.EXTENSION"
+        />
+    
+    <genericsetup:importStep
+        name="plone.app.drafts"
+        title="plone.app.drafts one-time configuration"
+        description="Set up intids and other one-time configuration"
+        handler=".setuphandlers.installDrafts">
+            <depends name="toolset"/>
+    </genericsetup:importStep>
+    
+    <include zcml:condition="installed Products.Archetypes" file="archetypes.zcml" />
+
+</configure>
