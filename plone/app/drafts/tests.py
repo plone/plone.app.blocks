@@ -21,6 +21,7 @@ from plone.app.drafts.interfaces import IDraftStorage
 from plone.app.drafts.interfaces import IDraftSyncer
 from plone.app.drafts.interfaces import ICurrentDraftManagement
 from plone.app.drafts.interfaces import IDrafting
+from plone.app.drafts.interfaces import IDraftProxy
 
 from plone.app.drafts.draft import Draft
 from plone.app.drafts.proxy import DraftProxy
@@ -31,6 +32,7 @@ from plone.app.drafts.utils import getCurrentUserId
 from plone.app.drafts.utils import getDefaultKey
 
 from Products.Five.testbrowser import Browser
+from Products.ATContentTypes.interfaces.document import IATDocument
 
 class IntegrationTestLayer(collective.testcaselayer.ptc.BasePTCLayer):
     
@@ -252,6 +254,18 @@ class TestDraftProxy(ptc.PloneTestCase):
         
         self.assertEquals(u"Old title", target.title)
         self.assertEquals(u"Old description", target.description)
+    
+    def test_interfaces(self):
+        
+        self.folder.invokeFactory('Document', 'd1')
+        target = self.folder['d1']
+        
+        draft = Draft()
+        proxy = DraftProxy(draft, target)
+        
+        self.failIf(IDraft.providedBy(proxy))
+        self.failUnless(IDraftProxy.providedBy(proxy))
+        self.failUnless(IATDocument.providedBy(proxy))
     
     def test_annotations(self):
         

@@ -87,6 +87,10 @@ class IDrafting(Interface):
     drafting is in progress.
     """
 
+class IDraftProxy(Interface):
+    """Marker interface for the draft proxy. See ``proxy.py`` for details.
+    """
+
 class IDraftSyncer(Interface):
     """Some draft data may need to be synchronised on save. This package
     provides a helper function, ``plone.app.drafts.utils.syncDraft``, which

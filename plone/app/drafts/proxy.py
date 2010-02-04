@@ -1,10 +1,53 @@
 from UserDict import DictMixin
 
 from zope.interface import implements
+from zope.interface.declarations import getObjectSpecification
+from zope.interface import implementedBy
+from zope.interface import providedBy
+from zope.interface.declarations import ObjectSpecificationDescriptor
+
 from zope.component import adapts
 from zope.annotation.interfaces import IAnnotations
 
+from plone.app.drafts.interfaces import IDraftProxy
+
+from Acquisition import aq_base
+
 _marker = object()
+
+class ProxySpecification(ObjectSpecificationDescriptor):
+    """A __providedBy__ decorator that returns the interfaces provided by
+    the draft and the proxy
+    """
+    
+    def __get__(self, inst, cls=None):
+        
+        # We're looking at a class - fall back on default
+        if inst is None:
+            return getObjectSpecification(cls)
+        
+        # Find the cached value and return it if possible
+        cached = getattr(inst, '_v__providedBy__', None)
+        if cached is not None:
+            return cached
+        
+        # Get interfaces directly provided by the draft proxy
+        provided = getattr(inst, '__provides__', None)
+        
+        # If the draft proxy doesn't have a __provides__ attribute, get the
+        # interfaces implied by the class as a starting point.
+        if provided is None:
+            provided = implementedBy(cls)
+        
+        # Add the interfaces provided by the target 
+        target = aq_base(inst._DraftProxy__target)
+        if target is None:
+            return provided
+        
+        provided += providedBy(target)
+        
+        inst._v__providedBy__ = provided
+        return provided
 
 class DraftProxy(object):
     """A simple proxy object that is initialised with a draft object and the
@@ -16,6 +59,10 @@ class DraftProxy(object):
     Attribute deletions are saved in a set ``draft._proxyDeleted``. Annotation
     key deletions are saved in a set ``draft._proxyAnnotationsDeleted``.
     """
+    
+    __providedBy__ = ProxySpecification()
+    
+    implements(IDraftProxy)
     
     def __init__(self, draft, target):
         self.__dict__['_DraftProxy__draft'] = draft
@@ -58,7 +105,7 @@ class AliasAnnotations(DictMixin):
     """
     
     implements(IAnnotations)
-    adapts(DraftProxy)
+    adapts(IDraftProxy)
    
     def __init__(self, proxy):
         self.proxy = proxy
