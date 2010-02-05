@@ -8,6 +8,8 @@
     <include package="plone.transformchain" />
     <include package="plone.tiles" />
     
+    <include package="plone.app.registry" />
+    
     <!-- TODO: Remove demo -->
     <include package=".demo" />
     
@@ -55,6 +57,13 @@
        factory=".transform.IncludeTiles"
        />
     
+    <!-- 8900: ESI post-processing if required -->
+    <adapter
+       for="* .interfaces.IBlocksLayer"
+       name="plone.app.blocks.esirender"
+       factory=".transform.ESIRender"
+       />
+    
     <!-- 8000: Off switch for ESI tiles -->
     <adapter
         for="plone.tiles.esi.ESIHead .interfaces.IBlocksLayer"
@@ -75,6 +84,14 @@
         layer=".interfaces.IBlocksLayer"
         permission="zope.Public"
         class=".contentxsl.ContentXSL"
+        />
+    
+    <!-- The ESI snippet view -->
+    <browser:page
+        name="plone.app.blocks.esirenderer"
+        for="plone.tiles.interfaces.IESIRendered"
+        class=".esi.ESISnippet"
+        permission="zope.Public"
         />
         
 </configure>

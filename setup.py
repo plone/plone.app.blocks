@@ -9,6 +9,7 @@ setup(name='plone.app.blocks',
       long_description=open("README.txt").read() + "\n" +
                        open(os.path.join("docs", "HISTORY.txt")).read() + "\n" +
                        open(os.path.join("plone", "app", "blocks", "rendering.txt")).read(),
+                       open(os.path.join("plone", "app", "blocks", "esi.txt")).read(),
       # Get more strings from http://www.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[
         "Framework :: Plone",
@@ -30,6 +31,7 @@ setup(name='plone.app.blocks',
           'lxml',
           'repoze.xmliter',
           'plone.tiles',
+          'plone.app.registry',
           'collective.testcaselayer',
       ],
       entry_points="""

@@ -1,0 +1,358 @@
+ESI rendering
+=============
+
+Blocks supports rendering of tiles for Edge Side Includes (ESI). A tile
+will be rendered to ESI provided that:
+
+* The tile itself is marked with the ``IESIRendered`` marker interface. See
+  `plone.tiles`_ for more details.
+* The ``plone.app.blocks.interfaces.IBlocksSettings.esi`` record in the
+  registry is set to True. It is False by default. To switch this through-the-
+  web, you can visit the configuration registry control panel in Plone.
+
+Note that if a tile is rendered using ESI, it's <head /> contents are ignored,
+instead of being merged into the final page. That is, only the ``@@esi-body``
+view form `plone.tiles`_ is used by default.
+
+An ESI link looks like this::
+
+    <esi:include src="http://example.com/plone/@@some.tile/tile-1/@@esi-body?param1=value1" />
+
+A fronting server such as Varnish will be able to load this on demand and
+compose the page from fragments that may be cached individually.
+
+Test setup
+----------
+
+Let's first register a two very simple tiles. One uses ESI, one does not.
+
+    >>> from plone.tiles.esi import ESITile
+    >>> from plone.tiles import Tile
+    >>> from plone.tiles.type import TileType
+
+    >>> class NonESITile(Tile):
+    ...     __name__ = 'test.tile2' # normally set by ZCML handler
+    ...
+    ...     def __call__(self):
+    ...         return """\
+    ... <html>
+    ...     <head>
+    ...         <meta name="tile-name" content="%(name)s" />
+    ...     </head>
+    ...     <body>
+    ...         <p>
+    ...             Non-ESI tile with query string %(queryString)s
+    ...         </p>
+    ...     </body>
+    ... </html>""" % dict(name=self.id, queryString=self.request['QUERY_STRING'])
+
+    >>> testTile2Type = TileType(
+    ...     name=u'test.tile2',
+    ...     title=u"Test tile 2",
+    ...     description=u"A tile used for testing",
+    ...     add_permission="cmf.ManagePortal")
+
+    >>> class SimpleESITile(ESITile):
+    ...     __name__ = 'test.tile3' # normally set by ZCML handler
+    ...
+    ...     def __call__(self):
+    ...         return """\
+    ... <html>
+    ...     <head>
+    ...         <meta name="tile-name" content="%(name)s" />
+    ...     </head>
+    ...     <body>
+    ...         <p>
+    ...             ESI tile with query string %(queryString)s
+    ...         </p>
+    ...     </body>
+    ... </html>""" % dict(name=self.id, queryString=self.request['QUERY_STRING'])
+
+    >>> testTile3Type = TileType(
+    ...     name=u'test.tile3',
+    ...     title=u"Test tile 3",
+    ...     description=u"A tile used for testing",
+    ...     add_permission="cmf.ManagePortal")
+
+Register these in the same way that the ZCML handlers would, more or less.
+
+    >>> from Products.Five.security import protectClass
+    >>> protectClass(NonESITile, 'zope2.View')
+    >>> protectClass(SimpleESITile, 'zope2.View')
+
+    >>> from App.class_init import InitializeClass
+    >>> InitializeClass(NonESITile)
+    >>> InitializeClass(SimpleESITile)
+
+    >>> from zope.component import provideAdapter, provideUtility
+    >>> from zope.interface import Interface
+    >>> provideAdapter(NonESITile, (Interface, Interface,), Interface, u'test.tile2',)
+    >>> provideUtility(testTile2Type, name=u'test.tile2')
+    >>> provideAdapter(SimpleESITile, (Interface, Interface,), Interface, u'test.tile3',)
+    >>> provideUtility(testTile3Type, name=u'test.tile3')
+
+We will also register a simple layout and a simple page using these tiles.
+
+    >>> layoutHTML = u"""\
+    ... <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    ... <html>
+    ...     <head>
+    ...         <title>Layout title</title>
+    ...         <link rel="panel" rev="panel1" target="panel1" />
+    ...         <link rel="tile" target="layout-non-esi-tile" href="./@@test.tile2/tile1" />
+    ...         <link rel="tile" target="layout-esi-tile" href="./@@test.tile3/tile2" />
+    ...     </head>
+    ...     <body>
+    ...         <h1>Welcome!</h1>
+    ...         <div id="panel1">Content goes here</div>
+    ...         <div id="layout-non-esi-tile">Layout tile 1 placeholder</div>
+    ...         <div id="layout-esi-tile">Layout tile 2 placeholder</div>
+    ...     </body>
+    ... </html>
+    ... """
+    
+    >>> from Products.Five.browser import BrowserView
+    >>> class Layout(BrowserView):
+    ...     __name__ = 'test-layout'
+    ...     def __call__(self):
+    ...         return layoutHTML
+    
+    >>> protectClass(Layout, 'zope2.View')
+    >>> InitializeClass(Layout)
+    >>> provideAdapter(Layout, (Interface, Interface,), Interface, u'test-layout',)
+
+    >>> pageHTML = u"""\
+    ... <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    ... <html>
+    ...     <head>
+    ...         <title>Page title</title>
+    ...         <link rel="layout" href="./@@test-layout"/>
+    ...         <link rel="tile" target="page-non-esi-tile" href="./@@test.tile2/tile3?foo=bar" />
+    ...         <link rel="tile" target="page-esi-tile" href="./@@test.tile3/tile4?foo=bar" />
+    ...     </head>
+    ...     <body>
+    ...         <div id="panel1">
+    ...             <div id="page-non-esi-tile">Page tile 3 placeholder</div>
+    ...             <div id="page-esi-tile">Page tile 4 placeholder</div>
+    ...         </div>
+    ...     </body>
+    ... </html>
+    ... """
+
+    >>> class Page(BrowserView):
+    ...     __name__ = 'test-page'
+    ...     def __call__(self):
+    ...         return pageHTML
+    
+    >>> protectClass(Page, 'zope2.View')
+    >>> InitializeClass(Page)
+    >>> provideAdapter(Page, (Interface, Interface,), Interface, u'test-page',)
+
+We'll also register the same page again, this time with tilepage rendering.
+
+    >>> from plone.app.blocks.interfaces import ITilePageRendered
+    >>> from zope.interface import implements
+
+    >>> class TilePagePage(BrowserView):
+    ...     implements(ITilePageRendered)
+    ...     __name__ = 'test-tilepage-page'
+    ...     def __call__(self):
+    ...         return pageHTML
+    
+    >>> protectClass(TilePagePage, 'zope2.View')
+    >>> InitializeClass(TilePagePage)
+    >>> provideAdapter(TilePagePage, (Interface, Interface,), Interface, u'test-tilepage-page',)
+
+ESI disabled
+------------
+
+We first render the page without enabling ESI. The ESI-capable tiles should
+be rendered as normal.
+
+    >>> from Products.Five.testbrowser import Browser
+    >>> browser = Browser()
+    >>> browser.handleErrors = False
+
+    >>> browser.open(self.portal.absolute_url() + '/@@test-page')
+    >>> print browser.contents
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
+        <link rel="panel" rev="panel1" target="panel1" />
+        <title>Page title</title>
+        <link rel="layout" href="./@@test-layout" />
+        <meta name="tile-name" content="tile1" />
+        <meta name="tile-name" content="tile2" />
+        <meta name="tile-name" content="tile4" />
+        <meta name="tile-name" content="tile3" />
+      </head>
+      <body>
+            <h1>Welcome!</h1>
+            <div id="panel1">
+                <div id="page-non-esi-tile"><p>
+                Non-ESI tile with query string foo=bar
+            </p>
+        </div><div id="page-esi-tile"><p>
+                ESI tile with query string foo=bar
+            </p>
+        </div></div>
+        <div id="layout-non-esi-tile"><p>
+                Non-ESI tile with query string 
+            </p>
+        </div><div id="layout-esi-tile"><p>
+                ESI tile with query string 
+            </p>
+        </div></body>
+    </html>
+
+Tile-page rendering should work similarly:
+
+    >>> browser.open(self.portal.absolute_url() + '/@@test-tilepage-page')
+    >>> tilePageContents = browser.contents
+    >>> print tilePageContents
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <?xml-stylesheet type="text/xsl" href="http://nohost/plone/@@test-tilepage-page/@@blocks-static-content/...xsl?" ?>
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
+        <meta name="tile-name" content="tile1" />
+        <meta name="tile-name" content="tile2" />
+        <meta name="tile-name" content="tile4" />
+        <meta name="tile-name" content="tile3" />
+      </head>
+      <body>
+        <div id="layout-non-esi-tile"><p>
+                Non-ESI tile with query string 
+            </p>
+        </div>
+        <div id="layout-esi-tile"><p>
+                ESI tile with query string 
+            </p>
+        </div>
+        <div id="page-esi-tile"><p>
+                ESI tile with query string foo=bar
+            </p>
+        </div>
+        <div id="page-non-esi-tile"><p>
+                Non-ESI tile with query string foo=bar
+            </p>
+        </div>
+      </body>
+    </html>
+
+    >>> browser.open(self.portal.absolute_url() + '/@@test-tilepage-page/@@blocks-static-content/1258209736.89.xsl')
+    >>> tilePageXSLTContents = browser.contents
+    >>> print tilePageXSLTContents
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+    <xsl:template match="/">
+    <html><head><link rel="panel" rev="panel1" target="panel1"/><title>Page title</title><link rel="layout" href="./@@test-layout"/></head><body>
+            <h1>Welcome!</h1>
+            <div id="panel1">
+                <xsl:copy-of select="/html/body/div[@id='page-non-esi-tile']"/><xsl:copy-of select="/html/body/div[@id='page-esi-tile']"/></div>
+        <xsl:copy-of select="/html/body/div[@id='layout-non-esi-tile']"/><xsl:copy-of select="/html/body/div[@id='layout-esi-tile']"/></body></html></xsl:template>
+    </xsl:stylesheet>
+
+ESI enabled
+-----------
+
+We can now enable ESI. This could be done using GenericSetup (with the
+``registry.xml`` import step), or through the configuration registry
+control panel. In code, it is done like so:
+
+    >>> from zope.component import getUtility
+    >>> from plone.registry.interfaces import IRegistry
+    >>> from plone.app.blocks.interfaces import IBlocksSettings
+    >>> registry = getUtility(IRegistry)
+    >>> registry.forInterface(IBlocksSettings).esi = True
+
+We can now perform the same rendering again. This time, the ESI-capable
+tiles should be rendered as ESI links. See `plone.tiles`_ for more details.
+
+    >>> browser.open(self.portal.absolute_url() + '/@@test-page')
+    >>> print browser.contents
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns:esi="http://www.edge-delivery.org/esi/1.0" xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
+        <link rel="panel" rev="panel1" target="panel1" />
+        <title>Page title</title>
+        <link rel="layout" href="./@@test-layout" />
+        <meta name="tile-name" content="tile1" />
+        <meta name="tile-name" content="tile3" />
+      </head>
+      <body>
+            <h1>Welcome!</h1>
+            <div id="panel1">
+                <div id="page-non-esi-tile"><p>
+                Non-ESI tile with query string foo=bar
+            </p>
+        </div><div id="page-esi-tile"><esi:include src="http://nohost/plone/@@test.tile3/tile4/@@esi-body?foo=bar" />
+        </div></div>
+        <div id="layout-non-esi-tile"><p>
+                Non-ESI tile with query string 
+            </p>
+        </div><div id="layout-esi-tile"><esi:include src="http://nohost/plone/@@test.tile3/tile2/@@esi-body?" />
+        </div></body>
+    </html>
+
+When ESI rendering takes place, the following URLs will be called:
+
+    >>> browser.open("http://nohost/plone/@@test.tile3/tile4/@@esi-body?foo=bar")
+    >>> print browser.contents
+    <p>
+        ESI tile with query string foo=bar
+    </p>
+
+    >>> browser.open("http://nohost/plone/@@test.tile3/tile2/@@esi-body?")
+    >>> print browser.contents
+     <p>
+        ESI tile with query string 
+    </p>
+
+Tile-page rendering works similarly:
+
+    >>> from plone.app.blocks.interfaces import ITilePageRendered
+    >>> from zope.interface import classImplements
+    >>> classImplements(Page, ITilePageRendered)
+
+    >>> browser.open(self.portal.absolute_url() + '/@@test-tilepage-page')
+    >>> tilePageContents = browser.contents
+    >>> print tilePageContents
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <?xml-stylesheet type="text/xsl" href="http://nohost/plone/@@test-tilepage-page/@@blocks-static-content/...xsl?" ?>
+    <html xmlns:esi="http://www.edge-delivery.org/esi/1.0" xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
+        <meta name="tile-name" content="tile1" />
+        <meta name="tile-name" content="tile3" />
+      </head>
+      <body>
+        <div id="layout-non-esi-tile"><p>
+                Non-ESI tile with query string 
+            </p>
+        </div>
+        <div id="layout-esi-tile"><esi:include src="http://nohost/plone/@@test.tile3/tile2/@@esi-body?" />
+        </div>
+        <div id="page-esi-tile"><esi:include src="http://nohost/plone/@@test.tile3/tile4/@@esi-body?foo=bar" />
+        </div>
+        <div id="page-non-esi-tile"><p>
+                Non-ESI tile with query string foo=bar
+            </p>
+        </div>
+      </body>
+    </html>
+    
+    >>> browser.open(self.portal.absolute_url() + '/@@test-tilepage-page/@@blocks-static-content/1258209736.89.xsl')
+    >>> tilePageXSLTContents = browser.contents
+    >>> print tilePageXSLTContents
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+    <xsl:template match="/">
+    <html><head><link rel="panel" rev="panel1" target="panel1"/><title>Page title</title><link rel="layout" href="./@@test-layout"/></head><body>
+            <h1>Welcome!</h1>
+            <div id="panel1">
+                <xsl:copy-of select="/html/body/div[@id='page-non-esi-tile']"/><xsl:copy-of select="/html/body/div[@id='page-esi-tile']"/></div>
+        <xsl:copy-of select="/html/body/div[@id='layout-non-esi-tile']"/><xsl:copy-of select="/html/body/div[@id='layout-esi-tile']"/></body></html></xsl:template>
+    </xsl:stylesheet>
+    
+.. _plone.tiles: http://pypi.python.org/pypi/plone.tiles

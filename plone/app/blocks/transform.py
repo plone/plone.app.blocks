@@ -7,7 +7,7 @@ from plone.transformchain.interfaces import ITransform
 
 from zope.interface import implements
 
-from plone.app.blocks import tilepage, panel, tiles
+from plone.app.blocks import tilepage, panel, tiles, esi
 
 class DisableParsing(object):
     """A no-op transform which sets flags to stop plone.app.blocks
@@ -169,3 +169,34 @@ class IncludeTiles(object):
         
         result.tree = tiles.renderTiles(self.request, result.tree)
         return result
+
+class ESIRender(object):
+    """If ESI rendering was used, render the page down to a format that allows
+    ESI to work.
+    """
+    
+    implements(ITransform)
+    
+    order = 8900
+    
+    def __init__(self, published, request):
+        self.published = published
+        self.request = request
+    
+    def transformString(self, result, encoding):
+        if not self.request.get('plone.app.blocks.esi', False):
+            return None
+        
+        return esi.substituteESILinks(result)
+    
+    def transformUnicode(self, result, encoding):
+        if not self.request.get('plone.app.blocks.esi', False):
+            return None
+        
+        return esi.substituteESILinks(result)
+    
+    def transformIterable(self, result, encoding):
+        if not self.request.get('plone.app.blocks.esi', False):
+            return None
+        
+        return esi.substituteESILinks("".join(result))

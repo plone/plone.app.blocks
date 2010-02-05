@@ -32,4 +32,9 @@ def test_suite():
             package='plone.app.blocks',
             test_class=FunctionalTestCase,
             optionflags=optionflags),
+        ztc.FunctionalDocFileSuite(
+            'esi.txt',
+            package='plone.app.blocks',
+            test_class=FunctionalTestCase,
+            optionflags=optionflags),
         ))

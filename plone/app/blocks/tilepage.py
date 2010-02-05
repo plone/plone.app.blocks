@@ -1,3 +1,7 @@
+from zope.component import queryUtility
+from plone.registry.interfaces import IRegistry
+
+from plone.app.blocks.interfaces import IBlocksSettings
 from plone.app.blocks import utils
 
 from lxml import etree
@@ -10,56 +14,66 @@ def createTilePage(request, tree):
     Assumes panel merging has already happened.
     """
     
+    renderView = None
+    renderedRequestKey = None
+    
+    # Optionally enable ESI rendering
+    registry = queryUtility(IRegistry)
+    if registry is not None:
+        if registry.forInterface(IBlocksSettings).esi:
+            renderView = 'plone.app.blocks.esirenderer'
+            renderedRequestKey = 'plone.app.blocks.esi'
+    
     # Find tiles in the merged document.
     tiles = utils.findTiles(request, tree)
     
     # Change the merged document into a tile page (rather forcefully)
 
-    html_node = tree.getroot()
-    html_node.clear()
+    htmlNode = tree.getroot()
+    htmlNode.clear()
 
     # Add an <?xml-stylesheet ?> processing instruction pointing to a
     # dynamically generated XSLT that will transform the tilepage into the
     # content
-    unique_xsl_name = "content"
+    uniqueXSLName = "content"
     published = request.get('PUBLISHED', None)
     if published is not None and hasattr(published, '__parent__') and hasattr(published.__parent__, '_p_mtime'):
-        unique_xsl_name = published.__parent__._p_mtime
+        uniqueXSLName = published.__parent__._p_mtime
     
     # The URL should include the modification time to make cache invalidation easier,
     # and the original query string, which will be used when the composite page is rendered
-    xsl_url = "%s/@@blocks-static-content/%s.xsl?%s" % (request.getURL(), unique_xsl_name, request['QUERY_STRING'])
+    xslURL = "%s/@@blocks-static-content/%s.xsl?%s" % (request.getURL(), uniqueXSLName, request['QUERY_STRING'])
     
-    stylesheet_declaration = etree.ProcessingInstruction('xml-stylesheet type="text/xsl" href="%s"' % xsl_url)
-    html_node.addprevious(stylesheet_declaration)
+    stylesheetDeclaration = etree.ProcessingInstruction('xml-stylesheet type="text/xsl" href="%s"' % xslURL)
+    htmlNode.addprevious(stylesheetDeclaration)
     
     # Set up empty head and body tags so that we can merge
-    head_node = E.HEAD()
-    html_node.append(head_node)
+    headNode = E.HEAD()
+    htmlNode.append(headNode)
     
-    body_node = E.BODY()
-    html_node.append(body_node)
+    bodyNode = E.BODY()
+    htmlNode.append(bodyNode)
     
     # Resolve each tile and place it into the tilepage body
-    for tile_id, tile_href in tiles.items():
-        tile_tree = utils.resolve(request, tile_href)
-        if tile_tree is not None:
-            tile_root = tile_tree.getroot()
+    for tileId, tileHref in tiles.items():
+        tileTree = utils.resolve(request, tileHref, renderView, renderedRequestKey)
+        if tileTree is not None:
+            tileRoot = tileTree.getroot()
             
             # merge tile head into tilepage
-            tile_head = tile_root.find('head')
-            if tile_head is not None:
-                for tile_head_child in tile_head:
-                    head_node.append(tile_head_child)
+            tileHead = tileRoot.find('head')
+            if tileHead is not None:
+                for tileHeadChild in tileHead:
+                    headNode.append(tileHeadChild)
             
             # add tile body
-            tile_body = tile_root.find('body')
-            new_tile_node = E.DIV()
-            new_tile_node.attrib['id'] = tile_id
-            for tile_body_child in tile_body:
-                new_tile_node.append(tile_body_child)
+            tileBody = tileRoot.find('body')
+            newTileNode = E.DIV()
+            newTileNode.attrib['id'] = tileId
+            for tileBodyChild in tileBody:
+                newTileNode.append(tileBodyChild)
             
-            body_node.append(new_tile_node)
+            bodyNode.append(newTileNode)
     
     # Make the tile page XSLT
     request.response.setHeader('Content-Type', 'text/xml')

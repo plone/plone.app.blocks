@@ -1,10 +1,8 @@
+import logging
 from urlparse import urlsplit, urljoin
 
-import logging
-
-logger = logging.getLogger('plone.app.blocks')
-
 from zope.interface import directlyProvidedBy, directlyProvides
+from zope.component import queryMultiAdapter
 
 from AccessControl import Unauthorized
 from zExceptions import NotFound
@@ -18,22 +16,24 @@ except ImportError:
 from lxml import etree
 from lxml import html
 
-head_xpath   = etree.XPath("/html/head")
-layout_xpath = etree.XPath("/html/head/link[@rel='layout']")
-tile_xpath   = etree.XPath("/html/head/link[@rel='tile']")
-panel_xpath  = etree.XPath("/html/head/link[@rel='panel']")
+headXPath   = etree.XPath("/html/head")
+layoutXPath = etree.XPath("/html/head/link[@rel='layout']")
+tileXPath   = etree.XPath("/html/head/link[@rel='tile']")
+panelXPath  = etree.XPath("/html/head/link[@rel='panel']")
+
+logger = logging.getLogger('plone.app.blocks')
 
 def cloneRequest(request, url):
     """Clone the given request for use in traversal to the given URL.
     
     This will set up request.form as well.
     
-    The returned request should be closed with request.close()
+    The returned request should be cleard with request.clear(). It should
+    *not* be closed with request.close(), since this fires EndRequestEvent,
+    which in turn disables the site-local component registry.
     """
     #  normalise url and split query string
-
-    url_parts = urlsplit(url)    
-    base_url = url_parts.geturl().split('?')[0]
+    urlParts = urlsplit(url)
     
     # Clone the request so that we can traverse from it.
     
@@ -43,8 +43,8 @@ def cloneRequest(request, url):
     directlyProvides(requestClone, *directlyProvidedBy(request))
     
     # Update the path and query string to reflect the new value
-    requestClone.environ['PATH_INFO'] = url_parts.path
-    requestClone.environ['QUERY_STRING'] = url_parts.query
+    requestClone.environ['PATH_INFO'] = urlParts.path
+    requestClone.environ['QUERY_STRING'] = urlParts.query
     
     requestClone.processInputs()
     
@@ -85,8 +85,16 @@ def extractCharset(response, default='utf-8'):
                 break
     return charset
     
-def resolve(request, url):
+def resolve(request, url, renderView=None, renderedRequestKey=None):
     """Resolve the given URL to an lxml tree.
+    
+    If ``renderView`` is given, it should be the name of a view that will be
+    looked up for the item being traversed to (e.g.a  tile). If the lookup
+    succeeds, this view will be used for the returned body instead of calling
+    the traversed object as normal.
+    
+    If ``renderView`` is used, a key with the name given by
+    ``renderedRequestKey`` will be set to True in the request.
     """
     
     requestClone = cloneRequest(request, url)
@@ -94,23 +102,25 @@ def resolve(request, url):
     
     try:
         traversed = traverse(requestClone, path)
+        renderer = queryMultiAdapter((traversed, requestClone,), name=renderView)
+        if renderer is not None:
+            if renderedRequestKey is not None:
+                request.set(renderedRequestKey, True)
+            traversed = renderer
+        
         resolved = invoke(requestClone, traversed)
-    except (NotFound, Unauthorized,), e:
+    except (NotFound, Unauthorized,):
         logger.exception("Could not resolve tile with URL %s" % url)
-        requestClone.close()
+        requestClone.clear()
         return None
     
     charset = extractCharset(requestClone.response)
-    requestClone.close()
+    requestClone.clear()
     
-    parser = html.HTMLParser()
-    if isinstance(resolved, unicode):
-        parser.feed(resolved)
-    elif isinstance(resolved, str):
-        parser.feed(resolved.decode(charset))
+    if isinstance(resolved, str):
+        resolved = resolved.decode(charset)
     
-    root = parser.close()
-    return root.getroottree()
+    return html.fromstring(resolved).getroottree()
 
 def xpath1(xpath, node, strict=True):
     """Return a single node matched by the given etree.XPath object.
@@ -128,36 +138,36 @@ def xpath1(xpath, node, strict=True):
         else:
             return result
 
-def mergeHead(src_tree, dest_tree, header_replace, header_append):
+def mergeHead(srcTree, destTree, headerReplace, headerAppend):
     """Merge the <head /> sections.
     
-     - Any node in the source matching an xpath in the list header_replace
+     - Any node in the source matching an xpath in the list headerReplace
         will be appended to dest's head. If there is a corresponding tag
         in the dest already, it will be removed.
         
-     - Any node in the source matching an xpath in the list header_append will
+     - Any node in the source matching an xpath in the list headerAppend will
         be appended to dest's head regardless of whether a corresponding
         tag exists there already.
     """
     
-    src_head = xpath1(head_xpath, src_tree)
-    dest_head = xpath1(head_xpath, dest_tree)
+    srcHead = xpath1(headXPath, srcTree)
+    destHead = xpath1(headXPath, destTree)
     
-    if src_head is None or dest_head is None:
+    if srcHead is None or destHead is None:
         return
     
-    for replace_xpath in header_replace:
-        dest_tags = replace_xpath(dest_tree)
-        src_tags = replace_xpath(src_tree)
-        if len(src_tags) > 0:
-            for dest_tag in dest_tags:
-                dest_tag.getparent().remove(dest_tag)
-            for src_tag in src_tags:
-                dest_head.append(src_tag)
+    for replaceXPath in headerReplace:
+        destTags = replaceXPath(destTree)
+        srcTags = replaceXPath(srcTree)
+        if len(srcTags) > 0:
+            for destTag in destTags:
+                destTag.getparent().remove(destTag)
+            for srcTag in srcTags:
+                destHead.append(srcTag)
 
-    for append_xpath in header_append:
-        for src_tag in append_xpath(src_tree):
-            dest_head.append(src_tag)
+    for appendXPath in headerAppend:
+        for srcTag in appendXPath(srcTree):
+            destHead.append(srcTag)
 
 def findTiles(request, tree, remove=False):
     """Given a request and an lxml tree with the body, return a dict of
@@ -167,27 +177,22 @@ def findTiles(request, tree, remove=False):
     """
     
     tiles = {}
-    base_url = request.getURL()
-    to_remove = []
+    baseURL = request.getURL()
     
     # Find all tiles that exist in the page
-    for tile_node in tile_xpath(tree):
+    for tileNode in tileXPath(tree):
         
-        tile_id = tile_node.get('target', None)
-        tile_href = tile_node.get('href', None)
+        tileId = tileNode.get('target', None)
+        tileHref = tileNode.get('href', None)
         
-        if tile_id is not None and tile_href is not None:
-            tile_href = urljoin(base_url, tile_href)
+        if tileId is not None and tileHref is not None:
+            tileHref = urljoin(baseURL, tileHref)
             
-            tile_target_xpath = etree.XPath("//*[@id='%s']" % tile_id)
-            tile_target_node = xpath1(tile_target_xpath, tree)
-            if tile_target_node is not None:
-                tiles[tile_id] = tile_href
+            tileTargetXPath = etree.XPath("//*[@id='%s']" % tileId)
+            tileTargetNode = xpath1(tileTargetXPath, tree)
+            if tileTargetNode is not None:
+                tiles[tileId] = tileHref
         
-        to_remove.append(tile_node)
-        
-    if remove:
-        for tile_node in to_remove:
-            tile_node.getparent().remove(tile_node)
+        tileNode.getparent().remove(tileNode)
         
     return tiles

@@ -26,6 +26,13 @@ The stages are:
     Resolve tiles and place them directly into the merged layout. This is the
     fallback for views that do not opt into ITilePageRendered.
 
+ plone.app.blocks.esirender (order 8900)
+    Only executed if the request key ``plone.app.blocks.esi`` is set and
+    has a true value, as would be the case if any ESI-rendered tiles are
+    included and ESI rendering is enabled globally. This step will serialise
+    the response down to a string and perform some substitution to make ESI
+    rendering work.
+
 As shown, the ``plone.app.blocks.tilepage`` stage comes in two versions. The
 simpler version just incorporates tiles into the page using a straightforward
 pipeline. This is safe, but not as cacheable as the alternative version.
@@ -44,4 +51,5 @@ the sub-path. The tilepage transform stage will append the object's ``mtime``
 and a ``.xsl`` suffix to the style sheet to aid caching and file type
 recognition.
 
-See ``rendering.txt`` for detailed examples of how the processing is applied.
+See ``rendering.txt`` for detailed examples of how the processing is applied,
+and ``esi.txt`` for details about how Edge Side Includes can be supported.

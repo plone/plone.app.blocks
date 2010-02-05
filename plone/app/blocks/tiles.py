@@ -1,3 +1,8 @@
+from zope.component import queryUtility
+
+from plone.registry.interfaces import IRegistry
+
+from plone.app.blocks.interfaces import IBlocksSettings
 from plone.app.blocks import utils
 
 def renderTiles(request, tree):
@@ -7,36 +12,48 @@ def renderTiles(request, tree):
     Assumes panel merging has already happened.
     """
     
+    renderView = None
+    renderedRequestKey = None
+    
+    # Optionally enable ESI rendering
+    registry = queryUtility(IRegistry)
+    if registry is not None:
+        if registry.forInterface(IBlocksSettings).esi:
+            renderView = 'plone.app.blocks.esirenderer'
+            renderedRequestKey = 'plone.app.blocks.esi'
+    
     # Find tiles in the merged document.
     tiles = utils.findTiles(request, tree, remove=True)
     
     root = tree.getroot()
-    head_node = root.find('head')
+    headNode = root.find('head')
     
     # Resolve each tile and place it into the tilepage body
-    for tile_id, tile_href in tiles.items():
-        tile_tree = utils.resolve(request, tile_href)
-        if tile_tree is not None:
-            tile_root = tile_tree.getroot()
+    for tileId, tileHref in tiles.items():
+        
+        tileTree = utils.resolve(request, tileHref, renderView, renderedRequestKey)
+        
+        if tileTree is not None:
+            tileRoot = tileTree.getroot()
             
-            tile_target = utils.xpath1("//*[@id='%s']" % tile_id, root)
-            if tile_target is None:
+            tileTarget = utils.xpath1("//*[@id='%s']" % tileId, root)
+            if tileTarget is None:
                 continue
             
             # merge tile head into the page's head
-            tile_head = tile_root.find('head')
-            if tile_head is not None:
-                for tile_head_child in tile_head:
-                    head_node.append(tile_head_child)
+            tileHead = tileRoot.find('head')
+            if tileHead is not None:
+                for tileHeadChild in tileHead:
+                    headNode.append(tileHeadChild)
             
             # clear children, but keep attributes
-            old_attrib = dict(tile_target.attrib)
-            tile_target.clear()
-            tile_target.attrib.update(old_attrib)
+            oldAttrib = dict(tileTarget.attrib)
+            tileTarget.clear()
+            tileTarget.attrib.update(oldAttrib)
             
             # insert tile target with tile body
-            tile_body = tile_root.find('body')
-            for tile_body_child in tile_body:
-                tile_target.append(tile_body_child)
+            tileBody = tileRoot.find('body')
+            for tileBodyChild in tileBody:
+                tileTarget.append(tileBodyChild)
 
     return tree

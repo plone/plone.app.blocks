@@ -39,5 +39,15 @@
         permission="zope.Public"
         schema=".demo.IDemoTile"
         />
+    
+    <plone:tile
+        name="plone.app.blocks.demo2"
+        title="Demo tile 2"
+        add_permission="cmf.ManagePortal"
+        class="plone.tiles.esi.ESITile"
+        template="tile.pt"
+        permission="zope.Public"
+        schema=".demo.IDemoTile"
+        />
         
 </configure>
