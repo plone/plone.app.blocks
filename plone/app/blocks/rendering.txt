@@ -262,7 +262,8 @@ working, it should perform its magic. We make sure that Zope is in
             <h1>Welcome!</h1>
             <div id="panel1">
                 Page panel 1
-                <div id="page-tile2"><p>
+                <div id="page-tile2">
+            <p>
                 This is a demo tile with id tile2
             </p>
             <p>
@@ -271,7 +272,8 @@ working, it should perform its magic. We make sure that Zope is in
         </div></div>
             <div id="panel2">
                 Page panel 2
-                <div id="page-tile3"><p>
+                <div id="page-tile3">
+            <p>
                 This is a demo tile with id tile3
             </p>
             <p>
@@ -280,7 +282,8 @@ working, it should perform its magic. We make sure that Zope is in
         </div></div>
             <div id="panel3">
                 Layout panel 3
-                <div id="layout-tile2"><p>
+                <div id="layout-tile2">
+            <p>
                 This is a demo tile with id tile2
             </p>
             <p>
@@ -325,21 +328,24 @@ We then try to access the same page again.
         <meta name="tile-name" content="tile3" />
       </head>
       <body>
-        <div id="layout-tile2"><p>
+        <div id="layout-tile2">
+            <p>
                 This is a demo tile with id tile2
             </p>
             <p>
                 Magic number: -1; Form: []; Query string: 
             </p>
         </div>
-        <div id="page-tile2"><p>
+        <div id="page-tile2">
+            <p>
                 This is a demo tile with id tile2
             </p>
             <p>
                 Magic number: 2; Form: [('magicNumber', 2)]; Query string: magicNumber:int=2
             </p>
         </div>
-        <div id="page-tile3"><p>
+        <div id="page-tile3">
+            <p>
                 This is a demo tile with id tile3
             </p>
             <p>
@@ -348,7 +354,6 @@ We then try to access the same page again.
         </div>
       </body>
     </html>
-
 
 Notice how this page contains all the dynamic tile content (including the
 ``<head />`` portions), but none of the static content or panels from the 

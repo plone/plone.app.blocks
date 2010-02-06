@@ -53,7 +53,9 @@ def renderTiles(request, tree):
             
             # insert tile target with tile body
             tileBody = tileRoot.find('body')
-            for tileBodyChild in tileBody:
-                tileTarget.append(tileBodyChild)
-
+            if tileBody is not None:
+                tileTarget.text = tileBody.text
+                for tileBodyChild in tileBody:
+                    tileTarget.append(tileBodyChild)
+    
     return tree

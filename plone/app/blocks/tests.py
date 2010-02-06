@@ -10,8 +10,6 @@ import collective.testcaselayer.ptc
 import plone.app.blocks
 import plone.tiles
 
-ptc.setupPloneSite()
-
 optionflags = (doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
 
 class IntegrationTestLayer(collective.testcaselayer.ptc.BasePTCLayer):

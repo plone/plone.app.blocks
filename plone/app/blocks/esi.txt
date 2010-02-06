@@ -190,17 +190,21 @@ be rendered as normal.
       <body>
             <h1>Welcome!</h1>
             <div id="panel1">
-                <div id="page-non-esi-tile"><p>
+                <div id="page-non-esi-tile">
+            <p>
                 Non-ESI tile with query string foo=bar
             </p>
-        </div><div id="page-esi-tile"><p>
+        </div><div id="page-esi-tile">
+            <p>
                 ESI tile with query string foo=bar
             </p>
         </div></div>
-        <div id="layout-non-esi-tile"><p>
+        <div id="layout-non-esi-tile">
+            <p>
                 Non-ESI tile with query string 
             </p>
-        </div><div id="layout-esi-tile"><p>
+        </div><div id="layout-esi-tile">
+            <p>
                 ESI tile with query string 
             </p>
         </div></body>
@@ -222,19 +226,23 @@ Tile-page rendering should work similarly:
         <meta name="tile-name" content="tile3" />
       </head>
       <body>
-        <div id="layout-non-esi-tile"><p>
+        <div id="layout-non-esi-tile">
+            <p>
                 Non-ESI tile with query string 
             </p>
         </div>
-        <div id="layout-esi-tile"><p>
+        <div id="layout-esi-tile">
+            <p>
                 ESI tile with query string 
             </p>
         </div>
-        <div id="page-esi-tile"><p>
+        <div id="page-esi-tile">
+            <p>
                 ESI tile with query string foo=bar
             </p>
         </div>
-        <div id="page-non-esi-tile"><p>
+        <div id="page-non-esi-tile">
+            <p>
                 Non-ESI tile with query string foo=bar
             </p>
         </div>
@@ -284,15 +292,19 @@ tiles should be rendered as ESI links. See `plone.tiles`_ for more details.
       <body>
             <h1>Welcome!</h1>
             <div id="panel1">
-                <div id="page-non-esi-tile"><p>
+                <div id="page-non-esi-tile">
+            <p>
                 Non-ESI tile with query string foo=bar
             </p>
-        </div><div id="page-esi-tile"><esi:include src="http://nohost/plone/@@test.tile3/tile4/@@esi-body?foo=bar" />
+        </div><div id="page-esi-tile">
+            <esi:include src="http://nohost/plone/@@test.tile3/tile4/@@esi-body?foo=bar" />
         </div></div>
-        <div id="layout-non-esi-tile"><p>
+        <div id="layout-non-esi-tile">
+            <p>
                 Non-ESI tile with query string 
             </p>
-        </div><div id="layout-esi-tile"><esi:include src="http://nohost/plone/@@test.tile3/tile2/@@esi-body?" />
+        </div><div id="layout-esi-tile">
+            <esi:include src="http://nohost/plone/@@test.tile3/tile2/@@esi-body?" />
         </div></body>
     </html>
 
@@ -328,15 +340,19 @@ Tile-page rendering works similarly:
         <meta name="tile-name" content="tile3" />
       </head>
       <body>
-        <div id="layout-non-esi-tile"><p>
+        <div id="layout-non-esi-tile">
+            <p>
                 Non-ESI tile with query string 
             </p>
         </div>
-        <div id="layout-esi-tile"><esi:include src="http://nohost/plone/@@test.tile3/tile2/@@esi-body?" />
+        <div id="layout-esi-tile">
+            <esi:include src="http://nohost/plone/@@test.tile3/tile2/@@esi-body?" />
         </div>
-        <div id="page-esi-tile"><esi:include src="http://nohost/plone/@@test.tile3/tile4/@@esi-body?foo=bar" />
+        <div id="page-esi-tile">
+            <esi:include src="http://nohost/plone/@@test.tile3/tile4/@@esi-body?foo=bar" />
         </div>
-        <div id="page-non-esi-tile"><p>
+        <div id="page-non-esi-tile">
+            <p>
                 Non-ESI tile with query string foo=bar
             </p>
         </div>

@@ -68,10 +68,14 @@ def createTilePage(request, tree):
             
             # add tile body
             tileBody = tileRoot.find('body')
+            
             newTileNode = E.DIV()
             newTileNode.attrib['id'] = tileId
-            for tileBodyChild in tileBody:
-                newTileNode.append(tileBodyChild)
+            
+            if tileBody is not None:
+                newTileNode.text = tileBody.text
+                for tileBodyChild in tileBody:
+                    newTileNode.append(tileBodyChild)
             
             bodyNode.append(newTileNode)
     
