@@ -30,7 +30,7 @@ setup(name='plone.app.drafts',
           'zope.component',
           'zope.schema',
           'zope.annotation',
-          'five.intid',
+          'plone.app.intid',
           'Zope2',
       ],
       extras_require={

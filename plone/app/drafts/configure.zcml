@@ -6,26 +6,7 @@
     xmlns:zcml="http://namespaces.zope.org/zcml"
     i18n_domain="plone.app.drafts">
     
-    <!-- XXX: hack until we have a sane way to install five.intid -->
-    <configure zcml:condition="not-installed plone.app.relations">
-        <includeOverrides package="five.intid" file="overrides.zcml" />
-        <include package="five.intid" file="base.zcml" />
-        <subscriber
-            handler="five.intid.intid.addIntIdSubscriber"
-            for="Products.CMFCore.interfaces.IDynamicType
-                 zope.lifecycleevent.interfaces.IObjectAddedEvent"
-            />
-        <subscriber
-            handler="five.intid.intid.removeIntIdSubscriber"
-            for="Products.CMFCore.interfaces.IDynamicType
-                 zope.lifecycleevent.interfaces.IObjectRemovedEvent"
-            />
-        <subscriber
-            handler="five.intid.intid.moveIntIdSubscriber"
-            for="Products.CMFCore.interfaces.IDynamicType
-                 zope.lifecycleevent.interfaces.IObjectMovedEvent"
-            />
-    </configure>
+    <include package="plone.app.intid" />
     
     <include package=".browser" />
     <adapter factory=".proxy.AliasAnnotations" />
