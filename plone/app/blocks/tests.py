@@ -31,7 +31,7 @@ def test_suite():
             test_class=FunctionalTestCase,
             optionflags=optionflags),
         ztc.FunctionalDocFileSuite(
-            'tests/context.txt',
+            'context.txt',
             package='plone.app.blocks',
             test_class=FunctionalTestCase,
             optionflags=optionflags),
