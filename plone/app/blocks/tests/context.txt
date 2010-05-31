@@ -1,0 +1,52 @@
+The context both the site layout and the page layout should use
+to render (e.g. to resolve TAL expressions) are be the object we're
+currently visualizing.
+
+    >>> from Products.Five.browser import BrowserView
+    >>> from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+    
+    >>> class Layout(BrowserView):
+    ...     __name__ = 'test-layout'
+    ...	    def __call__(self):
+    ...     	return ViewPageTemplateFile('test-layout.pt')(self)
+
+
+    >>> class Page(BrowserView):
+    ...     __name__ = 'test-page'
+    ...	    def __call__(self):
+    ...	    	return ViewPageTemplateFile('test-page.pt')(self)
+
+
+Initialize and register views:
+        
+    >>> from zope.interface import Interface, implements
+    >>> from Products.Five.security import protectClass
+    >>> protectClass(Layout, 'zope2.View')
+    >>> protectClass(Page, 'zope2.View')
+
+    >>> from App.class_init import InitializeClass
+    >>> InitializeClass(Layout)
+    >>> InitializeClass(Page)
+
+    >>> from zope.component import provideAdapter
+    >>> provideAdapter(Layout, (Interface, Interface,), Interface, u'test-layout')
+    >>> provideAdapter(Page, (Interface, Interface,), Interface, u'test-page')
+
+    >>> from Products.Five.testbrowser import Browser
+    >>> browser = Browser()
+    >>> browser.handleErrors = False
+
+    >>> browser.open(self.portal.absolute_url() + '/@@test-page')
+    >>> print browser.contents
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">               
+    <html xmlns="http://www.w3.org/1999/xhtml">                       
+      <head>                                                          
+        <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />                                                               
+        <title>Plone site</title>                                     
+        <link rel="panel" rev="content" target="content" />           
+        <link rel="layout" href="./@@test-layout" />                  
+      </head>                                                         
+      <body>                                                          
+        <div id="content">Plone site</div>                            
+      </body>                                                         
+    </html>  
