@@ -1,5 +1,6 @@
 from plone.app.blocks import utils
 from lxml import etree
+from urlparse import urljoin
 
 headerReplace = [etree.XPath("/html/head/%s" % tag) for tag in ('title', 'base',)]
 headerAppend = [etree.XPath("/html/head/%s" % tag) for tag in ('style', 'link', 'script', 'meta')]
@@ -20,6 +21,8 @@ def merge(request, pageTree):
         return None
     
     # Resolve layout tree
+    baseURL = request.getURL()
+    layoutHref = urljoin(baseURL, layoutHref) # turn the link absolute
     layoutTree = utils.resolve(request, layoutHref)
     if layoutTree is None:
         return None
