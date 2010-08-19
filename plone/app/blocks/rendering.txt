@@ -228,11 +228,13 @@ We can now render the page. Provided ``plone.app.blocks`` is installed and
 working, it should perform its magic. We make sure that Zope is in
 "development mode" to get pretty-printed output.
 
-    >>> from Products.Five.testbrowser import Browser
-    >>> browser = Browser()
+    >>> from plone.testing.z2 import Browser
+    >>> app = layer['app']
+    >>> browser = Browser(app)
     >>> browser.handleErrors = False
 
-    >>> browser.open(self.portal.absolute_url() + '/@@test-page')
+    >>> portal = layer['portal']
+    >>> browser.open(portal.absolute_url() + '/@@test-page')
     >>> print browser.contents
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
@@ -315,7 +317,7 @@ First, we mark the view with the relevant marker interface.
 
 We then try to access the same page again.
 
-    >>> browser.open(self.portal.absolute_url() + '/@@test-page')
+    >>> browser.open(portal.absolute_url() + '/@@test-page')
     >>> tilePageContents = browser.contents
     >>> print tilePageContents
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -366,7 +368,7 @@ path. This is not actually used, but allows aggressive caching of the XSLT
 file in a caching proxy. Once the context is modified, the tile page will
 reference a URL with a different number, forcing a fresh copy to be fetched.
 
-    >>> browser.open(self.portal.absolute_url() + '/@@test-page/@@blocks-static-content/1258209736.89.xsl')
+    >>> browser.open(portal.absolute_url() + '/@@test-page/@@blocks-static-content/1258209736.89.xsl')
     >>> tilePageXSLTContents = browser.contents
     >>> print tilePageXSLTContents
     <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">

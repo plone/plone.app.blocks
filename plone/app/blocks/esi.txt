@@ -169,11 +169,13 @@ ESI disabled
 We first render the page without enabling ESI. The ESI-capable tiles should
 be rendered as normal.
 
-    >>> from Products.Five.testbrowser import Browser
-    >>> browser = Browser()
+    >>> from plone.testing.z2 import Browser
+    >>> app = layer['app']
+    >>> browser = Browser(app)
     >>> browser.handleErrors = False
 
-    >>> browser.open(self.portal.absolute_url() + '/@@test-page')
+    >>> portal = layer['portal']
+    >>> browser.open(portal.absolute_url() + '/@@test-page')
     >>> print browser.contents
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
@@ -212,7 +214,7 @@ be rendered as normal.
 
 Tile-page rendering should work similarly:
 
-    >>> browser.open(self.portal.absolute_url() + '/@@test-tilepage-page')
+    >>> browser.open(portal.absolute_url() + '/@@test-tilepage-page')
     >>> tilePageContents = browser.contents
     >>> print tilePageContents
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -249,7 +251,7 @@ Tile-page rendering should work similarly:
       </body>
     </html>
 
-    >>> browser.open(self.portal.absolute_url() + '/@@test-tilepage-page/@@blocks-static-content/1258209736.89.xsl')
+    >>> browser.open(portal.absolute_url() + '/@@test-tilepage-page/@@blocks-static-content/1258209736.89.xsl')
     >>> tilePageXSLTContents = browser.contents
     >>> print tilePageXSLTContents
     <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
@@ -277,7 +279,7 @@ control panel. In code, it is done like so:
 We can now perform the same rendering again. This time, the ESI-capable
 tiles should be rendered as ESI links. See `plone.tiles`_ for more details.
 
-    >>> browser.open(self.portal.absolute_url() + '/@@test-page')
+    >>> browser.open(portal.absolute_url() + '/@@test-page')
     >>> print browser.contents
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns:esi="http://www.edge-delivery.org/esi/1.0" xmlns="http://www.w3.org/1999/xhtml">
@@ -328,7 +330,7 @@ Tile-page rendering works similarly:
     >>> from zope.interface import classImplements
     >>> classImplements(Page, ITilePageRendered)
 
-    >>> browser.open(self.portal.absolute_url() + '/@@test-tilepage-page')
+    >>> browser.open(portal.absolute_url() + '/@@test-tilepage-page')
     >>> tilePageContents = browser.contents
     >>> print tilePageContents
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -359,7 +361,7 @@ Tile-page rendering works similarly:
       </body>
     </html>
     
-    >>> browser.open(self.portal.absolute_url() + '/@@test-tilepage-page/@@blocks-static-content/1258209736.89.xsl')
+    >>> browser.open(portal.absolute_url() + '/@@test-tilepage-page/@@blocks-static-content/1258209736.89.xsl')
     >>> tilePageXSLTContents = browser.contents
     >>> print tilePageXSLTContents
     <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
