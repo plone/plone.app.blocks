@@ -272,12 +272,8 @@ working, it should perform its magic. We make sure that Zope is in
                 padding: 5px;
             }
             </style>
-        <link rel="panel" rev="panel1" target="panel1" />
-        <link rel="panel" rev="panel2" target="panel2" />
-        <link rel="panel" rev="panel3" target="panel3" />
         <title>Page title</title>
         <link rel="stylesheet" href="/layout/page.css" />
-        <link rel="layout" href="./@@test-layout" />
         <script type="text/javascript">alert('page');</script>
         <link rel="stylesheet" type="text/css" href="tiled.css" />
         <meta name="tile-name" content="tile2" />
@@ -404,7 +400,7 @@ reference a URL with a different number, forcing a fresh copy to be fetched.
                 border: dotted black 1px;
                 padding: 5px;
             }
-            </style><link rel="panel" rev="panel1" target="panel1"/><link rel="panel" rev="panel2" target="panel2"/><link rel="panel" rev="panel3" target="panel3"/><title>Page title</title><link rel="stylesheet" href="/layout/page.css"/><link rel="layout" href="./@@test-layout"/><script type="text/javascript">alert('page');</script></head><body>
+            </style><title>Page title</title><link rel="stylesheet" href="/layout/page.css"/><script type="text/javascript">alert('page');</script></head><body>
             <h1>Welcome!</h1>
             <div id="panel1">
                 Page panel 1
@@ -436,12 +432,8 @@ applied to the content.
                         padding: 5px;
                     }
             </style>
-            <link rel="panel" rev="panel1" target="panel1">
-            <link rel="panel" rev="panel2" target="panel2">
-            <link rel="panel" rev="panel3" target="panel3">
             <title>Page title</title>
             <link rel="stylesheet" href="/layout/page.css">
-            <link rel="layout" href="./@@test-layout">
             <script type="text/javascript">alert('page');</script>
         </head>
         <body>
