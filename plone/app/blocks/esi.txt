@@ -184,8 +184,8 @@ be rendered as normal.
         <link rel="panel" rev="panel1" target="panel1" />
         <title>Page title</title>
         <link rel="layout" href="./@@test-layout" />
-        <meta name="tile-name" content="tile1" />
         <meta name="tile-name" content="tile2" />
+        <meta name="tile-name" content="tile1" />
         <meta name="tile-name" content="tile4" />
         <meta name="tile-name" content="tile3" />
       </head>
@@ -222,8 +222,8 @@ Tile-page rendering should work similarly:
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
-        <meta name="tile-name" content="tile1" />
         <meta name="tile-name" content="tile2" />
+        <meta name="tile-name" content="tile1" />
         <meta name="tile-name" content="tile4" />
         <meta name="tile-name" content="tile3" />
       </head>

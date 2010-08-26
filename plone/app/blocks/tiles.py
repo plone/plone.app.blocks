@@ -5,6 +5,7 @@ from plone.registry.interfaces import IRegistry
 from plone.app.blocks.interfaces import IBlocksSettings
 from plone.app.blocks import utils
 
+
 def renderTiles(request, tree):
     """Find all tiles in the given response, contained in the lxml element
     tree `tree`, and insert them into the ouput.
@@ -24,20 +25,20 @@ def renderTiles(request, tree):
     
     # Find tiles in the merged document.
     tiles = utils.findTiles(request, tree, remove=True)
-    
+
     root = tree.getroot()
     headNode = root.find('head')
     
     # Resolve each tile and place it into the tilepage body
-    for tileId, tileHref in tiles.items():
+    for (tileId, (tileHref, hasTarget)) in sorted(tiles.items(), cmp=utils.tileSort):
         
         tileTree = utils.resolve(request, tileHref, renderView, renderedRequestKey)
         
         if tileTree is not None:
             tileRoot = tileTree.getroot()
-            
+
             tileTarget = utils.xpath1("//*[@id='%s']" % tileId, root)
-            if tileTarget is None:
+            if hasTarget and tileTarget is None:
                 continue
             
             # merge tile head into the page's head
@@ -45,6 +46,10 @@ def renderTiles(request, tree):
             if tileHead is not None:
                 for tileHeadChild in tileHead:
                     headNode.append(tileHeadChild)
+
+            # No target? Then we're done.
+            if not hasTarget:
+                continue
             
             # clear children, but keep attributes
             oldAttrib = dict(tileTarget.attrib)

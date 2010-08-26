@@ -100,6 +100,7 @@ and are both of the same type.
     ... 
     ...         <link rel="tile" target="layout-tile1" href="./@@test.tile1/tile1" />
     ...         <link rel="tile" target="layout-tile2" href="./@@test.tile1/tile2" />
+    ...         <link rel="tile" href="./@@test.tile_nobody/tile_css" />
     ...     </head>
     ...     <body>
     ...         <h1>Welcome!</h1>
@@ -197,6 +198,20 @@ using the standard ``<browser:page />`` and ``<plone:tile />`` directives.
     ... </html>""" % dict(name=self.id, number=self.data['magicNumber'] or -1,
     ...                   form=sorted(self.request.form.items()), queryString=self.request['QUERY_STRING'])
 
+Let's have another, this time only a head part. This could for example
+be a tile that only needs to insert some CSS.
+
+    >>> class TestTileNoBody(Tile):
+    ...     __name__ = 'test.tile_nobody'
+    ...
+    ...     def __call__(self):
+    ...         return """\
+    ... <html>
+    ...     <head>
+    ...         <link rel="stylesheet" type="text/css" href="tiled.css" />
+    ...     </head>
+    ... </html>"""
+
     >>> from plone.tiles.type import TileType
     >>> testTileType = TileType(
     ...     name=u'test.tile1',
@@ -204,6 +219,12 @@ using the standard ``<browser:page />`` and ``<plone:tile />`` directives.
     ...     description=u"A tile used for testing",
     ...     add_permission="cmf.ManagePortal",
     ...     schema=ITestTile)
+
+    >>> testTileTypeNoBody = TileType(
+    ...     name=u'test.tile_nobody',
+    ...     title=u"Test tile using only a header",
+    ...     description=u"Another tile used for testing",
+    ...     add_permission="cmf.ManagePortal")
 
 Register these in the same way that the ZCML handlers would, more or less.
 
@@ -222,7 +243,9 @@ Register these in the same way that the ZCML handlers would, more or less.
     >>> provideAdapter(Layout, (Interface, Interface,), Interface, u'test-layout')
     >>> provideAdapter(Page, (Interface, Interface,), Interface, u'test-page')
     >>> provideAdapter(TestTile, (Interface, Interface,), Interface, u'test.tile1',)
+    >>> provideAdapter(TestTileNoBody, (Interface, Interface,), Interface, u'test.tile_nobody',)
     >>> provideUtility(testTileType, name=u'test.tile1')
+    >>> provideUtility(testTileTypeNoBody, name=u'test.tile_nobody')
 
 We can now render the page. Provided ``plone.app.blocks`` is installed and
 working, it should perform its magic. We make sure that Zope is in
@@ -256,6 +279,7 @@ working, it should perform its magic. We make sure that Zope is in
         <link rel="stylesheet" href="/layout/page.css" />
         <link rel="layout" href="./@@test-layout" />
         <script type="text/javascript">alert('page');</script>
+        <link rel="stylesheet" type="text/css" href="tiled.css" />
         <meta name="tile-name" content="tile2" />
         <meta name="tile-name" content="tile2" />
         <meta name="tile-name" content="tile3" />
@@ -325,6 +349,7 @@ We then try to access the same page again.
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
+        <link rel="stylesheet" type="text/css" href="tiled.css" />
         <meta name="tile-name" content="tile2" />
         <meta name="tile-name" content="tile2" />
         <meta name="tile-name" content="tile3" />

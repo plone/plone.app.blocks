@@ -1,5 +1,6 @@
 import logging
 from urlparse import urlsplit, urljoin
+import uuid
 
 from zope.interface import directlyProvidedBy, directlyProvides
 from zope.component import queryMultiAdapter
@@ -169,9 +170,14 @@ def mergeHead(srcTree, destTree, headerReplace, headerAppend):
         for srcTag in appendXPath(srcTree):
             destHead.append(srcTag)
 
+
 def findTiles(request, tree, remove=False):
-    """Given a request and an lxml tree with the body, return a dict of
-    tile id to absolute tile href (including query string).
+
+    """Given a request and an lxml tree with the body, return a dict
+    of tile id to a tuple of absolute tile href (including query
+    string) and a marker specifying whether this is a tile with an
+    actual target or not. The latter is needed for tiles that need to
+    only merge into the head.
     
     If remove is true, tile links are removed once complete.
     """
@@ -181,18 +187,30 @@ def findTiles(request, tree, remove=False):
     
     # Find all tiles that exist in the page
     for tileNode in tileXPath(tree):
-        
-        tileId = tileNode.get('target', None)
+
+        # If we do not have an id, generate one        
+        tileId = tileNode.get('target', None) 
         tileHref = tileNode.get('href', None)
+        hasTarget = True
+
+        if tileId is None:
+            tileId = "__tile_%s" % uuid.uuid1()
+            hasTarget = False
         
-        if tileId is not None and tileHref is not None:
+        if tileHref is not None:
             tileHref = urljoin(baseURL, tileHref)
-            
             tileTargetXPath = etree.XPath("//*[@id='%s']" % tileId)
             tileTargetNode = xpath1(tileTargetXPath, tree)
-            if tileTargetNode is not None:
-                tiles[tileId] = tileHref
-        
-        tileNode.getparent().remove(tileNode)
-        
+            if (not hasTarget) or (tileTargetNode is not None):
+                tiles[tileId] = (tileHref, hasTarget)
+
+        if remove:
+            tileNode.getparent().remove(tileNode)
+    
     return tiles
+
+
+def tileSort(tile0, tile1):
+    """ Sort entries from findTiles on ID """
+    
+    return cmp(tile0[0], tile1[0])

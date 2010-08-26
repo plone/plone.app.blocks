@@ -55,7 +55,7 @@ def createTilePage(request, tree):
     htmlNode.append(bodyNode)
     
     # Resolve each tile and place it into the tilepage body
-    for tileId, tileHref in tiles.items():
+    for (tileId, (tileHref, hasTarget)) in sorted(tiles.items(), cmp=utils.tileSort):
         tileTree = utils.resolve(request, tileHref, renderView, renderedRequestKey)
         if tileTree is not None:
             tileRoot = tileTree.getroot()
@@ -76,8 +76,9 @@ def createTilePage(request, tree):
                 newTileNode.text = tileBody.text
                 for tileBodyChild in tileBody:
                     newTileNode.append(tileBodyChild)
-            
-            bodyNode.append(newTileNode)
+
+            if hasTarget:
+                bodyNode.append(newTileNode)
     
     # Make the tile page XSLT
     request.response.setHeader('Content-Type', 'text/xml')

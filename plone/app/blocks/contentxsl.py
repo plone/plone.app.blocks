@@ -32,7 +32,7 @@ class ContentXSL(object):
         """
         self.traversed += 1
         return self
-    
+
     def __call__(self):
     
         # Invoke the context (a view) to get the raw page contents. Any query
@@ -62,7 +62,11 @@ class ContentXSL(object):
         # Copy the whole content HTML file into the XSLT as the template
         xsltTemplate.append(tree.getroot())
         
-        for tileId, tileHref in tiles.items():
+        for (tileId, (tileHref, hasTarget)) in sorted(tiles.items(), cmp=utils.tileSort):
+
+            if not hasTarget:
+                continue
+            
             tileTarget = utils.xpath1("//*[@id='%s']" % tileId, xsltTemplate)
             if tileTarget is None:
                 continue
