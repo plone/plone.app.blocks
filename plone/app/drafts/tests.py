@@ -491,7 +491,7 @@ class TestCurrentDraft(ptc.PloneTestCase):
         current.targetKey = u"123"
         self.assertEquals(True, current.save())
         
-        self.assertEquals({'value': '123', 'path': '/'}, response.cookies['plone.app.drafts.targetKey'])
+        self.assertEquals({'value': '123', 'quoted': True, 'path': '/'}, response.cookies['plone.app.drafts.targetKey'])
         self.failIf('plone.app.drafts.draftName' in response.cookies)
         self.failIf('plone.app.drafts.path' in response.cookies)
         
@@ -499,8 +499,8 @@ class TestCurrentDraft(ptc.PloneTestCase):
         current.draftName = u"draft-1"
         self.assertEquals(True, current.save())
         
-        self.assertEquals({'value': '123', 'path': '/'}, response.cookies['plone.app.drafts.targetKey'])
-        self.assertEquals({'value': 'draft-1', 'path': '/'}, response.cookies['plone.app.drafts.draftName'])
+        self.assertEquals({'value': '123', 'quoted': True, 'path': '/'}, response.cookies['plone.app.drafts.targetKey'])
+        self.assertEquals({'value': 'draft-1', 'quoted': True, 'path': '/'}, response.cookies['plone.app.drafts.draftName'])
         self.failIf('plone.app.drafts.path' in response.cookies)
         
         current.targetKey = u"123"
@@ -508,9 +508,9 @@ class TestCurrentDraft(ptc.PloneTestCase):
         current.path = '/test'
         self.assertEquals(True, current.save())
         
-        self.assertEquals({'value': '123', 'path': '/test'}, response.cookies['plone.app.drafts.targetKey'])
-        self.assertEquals({'value': 'draft-1', 'path': '/test'}, response.cookies['plone.app.drafts.draftName'])
-        self.assertEquals({'value': '/test', 'path': '/test'}, response.cookies['plone.app.drafts.path'])
+        self.assertEquals({'value': '123', 'quoted': True, 'path': '/test'}, response.cookies['plone.app.drafts.targetKey'])
+        self.assertEquals({'value': 'draft-1', 'quoted': True, 'path': '/test'}, response.cookies['plone.app.drafts.draftName'])
+        self.assertEquals({'value': '/test', 'quoted': True, 'path': '/test'}, response.cookies['plone.app.drafts.path'])
     
     def test_discard(self):
         request = self.app.REQUEST
@@ -520,7 +520,7 @@ class TestCurrentDraft(ptc.PloneTestCase):
         current.discard()
         
         deletedToken = {'expires': 'Wed, 31-Dec-97 23:59:59 GMT', 'max_age': 0,
-                        'path': '/', 'value': 'deleted'}
+                        'path': '/', 'quoted': True, 'value': 'deleted'}
         
         self.assertEquals(deletedToken, response.cookies['plone.app.drafts.targetKey'])
         self.assertEquals(deletedToken, response.cookies['plone.app.drafts.draftName'])
