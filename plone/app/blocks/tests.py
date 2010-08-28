@@ -33,7 +33,7 @@ PABLOCKS_FUNCTIONAL_TESTING = FunctionalTesting(bases=(PABLOCKS_FIXTURE,), name=
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTests([
-        layered(doctest.DocFileSuite('rendering.txt', 'esi.txt', 'context.txt',
+        layered(doctest.DocFileSuite('rendering.txt', 'context.txt', #'esi.txt',
                                      optionflags=optionflags),
                 layer=PABLOCKS_FUNCTIONAL_TESTING)
         ])
