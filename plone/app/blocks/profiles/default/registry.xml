@@ -1,5 +1,3 @@
 <registry>
-    
-    <records interface="plone.app.blocks.interfaces.IBlocksSettings" />
-    
+  <records interface="plone.app.blocks.interfaces.IBlocksSettings" />
 </registry>

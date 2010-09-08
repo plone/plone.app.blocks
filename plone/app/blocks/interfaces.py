@@ -3,7 +3,7 @@ from zope.i18nmessageid import MessageFactory
 from zope.interface import Interface
 from zope import schema
 
-_ = MessageFactory('plone.app.blocks')
+_ = MessageFactory('plone')
 
 class ITilePageRendered(Interface):
     """This marker interface can be applied to views that should use separate
@@ -18,7 +18,7 @@ class IBlocksLayer(Interface):
 class IBlocksSettings(Interface):
     """Settings registered with the portal_registry tool
     """
-    
+
     esi = schema.Bool(
             title=_(u"Enable Edge Side Includes"),
             description=_(u"Allows tiles which support Edge Side Includes (ESI)"

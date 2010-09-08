@@ -3,7 +3,7 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     xmlns:zcml="http://namespaces.zope.org/zcml"
-    i18n_domain="plone.app.blocks">
+    i18n_domain="plone">
 
     <include package="plone.transformchain" />
     <include package="plone.tiles" />
