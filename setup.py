@@ -7,10 +7,10 @@ setup(name='plone.app.blocks',
       version=version,
       description="Implements the in-Plone blocks rendering process",
       long_description=open("README.txt").read() + "\n" +
-                       open(os.path.join("docs", "HISTORY.txt")).read() + "\n" +
-                       open(os.path.join("plone", "app", "blocks", "rendering.txt")).read() + "\n" +
-                       open(os.path.join("plone", "app", "blocks", "esi.txt")).read(),
-      # Get more strings from http://www.python.org/pypi?%3Aaction=list_classifiers
+          open(os.path.join("docs", "HISTORY.txt")).read() + "\n" +
+          open(os.path.join("plone", "app", "blocks", "rendering.txt")).read()
+          + "\n" +
+          open(os.path.join("plone", "app", "blocks", "esi.txt")).read(),
       classifiers=[
         "Framework :: Plone",
         "Programming Language :: Python",
@@ -37,7 +37,7 @@ setup(name='plone.app.blocks',
       extras_require={
           'test': [
               'plone.app.testing',
-              ]
+              ],
           },
       entry_points="""
       [z3c.autoinclude.plugin]

@@ -12,6 +12,7 @@ from zope.configuration import xmlconfig
 
 optionflags = (doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
 
+
 class PABlocks(PloneSandboxLayer):
 
     def setUpZope(self, app, configurationContext):
@@ -27,15 +28,18 @@ class PABlocks(PloneSandboxLayer):
 
 PABLOCKS_FIXTURE = PABlocks()
 
-PABLOCKS_INTEGRATION_TESTING = IntegrationTesting(bases=(PABLOCKS_FIXTURE,), name="PABlocks:Integration")
-PABLOCKS_FUNCTIONAL_TESTING = FunctionalTesting(bases=(PABLOCKS_FIXTURE,), name="PABlocks:Functional")
+PABLOCKS_INTEGRATION_TESTING = IntegrationTesting(bases=(PABLOCKS_FIXTURE,),
+                                                  name="PABlocks:Integration")
+PABLOCKS_FUNCTIONAL_TESTING = FunctionalTesting(bases=(PABLOCKS_FIXTURE,),
+                                                name="PABlocks:Functional")
+
 
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTests([
-        layered(doctest.DocFileSuite('rendering.txt', 'context.txt', #'esi.txt',
+        layered(doctest.DocFileSuite('rendering.txt', 'context.txt',
+                                     #'esi.txt',
                                      optionflags=optionflags),
-                layer=PABLOCKS_FUNCTIONAL_TESTING)
+                layer=PABLOCKS_FUNCTIONAL_TESTING),
         ])
     return suite
-        
