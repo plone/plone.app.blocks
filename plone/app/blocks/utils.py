@@ -1,18 +1,8 @@
 import logging
-from urlparse import urlsplit, urljoin
+from urlparse import urljoin
 import uuid
 
-from zope.interface import directlyProvidedBy, directlyProvides
-from zope.component import queryMultiAdapter
-
-from AccessControl import Unauthorized
-from zExceptions import NotFound
-
-try:
-    from repoze.zope2.mapply import mapply, missing_name, dont_publish_class
-except ImportError:
-    from ZPublisher.mapply import mapply
-    from ZPublisher.Publish import missing_name, dont_publish_class
+from plone.subrequest import subrequest
 
 from lxml import etree
 from lxml import html
@@ -23,59 +13,6 @@ tileXPath = etree.XPath("/html/head/link[@rel='tile']")
 panelXPath = etree.XPath("/html/head/link[@rel='panel']")
 
 logger = logging.getLogger('plone.app.blocks')
-
-
-def cloneRequest(request, url):
-    """Clone the given request for use in traversal to the given URL.
-
-    This will set up request.form as well.
-
-    The returned request should be cleard with request.clear(). It should
-    *not* be closed with request.close(), since this fires EndRequestEvent,
-    which in turn disables the site-local component registry.
-    """
-    #  normalise url and split query string
-    urlParts = urlsplit(url)
-
-    # Clone the request so that we can traverse from it.
-
-    requestClone = request.clone()
-
-    # Make sure the new request provides the same markers as our old one
-    directlyProvides(requestClone, *directlyProvidedBy(request))
-
-    # Update the path and query string to reflect the new value
-    requestClone.environ['PATH_INFO'] = urlParts.path
-    requestClone.environ['QUERY_STRING'] = urlParts.query
-
-    requestClone.processInputs()
-
-    return requestClone
-
-
-def traverse(request, path):
-    """Traverse to the given URL, simulating URL traversal.
-
-    Returns the traversed-to object. May raise Unauthorized or NotFound.
-    """
-
-    return request.traverse(path)
-
-
-def invoke(request, traversed):
-    """Invoke a traversed-to object in the same manner that the publisher
-    would.
-    """
-
-    return mapply(traversed, positional=request.args,
-                  keyword=request,
-                  debug=None,
-                  maybe=1,
-                  missing_name=missing_name,
-                  handle_class=dont_publish_class,
-                  context=request,
-                  bind=1)
-
 
 def extractCharset(response, default='utf-8'):
     """Get the charset of the given response
@@ -90,40 +27,15 @@ def extractCharset(response, default='utf-8'):
     return charset
 
 
-def resolve(request, url, renderView=None, renderedRequestKey=None):
+def resolve(url):
     """Resolve the given URL to an lxml tree.
-
-    If ``renderView`` is given, it should be the name of a view that will be
-    looked up for the item being traversed to (e.g.a  tile). If the lookup
-    succeeds, this view will be used for the returned body instead of calling
-    the traversed object as normal.
-
-    If ``renderView`` is used, a key with the name given by
-    ``renderedRequestKey`` will be set to True in the request.
     """
 
-    requestClone = cloneRequest(request, url)
-    path = '/'.join(requestClone.physicalPathFromURL(url.split('?')[0]))
-
-    try:
-        traversed = traverse(requestClone, path)
-        renderer = queryMultiAdapter((traversed, requestClone,),
-                                     name=renderView)
-        if renderer is not None:
-            if renderedRequestKey is not None:
-                request.set(renderedRequestKey, True)
-            traversed = renderer
-
-        resolved = invoke(requestClone, traversed)
-    except (NotFound, Unauthorized,):
-        logger.exception("Could not resolve tile with URL %s" % url)
-        requestClone.clear()
-        return None
-
-    charset = extractCharset(requestClone.response)
-    requestClone.clear()
-
+    response = subrequest(url)
+    resolved = response.body or response.stdout.getvalue()
+    
     if isinstance(resolved, str):
+        charset = extractCharset(response)
         resolved = resolved.decode(charset)
 
     return html.fromstring(resolved).getroottree()

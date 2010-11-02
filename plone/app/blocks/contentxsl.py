@@ -44,7 +44,7 @@ class ContentXSL(object):
         if self.request['QUERY_STRING']:
             originalURL += '?' + self.request['QUERY_STRING']
 
-        tree = utils.resolve(self.request, originalURL)
+        tree = utils.resolve(originalURL)
         if tree is None:
             raise NotFound(originalURL)
 

@@ -10,6 +10,8 @@
     
     <include package="plone.app.registry" />
     
+    <include package="plone.subrequest" />
+    
     <!-- TODO: Remove demo -->
     <include package=".demo" />
     
@@ -86,12 +88,4 @@
         class=".contentxsl.ContentXSL"
         />
     
-    <!-- The ESI snippet view -->
-    <browser:page
-        name="plone.app.blocks.esirenderer"
-        for="plone.tiles.interfaces.IESIRendered"
-        class=".esi.ESISnippet"
-        permission="zope.Public"
-        />
-        
 </configure>

@@ -28,7 +28,7 @@ def merge(request, pageTree, removePanelLinks=True, removeLayoutLink=True):
     # Resolve layout tree
     baseURL = request.getURL()
     layoutHref = urljoin(baseURL, layoutHref)  # turn the link absolute
-    layoutTree = utils.resolve(request, layoutHref)
+    layoutTree = utils.resolve(layoutHref)
     if layoutTree is None:
         return None
 

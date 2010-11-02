@@ -4,10 +4,12 @@ from repoze.xmliter.utils import getHTMLSerializer
 from repoze.xmliter.serializer import XMLSerializer
 
 from plone.transformchain.interfaces import ITransform
+from plone.tiles.interfaces import ESI_HEADER
 
 from zope.interface import implements
 
-from plone.app.blocks import tilepage, panel, tiles, esi
+from plone.app.blocks import tilepage, panel, tiles
+from plone.tiles import esi
 
 
 class DisableParsing(object):
@@ -106,7 +108,7 @@ class MergePanels(object):
         if not self.request.get('plone.app.blocks.enabled', False) or \
             not isinstance(result, XMLSerializer):
             return None
-
+        
         tree = panel.merge(self.request, result.tree)
         if tree is None:
             return None
@@ -142,10 +144,10 @@ class CreateTilePage(object):
         if not self.request.get('plone.app.blocks.enabled', False) or \
             not isinstance(result, XMLSerializer):
             return None
-
+        
         if not self.request.get('plone.app.blocks.merged', False):
             return None
-
+        
         result.tree = tilepage.createTilePage(self.request, result.tree)
         return result
 
@@ -177,7 +179,7 @@ class IncludeTiles(object):
 
         if not self.request.get('plone.app.blocks.merged', False):
             return None
-
+        
         result.tree = tiles.renderTiles(self.request, result.tree)
         return result
 
@@ -196,19 +198,19 @@ class ESIRender(object):
         self.request = request
 
     def transformString(self, result, encoding):
-        if not self.request.get('plone.app.blocks.esi', False):
+        if self.request.getHeader(ESI_HEADER, 'false').lower() != 'true':
             return None
 
         return esi.substituteESILinks(result)
 
     def transformUnicode(self, result, encoding):
-        if not self.request.get('plone.app.blocks.esi', False):
+        if self.request.getHeader(ESI_HEADER, 'false').lower() != 'true':
             return None
 
         return esi.substituteESILinks(result)
 
     def transformIterable(self, result, encoding):
-        if not self.request.get('plone.app.blocks.esi', False):
+        if self.request.getHeader(ESI_HEADER, 'false').lower() != 'true':
             return None
 
         return esi.substituteESILinks("".join(result))

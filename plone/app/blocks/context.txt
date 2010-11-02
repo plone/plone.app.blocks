@@ -8,7 +8,6 @@ To illustrate this, we create two browser views with the context title
 contents of the site and page layouts, respectively::
 
     >>> from Products.Five.browser import BrowserView
-    >>> from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
     
     >>> class SiteLayout(BrowserView):
     ...     __name__ = 'site-layout'
@@ -35,7 +34,7 @@ contents of the site and page layouts, respectively::
     ...   <head>
     ...     <link rel="layout" href="./@@site-layout" />
     ...   </head>
-    ...   <body>	
+    ...   <body>
     ...     <div id="content">%s</div>
     ...   </body>
     ... </html>
@@ -73,14 +72,12 @@ be used::
     >>> browser.open(portal.absolute_url() + '/@@page-layout')
     >>> print browser.contents
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">               
-    <html xmlns="http://www.w3.org/1999/xhtml">                       
-      <head>                                                          
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
         <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
-        <title>Plone site</title>                                     
-        <link rel="panel" rev="content" target="content" />           
-        <link rel="layout" href="./@@site-layout" />                  
-      </head>                                                         
-      <body>                                                          
-        <div id="content">Plone site</div>                            
-      </body>                                                         
-    </html>  
+        <title>Plone site</title>
+      </head>
+      <body>
+        <div id="content">Plone site</div>
+      </body>
+    </html>

@@ -1,5 +1,8 @@
 from zope.component import queryUtility
+
 from plone.registry.interfaces import IRegistry
+
+from plone.tiles.interfaces import ESI_HEADER, ESI_HEADER_KEY
 
 from plone.app.blocks.interfaces import IBlocksSettings
 from plone.app.blocks import utils
@@ -15,15 +18,12 @@ def createTilePage(request, tree):
     Assumes panel merging has already happened.
     """
 
-    renderView = None
-    renderedRequestKey = None
-
-    # Optionally enable ESI rendering
-    registry = queryUtility(IRegistry)
-    if registry is not None:
-        if registry.forInterface(IBlocksSettings).esi:
-            renderView = 'plone.app.blocks.esirenderer'
-            renderedRequestKey = 'plone.app.blocks.esi'
+    # Optionally enable ESI rendering in tiles that support this
+    if not request.getHeader(ESI_HEADER):
+        registry = queryUtility(IRegistry)
+        if registry is not None:
+            if registry.forInterface(IBlocksSettings).esi:
+                request.environ[ESI_HEADER_KEY] = 'true'
 
     # Find tiles in the merged document.
     tiles = utils.findTiles(request, tree)
@@ -61,10 +61,9 @@ def createTilePage(request, tree):
     htmlNode.append(bodyNode)
 
     # Resolve each tile and place it into the tilepage body
-    for (tileId, (tileHref, hasTarget)) in sorted(tiles.items(),
-                                                  cmp=utils.tileSort):
-        tileTree = utils.resolve(request, tileHref, renderView,
-                                 renderedRequestKey)
+    for (tileId, (tileHref, hasTarget)) in sorted(tiles.items(), cmp=utils.tileSort):
+        
+        tileTree = utils.resolve(tileHref)
         if tileTree is not None:
             tileRoot = tileTree.getroot()
 

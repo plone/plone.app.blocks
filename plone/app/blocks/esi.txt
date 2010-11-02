@@ -55,7 +55,7 @@ Let's first register a two very simple tiles. One uses ESI, one does not.
     >>> class SimpleESITile(ESITile):
     ...     __name__ = 'test.tile3' # normally set by ZCML handler
     ...
-    ...     def __call__(self):
+    ...     def render(self):
     ...         return """\
     ... <html>
     ...     <head>
@@ -181,9 +181,7 @@ be rendered as normal.
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
-        <link rel="panel" rev="panel1" target="panel1" />
         <title>Page title</title>
-        <link rel="layout" href="./@@test-layout" />
         <meta name="tile-name" content="tile2" />
         <meta name="tile-name" content="tile1" />
         <meta name="tile-name" content="tile4" />
@@ -228,14 +226,14 @@ Tile-page rendering should work similarly:
         <meta name="tile-name" content="tile3" />
       </head>
       <body>
-        <div id="layout-non-esi-tile">
-            <p>
-                Non-ESI tile with query string 
-            </p>
-        </div>
         <div id="layout-esi-tile">
             <p>
                 ESI tile with query string 
+            </p>
+        </div>
+        <div id="layout-non-esi-tile">
+            <p>
+                Non-ESI tile with query string 
             </p>
         </div>
         <div id="page-esi-tile">
@@ -256,7 +254,7 @@ Tile-page rendering should work similarly:
     >>> print tilePageXSLTContents
     <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
     <xsl:template match="/">
-    <html><head><link rel="panel" rev="panel1" target="panel1"/><title>Page title</title><link rel="layout" href="./@@test-layout"/></head><body>
+    <html><head><title>Page title</title></head><body>
             <h1>Welcome!</h1>
             <div id="panel1">
                 <xsl:copy-of select="/html/body/div[@id='page-non-esi-tile']"/><xsl:copy-of select="/html/body/div[@id='page-esi-tile']"/></div>
@@ -275,6 +273,7 @@ control panel. In code, it is done like so:
     >>> from plone.app.blocks.interfaces import IBlocksSettings
     >>> registry = getUtility(IRegistry)
     >>> registry.forInterface(IBlocksSettings).esi = True
+    >>> import transaction; transaction.commit()
 
 We can now perform the same rendering again. This time, the ESI-capable
 tiles should be rendered as ESI links. See `plone.tiles`_ for more details.
@@ -285,9 +284,7 @@ tiles should be rendered as ESI links. See `plone.tiles`_ for more details.
     <html xmlns:esi="http://www.edge-delivery.org/esi/1.0" xmlns="http://www.w3.org/1999/xhtml">
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
-        <link rel="panel" rev="panel1" target="panel1" />
         <title>Page title</title>
-        <link rel="layout" href="./@@test-layout" />
         <meta name="tile-name" content="tile1" />
         <meta name="tile-name" content="tile3" />
       </head>
@@ -342,13 +339,13 @@ Tile-page rendering works similarly:
         <meta name="tile-name" content="tile3" />
       </head>
       <body>
+        <div id="layout-esi-tile">
+            <esi:include src="http://nohost/plone/@@test.tile3/tile2/@@esi-body?" />
+        </div>
         <div id="layout-non-esi-tile">
             <p>
                 Non-ESI tile with query string 
             </p>
-        </div>
-        <div id="layout-esi-tile">
-            <esi:include src="http://nohost/plone/@@test.tile3/tile2/@@esi-body?" />
         </div>
         <div id="page-esi-tile">
             <esi:include src="http://nohost/plone/@@test.tile3/tile4/@@esi-body?foo=bar" />
@@ -366,7 +363,7 @@ Tile-page rendering works similarly:
     >>> print tilePageXSLTContents
     <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
     <xsl:template match="/">
-    <html><head><link rel="panel" rev="panel1" target="panel1"/><title>Page title</title><link rel="layout" href="./@@test-layout"/></head><body>
+    <html><head><title>Page title</title></head><body>
             <h1>Welcome!</h1>
             <div id="panel1">
                 <xsl:copy-of select="/html/body/div[@id='page-non-esi-tile']"/><xsl:copy-of select="/html/body/div[@id='page-esi-tile']"/></div>
