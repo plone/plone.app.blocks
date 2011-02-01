@@ -34,7 +34,7 @@ setup(name='plone.app.drafts',
           'Zope2',
       ],
       extras_require={
-        'tests': ['collective.testcaselayer', 'Products.PloneTestCase'],
+        'test': ['collective.testcaselayer', 'Products.PloneTestCase'],
       },
       entry_points="""
       [z3c.autoinclude.plugin]
