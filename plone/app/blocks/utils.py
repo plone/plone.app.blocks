@@ -30,14 +30,14 @@ def extractCharset(response, default='utf-8'):
 def resolve(url):
     """Resolve the given URL to an lxml tree.
     """
-
+    
     response = subrequest(url)
-    resolved = response.body or response.stdout.getvalue()
+    resolved = response.getBody()
     
     if isinstance(resolved, str):
         charset = extractCharset(response)
         resolved = resolved.decode(charset)
-
+    
     return html.fromstring(resolved).getroottree()
 
 
