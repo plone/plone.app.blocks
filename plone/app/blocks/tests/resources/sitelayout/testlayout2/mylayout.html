@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+    <head>
+        <title>Layout 2 title</title>
+        <link rel="stylesheet" href="/layout/style.css" />
+        <script type="text/javascript">alert('layout');</script>
+
+        <style type="text/css">
+        div {
+            margin: 5px;
+            border: dotted black 1px;
+            padding: 5px;
+        }
+        </style>
+
+        <link rel="panel" rev="panel1" target="panel1" />
+        <link rel="panel" rev="panel2" target="panel2" />
+        <link rel="panel" rev="panel3" target="panel3" />
+
+        <link rel="tile" target="layout-tile1" href="./@@test.tile1/tile1" />
+        <link rel="tile" target="layout-tile2" href="./@@test.tile1/tile2" />
+        <link rel="tile" href="./@@test.tile_nobody/tile_css" />
+    </head>
+    <body>
+        <h1>Welcome to layout 2!</h1>
+        <div id="panel1">Layout panel 1</div>
+        <div id="panel2">
+            Layout panel 2
+            <div id="layout-tile1">Layout tile 1 placeholder</div>
+        </div>
+        <div id="panel3">
+            Layout panel 3
+            <div id="layout-tile2">Layout tile 2 placeholder</div>
+        </div>
+    </body>
+</html>

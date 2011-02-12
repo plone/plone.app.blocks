@@ -1,13 +1,12 @@
-If a relative URL for the layout is specified, the context the site
-layout browser view will use to be rendered (e.g. to resolve TAL
-expressions) will be determined in relation to the object where the
-page layout view is called.
+If a relative URL for the layout is specified, the context the site layout
+browser view will use to be rendered (e.g. to resolve TAL expressions) will be
+determined in relation to the object where the page layout view is called.
 
-To illustrate this, we create two browser views with the context title
-(which will be the Plone site itself) as part of the title and
-contents of the site and page layouts, respectively::
+To illustrate this, we create two browser views with the context title (which
+will be the Plone site itself) as part of the title and contents of the site
+and page layouts, respectively::
 
-    >>> from Products.Five.browser import BrowserView
+    >>> from zope.publisher.browser import BrowserView
     
     >>> class SiteLayout(BrowserView):
     ...     __name__ = 'site-layout'
@@ -40,11 +39,10 @@ contents of the site and page layouts, respectively::
     ... </html>
     ... """ % self.context.Title()
 
-Observe that the <link rel="layout" href="./@@site-layout" /> tag
-references a relative URL.
+Observe that the ``<link rel="layout" href="./@@site-layout" />`` tag references a
+relative URL.
 
-Next, we initialize and register the browser views as ZCML handlers
-would::
+Next, we initialize and register the browser views as ZCML handlers would::
         
     >>> from zope.interface import Interface
     >>> from Products.Five.security import protectClass
@@ -59,9 +57,8 @@ would::
     >>> provideAdapter(SiteLayout, (Interface, Interface,), Interface, u'site-layout')
     >>> provideAdapter(PageLayout, (Interface, Interface,), Interface, u'page-layout')
 
-If we now render the page calling it with the portal object itself as
-context, the default title of the portal object, ``Plone site'' will
-be used::
+If we now render the page calling it with the portal object itself as context,
+the default title of the portal object, ``Plone site`` will be used::
 
     >>> from plone.testing.z2 import Browser
     >>> app = layer['app']

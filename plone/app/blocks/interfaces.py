@@ -3,8 +3,17 @@ from zope.i18nmessageid import MessageFactory
 from zope.interface import Interface
 from zope import schema
 
-_ = MessageFactory('plone')
+from plone.resource.manifest import ManifestFormat
 
+SITE_LAYOUT_RESOURCE_NAME = "sitelayout"
+SITE_LAYOUT_FILE_NAME = "site.html"
+
+SITE_LAYOUT_MANIFEST_FORMAT = ManifestFormat(SITE_LAYOUT_RESOURCE_NAME,
+        keys=('title', 'description', 'file'),
+        defaults={'file': SITE_LAYOUT_FILE_NAME},
+    )
+
+_ = MessageFactory('plone')
 
 class ITilePageRendered(Interface):
     """This marker interface can be applied to views that should use separate
@@ -29,3 +38,11 @@ class IBlocksSettings(Interface):
                           u"invoked directly."),
             default=False,
         )
+
+class IOmittedField(Interface):
+    """Marker interface for schema fields not to be shown to users
+    """
+
+class ILayoutField(Interface):
+    """Marker interface for the layout field
+    """

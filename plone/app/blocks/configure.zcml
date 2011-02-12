@@ -3,14 +3,18 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     xmlns:zcml="http://namespaces.zope.org/zcml"
+    xmlns:plone="http://namespaces.plone.org/plone"
     i18n_domain="plone">
 
-    <include package="plone.transformchain" />
+    <include package="plone.behavior" file="meta.zcml" />
+    <include package="plone.resource" file="meta.zcml" />
+    
+    <include package="plone.resource" />
     <include package="plone.tiles" />
+    <include package="plone.subrequest" />
+    <include package="plone.transformchain" />
     
     <include package="plone.app.registry" />
-    
-    <include package="plone.subrequest" />
     
     <!-- TODO: Remove demo -->
     <include package=".demo" />
@@ -23,7 +27,48 @@
         for="Products.CMFPlone.interfaces.IPloneSiteRoot"
         provides="Products.GenericSetup.interfaces.EXTENSION"
         />
-
+    
+    <!-- Register the layout behavior -->
+    <plone:behavior
+        title="Layout support"
+        description="Adds layout support to your content type"
+        provides=".layoutbehavior.ILayoutAware"
+        />
+    
+    <!-- Register the resource traverser -->
+    <adapter
+        name="sitelayout"
+        for="* zope.publisher.interfaces.IRequest"
+        provides="zope.traversing.interfaces.ITraversable"
+        factory=".resource.SiteLayoutTraverser"
+        />
+    
+    <!-- Register vocabulary -->
+    <utility
+        component=".resource.AvailableSiteLayoutsVocabularyFactory"
+        name="plone.availableSiteLayouts"
+        />
+    
+    <!-- Cache invalidation when global site layout changes -->
+    <subscriber
+        handler=".resource.globalSiteLayoutModified"
+        />
+    
+    <!-- Register indirection views for looking up the layout -->
+    <browser:view
+        name="default-site-layout"
+        for="*"
+        permission="zope.Public"
+        class=".resource.DefaultSiteLayout"
+        />
+    
+    <browser:view
+        name="page-site-layout"
+        for="plone.app.blocks.layoutbehavior.ILayoutAware"
+        permission="zope.Public"
+        class=".resource.PageSiteLayout"
+        />
+    
     <!-- The transform pipeline -->
     
     <!-- 8000: Turn the response into an lxml tree for further manipulation -->

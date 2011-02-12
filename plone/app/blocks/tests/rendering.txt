@@ -1,14 +1,14 @@
 Blocks rendering in detail
 ==========================
 
-This test illustrates the blocks rendering process. At a high level, it
+This doctest illustrates the blocks rendering process. At a high level, it
 consists of the following steps:
 
 0. Obtain the content page, an HTML document.
-1. Look for a page layout link in the content page ``<head />``. This
+1. Look for a site layout link in the content page ``<head />``. This
    takes the form of a tag like ``<link rel="layout" href="..." />``.
-2. Resolve and obtain the page layout. This is another HTML document.
-3. Extract panels from the layout. A panel is an element (usually a
+2. Resolve and obtain the site layout. This is another HTML document.
+3. Extract panels from the site layout. A panel is an element (usually a
    ``<div />``) in the layout page with a particular id. That id is
    identified by a ``<link />`` tag in the head of the layout page, which
    looks like this: ``<link rel="panel" rev="panel1" target="panel1" />``.
@@ -66,17 +66,24 @@ content (i.e. the layout as applied to the content page) is changed.
 Rendering step-by-step
 ----------------------
 
-Let us now illustrate the rendering process. To keep things simple, we will
-do so with hardcoded, global browser views. However, it is important to
-realise that ``plone.app.blocks`` works by post-processing responses rendered
-by Zope. The content and layout pages could just as easily be created by views
-of content objects.
+Let us now illustrate the rendering process. 
 
-First, we will create a page representing the layout, with panels. This
+The most common approach for managing site layouts is to use a resource
+registered using a ``plone.resource`` directory of type ``sitelayout``, and
+then use the ``@@default-site-layout`` view to reference the content. We
+will describe this approach after first showing a simplified example using
+standard browser views.
+
+It is important to realise that ``plone.app.blocks`` works by post-processing
+responses rendered by Zope. The content and layout pages could just as easily
+be created by views of content objects, or even resources external to
+Zope/Plone.
+
+First, we will create a page representing the site layout and its panels. This
 includes some resources and other elements in the ``<head />``, ``<link />``
 tags which identify tile placeholders and panels, as well as content inside
-and outside panels. The tiles in this case are managed by ``plone.tiles``,
-and are both of the same type.
+and outside panels. The tiles in this case are managed by ``plone.tiles``, and
+are both of the same type.
 
     >>> layoutHTML = u"""\
     ... <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -157,7 +164,7 @@ of the test, and we have to apply security because we will shortly render
 those pages using the test publisher. In real life, these could be registered
 using the standard ``<browser:page />`` and ``<plone:tile />`` directives.
 
-    >>> from Products.Five.browser import BrowserView
+    >>> from zope.publisher.browser import BrowserView
 
     >>> class Layout(BrowserView):
     ...     __name__ = 'test-layout'
@@ -226,7 +233,7 @@ be a tile that only needs to insert some CSS.
     ...     description=u"Another tile used for testing",
     ...     add_permission="cmf.ManagePortal")
 
-Register these in the same way that the ZCML handlers would, more or less.
+We register these in the same way that the ZCML handlers would, more or less:
 
     >>> from Products.Five.security import protectClass
     >>> protectClass(Layout, 'zope2.View')
@@ -325,6 +332,9 @@ Notice how:
   * The tiles have been rendered, replacing the relevant placeholders
   * The ``<head />`` section from the rendered tiles has been merged into the
     ``<head />`` of the output page.
+
+Tile page rendering
+-------------------
 
 Let's now see how the page rendering would work if the content page indicated
 that it wanted to use tile rendering.

@@ -12,7 +12,7 @@ The stages are:
     the transformation is aborted.
 
  plone.app.blocks.mergepanels (order 8100)
-    Looks up the page layout and executes the panel merge algorithm. Sets a
+    Looks up the site layout and executes the panel merge algorithm. Sets a
     request variable ('plone.app.blocks.merged') to indicate that it has
     done its job.
     
@@ -50,6 +50,39 @@ This acts as an ``IPublishTraverse`` adapter that just gobbles up anything on
 the sub-path. The tilepage transform stage will append the object's ``mtime``
 and a ``.xsl`` suffix to the style sheet to aid caching and file type
 recognition.
+
+The package also registers the ``sitelayout`` ``plone.resource`` resource
+type, allowing site layouts to be created easily as static HTML files served
+from resource directories.
+
+The current default site layout can be identified by the ``plone.registry``
+key ``plone.defaultSiteLayout``, which is set to ``None`` by default. To
+create a layout link that always uses the current site default, use::
+
+    <link rel="layout" href="./@@default-site-layout" />
+
+The ``@@default-site-layout`` view will render the current default site
+layout.
+
+It is possible for the default site layout to be overridden per section,
+by having parent objects provide or be adaptable to
+``plone.app.blocks.layoutbehavior.ILayoutAware``. As the module name implies,
+this interface can be used as a ``plone.behavior`` behavior, but it can also
+be implemented directly or used as a standard adapter.
+
+The ``ILayoutAware`` interface defines three properties:
+
+* ``content``, which contains the body of the page to be rendered
+* ``pageSiteLayout``, which contains the path to the site layout to be used
+  for the given page. It can be ``None`` if the default is to be used.
+* ``sectionSiteLayout``, which contains the path to the site layout to be
+  used for pages *underneath* the given page (but not for the page itself).
+  Again, it can be ``None`` if the default is to be used.
+
+To make use of the page site layout, make use of the following site layout
+link::
+
+    <link rel="layout" href="./@@default-site-layout" />
 
 See ``rendering.txt`` for detailed examples of how the processing is applied,
 and ``esi.txt`` for details about how Edge Side Includes can be supported.

@@ -1,11 +1,26 @@
 import logging
-from urlparse import urljoin
 import uuid
 
-from plone.subrequest import subrequest
+from urlparse import urljoin
 
 from lxml import etree
 from lxml import html
+
+from zope.component import queryUtility
+from zope.site.hooks import getSite
+
+from plone.subrequest import subrequest
+
+from plone.registry.interfaces import IRegistry
+
+from plone.app.blocks.layoutbehavior import ILayoutAware
+
+from Acquisition import aq_inner
+from Acquisition import aq_parent
+
+from zExceptions import NotFound
+
+from Products.CMFCore.utils import getToolByName
 
 headXPath = etree.XPath("/html/head")
 layoutXPath = etree.XPath("/html/head/link[@rel='layout']")
@@ -31,14 +46,33 @@ def resolve(url):
     """Resolve the given URL to an lxml tree.
     """
     
+    resolved = resolveResource(url)
+    return html.fromstring(resolved).getroottree()
+
+def resolveResource(url):
+    """Resolve the given URL to a unicode string. If the URL is an absolute
+    path, it will be made relative to the Plone site root.
+    """
+    
+    if url.startswith('/'):
+        site = getSite()
+        portal_url = getToolByName(site, 'portal_url')
+        url = portal_url.getPortalObject().absolute_url_path() + url
+    
     response = subrequest(url)
+    if response.status == 404:
+        raise NotFound(url)
+    
     resolved = response.getBody()
     
     if isinstance(resolved, str):
         charset = extractCharset(response)
         resolved = resolved.decode(charset)
     
-    return html.fromstring(resolved).getroottree()
+    if response.status != 200:
+        raise RuntimeError(resolved)
+    
+    return resolved
 
 
 def xpath1(xpath, node, strict=True):
@@ -130,6 +164,42 @@ def findTiles(request, tree, remove=False):
 
 
 def tileSort(tile0, tile1):
-    """ Sort entries from findTiles on ID """
+    """Sort entries from findTiles on ID
+    """
 
     return cmp(tile0[0], tile1[0])
+
+def getDefaultSiteLayout(context):
+    """Get the path to the site layout to use by default for the given content
+    object
+    """
+    
+    # Note: the sectionSiteLayout on context is for pages *under* context, not
+    # necessarily context itself
+
+    parent = aq_parent(aq_inner(context))
+    while parent is not None:
+        layoutAware = ILayoutAware(parent, None)
+        if layoutAware is not None:
+            if getattr(layoutAware, 'sectionSiteLayout', None):
+                return layoutAware.sectionSiteLayout
+        parent = aq_parent(aq_inner(parent))
+    
+    registry = queryUtility(IRegistry)
+    if registry is None:
+        return None
+    
+    return registry.get('plone.defaultSiteLayout')
+
+def getLayoutAwareSiteLayout(context):
+    """Get the path to the site layout for a page. This is generally only
+    appropriate for the view of this page. For a generic template or view, use
+    getDefaultSiteLayout(context) instead.
+    """
+    
+    layoutAware = ILayoutAware(context, None)
+    if layoutAware is not None:
+        if getattr(layoutAware, 'pageSiteLayout', None):
+            return layoutAware.pageSiteLayout
+    
+    return getDefaultSiteLayout(context)

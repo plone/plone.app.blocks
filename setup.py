@@ -8,9 +8,8 @@ setup(name='plone.app.blocks',
       description="Implements the in-Plone blocks rendering process",
       long_description=open("README.txt").read() + "\n" +
           open(os.path.join("docs", "HISTORY.txt")).read() + "\n" +
-          open(os.path.join("plone", "app", "blocks", "rendering.txt")).read()
-          + "\n" +
-          open(os.path.join("plone", "app", "blocks", "esi.txt")).read(),
+          open(os.path.join("plone", "app", "blocks", "tests", "rendering.txt")).read() + "\n" +
+          open(os.path.join("plone", "app", "blocks", "tests", "esi.txt")).read(),
       classifiers=[
         "Framework :: Plone",
         "Programming Language :: Python",
@@ -31,9 +30,10 @@ setup(name='plone.app.blocks',
           'lxml',
           'repoze.xmliter',
           'plone.tiles>=1.0a2',
+          'plone.resource',
+          'plone.behavior',
           'plone.subrequest',
           'plone.app.registry',
-          'collective.testcaselayer',
       ],
       extras_require={
           'test': [

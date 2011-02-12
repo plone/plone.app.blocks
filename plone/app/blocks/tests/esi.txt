@@ -111,7 +111,7 @@ We will also register a simple layout and a simple page using these tiles.
     ... </html>
     ... """
     
-    >>> from Products.Five.browser import BrowserView
+    >>> from zope.publisher.browser import BrowserView
     >>> class Layout(BrowserView):
     ...     __name__ = 'test-layout'
     ...     def __call__(self):
