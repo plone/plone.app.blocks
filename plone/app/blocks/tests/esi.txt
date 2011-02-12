@@ -110,7 +110,11 @@ We will also register a simple layout and a simple page using these tiles.
     ...     </body>
     ... </html>
     ... """
-    
+
+To keep things simple, we'll skip the resource directory and layout
+indirection view, instead just referencing a view containing the layout
+directly.
+
     >>> from zope.publisher.browser import BrowserView
     >>> class Layout(BrowserView):
     ...     __name__ = 'test-layout'

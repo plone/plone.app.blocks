@@ -28,7 +28,9 @@ from plone.app.blocks.utils import resolveResource
 from plone.app.blocks.utils import getDefaultSiteLayout
 from plone.app.blocks.utils import getLayoutAwareSiteLayout
 
+from Acquisition import aq_parent
 from Products.CMFCore.utils import getToolByName
+from OFS.interfaces import ITraversable
 from zExceptions import NotFound
 
 class SiteLayoutTraverser(ResourceTraverser):
@@ -115,8 +117,17 @@ class DefaultSiteLayout(BrowserView):
         layout = getDefaultSiteLayout(self.context)
         if layout is None:
             raise NotFound("No default site layout set")
-            
-        path = urlparse.urljoin(self.context.absolute_url_path(), layout)
+        
+        pathContext = self.context
+        while not ITraversable.providedBy(pathContext):
+            pathContext = aq_parent(pathContext)
+            if pathContext is None:
+                break
+        
+        path = layout
+        if pathContext is not None:
+            path = urlparse.urljoin(pathContext.absolute_url_path(), layout)
+        
         return resolveResource(path)
 
 class PageSiteLayout(BrowserView):
@@ -139,5 +150,14 @@ class PageSiteLayout(BrowserView):
         if layout is None:
             raise NotFound("No default site layout set")
             
-        path = urlparse.urljoin(self.context.absolute_url_path(), layout)
+        pathContext = self.context
+        while not ITraversable.providedBy(pathContext):
+            pathContext = aq_parent(pathContext)
+            if pathContext is None:
+                break
+        
+        path = layout
+        if pathContext is not None:
+            path = urlparse.urljoin(pathContext.absolute_url_path(), layout)
+        
         return resolveResource(path)

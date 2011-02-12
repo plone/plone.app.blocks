@@ -53,7 +53,32 @@ recognition.
 
 The package also registers the ``sitelayout`` ``plone.resource`` resource
 type, allowing site layouts to be created easily as static HTML files served
-from resource directories.
+from resource directories. The URL to a site layout is typically something
+like::
+
+    /++sitelayout++my.layout/site.html
+
+See ``plone.resource`` for more information about how to register resource
+directories. For site layouts, the ``type`` of the resource directory is
+``sitelayout``.
+
+It is possible to provide a manifest file that gives a title, description and
+alternative default file for a site layout HTML file in a resource directory.
+To create such a manifest, put a ``manifest.cfg`` file in the layout directory
+with the following structure::
+
+    [sitelayout]
+    title = My layout title
+    description = Some description
+    file = some-html-file.html
+
+All keys are optional. The file defaults to ``site.html``.
+
+A vocabulary factory called ``plone.availableSiteLayouts`` is registered to
+allow lookup of all registered site layouts.  The terms in this vocabulary
+use the URL as a value, the resource directory name as a token, and the 
+title from the manifest (falling back on a sanitised version of the resource
+directory name) as the title.
 
 The current default site layout can be identified by the ``plone.registry``
 key ``plone.defaultSiteLayout``, which is set to ``None`` by default. To
