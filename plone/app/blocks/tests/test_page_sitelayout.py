@@ -252,12 +252,12 @@ class TestPageSiteLayout(unittest.TestCase):
         self.assertFalse(u"Layout title" in rendered)
         self.assertTrue(u"Layout 2 title" in rendered)
         
-        # Change the section value
-        currentSectionSiteLayout = '/++sitelayout++testlayout1/site.html'
-        
         # Trigger invalidation by modifying the context
         portal['f1']['d1'].title = u"New title"
         transaction.commit()
+        
+        # Change the section value
+        currentSectionSiteLayout = '/++sitelayout++testlayout1/site.html'
         
         view = getMultiAdapter((portal['f1']['d1'], request,), name=u'page-site-layout')
         rendered = view()
@@ -316,11 +316,11 @@ class TestPageSiteLayout(unittest.TestCase):
         self.assertFalse(u"Layout title" in rendered)
         self.assertTrue(u"Layout 2 title" in rendered)
         
-        # Change the section value
-        currentSectionSiteLayout = '/++sitelayout++testlayout1/site.html'
-        
         # Trigger invalidation by incrementing the catalog counter
         portal['portal_catalog']._increment_counter()
+        
+        # Change the section value
+        currentSectionSiteLayout = '/++sitelayout++testlayout1/site.html'
         
         view = getMultiAdapter((portal['f1']['d1'], request,), name=u'page-site-layout')
         rendered = view()
@@ -379,11 +379,11 @@ class TestPageSiteLayout(unittest.TestCase):
         self.assertFalse(u"Layout title" in rendered)
         self.assertTrue(u"Layout 2 title" in rendered)
         
-        # Change the section value
-        currentSectionSiteLayout = '/++sitelayout++testlayout1/site.html'
-        
         # Trigger invalidation by modifying the global registry key
         registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = '/++sitelayout++testlayout2/mylayout.html'
+        
+        # Change the section value
+        currentSectionSiteLayout = '/++sitelayout++testlayout1/site.html'
         
         view = getMultiAdapter((portal['f1']['d1'], request,), name=u'page-site-layout')
         rendered = view()

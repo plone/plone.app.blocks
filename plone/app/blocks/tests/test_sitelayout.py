@@ -202,16 +202,17 @@ class TestSiteLayout(unittest.TestCase):
         
         self.assertTrue(u"ZODB test" in rendered)
         
+        # Trigger invalidation by modifying the context and committing
+        portal.title = u"New title"
+        transaction.commit()
+        
+        # Modify the site layout
         resources['sitelayout']['testlayout3']._delOb('site.html')
         resources['sitelayout']['testlayout3']._setOb('site.html',
                 File('site.html', 'site.html', StringIO(
                             '<html><head><title>Cache test</title></head></html>')
                         )
             )
-        
-        # Trigger invalidation by modifying the context and committing
-        portal.title = u"New title"
-        transaction.commit()
         
         view = getMultiAdapter((portal, request,), name=u'default-site-layout')
         rendered = view()

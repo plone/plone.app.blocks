@@ -114,7 +114,7 @@ class DefaultSiteLayout(BrowserView):
     
     @cache(cacheKey, store_on_context)
     def __call__(self):
-        layout = getDefaultSiteLayout(self.context)
+        layout = self._getLayout()
         if layout is None:
             raise NotFound("No default site layout set")
         
@@ -129,8 +129,11 @@ class DefaultSiteLayout(BrowserView):
             path = urlparse.urljoin(pathContext.absolute_url_path(), layout)
         
         return resolveResource(path)
-
-class PageSiteLayout(BrowserView):
+    
+    def _getLayout(self):
+        return getDefaultSiteLayout(self.context)
+    
+class PageSiteLayout(DefaultSiteLayout):
     """Look up and render the site layout to use for the context.
     
     Use this for a page that does have the ILayout behavior. It will take the
@@ -144,20 +147,5 @@ class PageSiteLayout(BrowserView):
     and page-specific settings into account.
     """
     
-    @cache(cacheKey, store_on_context)
-    def __call__(self):
-        layout = getLayoutAwareSiteLayout(self.context)
-        if layout is None:
-            raise NotFound("No default site layout set")
-            
-        pathContext = self.context
-        while not ITraversable.providedBy(pathContext):
-            pathContext = aq_parent(pathContext)
-            if pathContext is None:
-                break
-        
-        path = layout
-        if pathContext is not None:
-            path = urlparse.urljoin(pathContext.absolute_url_path(), layout)
-        
-        return resolveResource(path)
+    def _getLayout(self):
+        return getLayoutAwareSiteLayout(self.context)
