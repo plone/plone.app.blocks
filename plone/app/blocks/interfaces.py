@@ -13,6 +13,8 @@ SITE_LAYOUT_MANIFEST_FORMAT = ManifestFormat(SITE_LAYOUT_RESOURCE_NAME,
         defaults={'file': SITE_LAYOUT_FILE_NAME},
     )
 
+DEFAULT_SITE_LAYOUT_REGISTRY_KEY = 'plone.defaultSiteLayout'
+
 _ = MessageFactory('plone')
 
 class ITilePageRendered(Interface):

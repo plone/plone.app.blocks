@@ -16,9 +16,6 @@
     
     <include package="plone.app.registry" />
     
-    <!-- TODO: Remove demo -->
-    <include package=".demo" />
-    
     <genericsetup:registerProfile
         name="default"
         title="Blocks rendering engine"
@@ -64,7 +61,7 @@
     
     <browser:view
         name="page-site-layout"
-        for="plone.app.blocks.layoutbehavior.ILayoutAware"
+        for="*"
         permission="zope.Public"
         class=".resource.PageSiteLayout"
         />

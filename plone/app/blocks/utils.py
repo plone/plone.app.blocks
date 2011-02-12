@@ -13,6 +13,7 @@ from plone.subrequest import subrequest
 
 from plone.registry.interfaces import IRegistry
 
+from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.layoutbehavior import ILayoutAware
 
 from Acquisition import aq_inner
@@ -189,7 +190,7 @@ def getDefaultSiteLayout(context):
     if registry is None:
         return None
     
-    return registry.get('plone.defaultSiteLayout')
+    return registry.get(DEFAULT_SITE_LAYOUT_REGISTRY_KEY)
 
 def getLayoutAwareSiteLayout(context):
     """Get the path to the site layout for a page. This is generally only
