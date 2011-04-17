@@ -36,6 +36,12 @@ class ILayoutAware(Interface):
             required=False,
         )
     
+try:
+    from plone.autoform.interfaces import IFormFieldProvider
+    alsoProvides(ILayoutAware, IFormFieldProvider)
+except ImportError:
+    pass
+    
 alsoProvides(ILayoutAware['content'], IOmittedField)
 alsoProvides(ILayoutAware['pageSiteLayout'], IOmittedField)
 alsoProvides(ILayoutAware['sectionSiteLayout'], IOmittedField)
