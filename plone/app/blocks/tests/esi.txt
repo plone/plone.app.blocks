@@ -99,14 +99,12 @@ We will also register a simple layout and a simple page using these tiles.
     ...     <head>
     ...         <title>Layout title</title>
     ...         <link rel="panel" rev="panel1" target="panel1" />
-    ...         <link rel="tile" target="layout-non-esi-tile" href="./@@test.tile2/tile1" />
-    ...         <link rel="tile" target="layout-esi-tile" href="./@@test.tile3/tile2" />
     ...     </head>
     ...     <body>
     ...         <h1>Welcome!</h1>
     ...         <div id="panel1">Content goes here</div>
-    ...         <div id="layout-non-esi-tile">Layout tile 1 placeholder</div>
-    ...         <div id="layout-esi-tile">Layout tile 2 placeholder</div>
+    ...         <div id="layout-non-esi-tile" class="tile-placeholder" data-tile-href="./@@test.tile2/tile1">Layout tile 1 placeholder</div>
+    ...         <div id="layout-esi-tile" class="tile-placeholder" data-tile-href="./@@test.tile3/tile2">Layout tile 2 placeholder</div>
     ...     </body>
     ... </html>
     ... """
@@ -131,13 +129,11 @@ directly.
     ...     <head>
     ...         <title>Page title</title>
     ...         <link rel="layout" href="./@@test-layout"/>
-    ...         <link rel="tile" target="page-non-esi-tile" href="./@@test.tile2/tile3?foo=bar" />
-    ...         <link rel="tile" target="page-esi-tile" href="./@@test.tile3/tile4?foo=bar" />
     ...     </head>
     ...     <body>
     ...         <div id="panel1">
-    ...             <div id="page-non-esi-tile">Page tile 3 placeholder</div>
-    ...             <div id="page-esi-tile">Page tile 4 placeholder</div>
+    ...             <div id="page-non-esi-tile" class="tile-placeholder" data-tile-href="./@@test.tile2/tile3?foo=bar">Page tile 3 placeholder</div>
+    ...             <div id="page-esi-tile" class="tile-placeholder" data-tile-href="./@@test.tile3/tile4?foo=bar">Page tile 4 placeholder</div>
     ...         </div>
     ...     </body>
     ... </html>
@@ -186,10 +182,10 @@ be rendered as normal.
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
         <title>Page title</title>
-        <meta name="tile-name" content="tile2" />
-        <meta name="tile-name" content="tile1" />
-        <meta name="tile-name" content="tile4" />
         <meta name="tile-name" content="tile3" />
+        <meta name="tile-name" content="tile4" />
+        <meta name="tile-name" content="tile1" />
+        <meta name="tile-name" content="tile2" />
       </head>
       <body>
             <h1>Welcome!</h1>
@@ -224,20 +220,15 @@ Tile-page rendering should work similarly:
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
-        <meta name="tile-name" content="tile2" />
-        <meta name="tile-name" content="tile1" />
-        <meta name="tile-name" content="tile4" />
         <meta name="tile-name" content="tile3" />
+        <meta name="tile-name" content="tile4" />
+        <meta name="tile-name" content="tile1" />
+        <meta name="tile-name" content="tile2" />
       </head>
       <body>
-        <div id="layout-esi-tile">
+        <div id="page-non-esi-tile">
             <p>
-                ESI tile with query string 
-            </p>
-        </div>
-        <div id="layout-non-esi-tile">
-            <p>
-                Non-ESI tile with query string 
+                Non-ESI tile with query string foo=bar
             </p>
         </div>
         <div id="page-esi-tile">
@@ -245,9 +236,14 @@ Tile-page rendering should work similarly:
                 ESI tile with query string foo=bar
             </p>
         </div>
-        <div id="page-non-esi-tile">
+        <div id="layout-non-esi-tile">
             <p>
-                Non-ESI tile with query string foo=bar
+                Non-ESI tile with query string 
+            </p>
+        </div>
+        <div id="layout-esi-tile">
+            <p>
+                ESI tile with query string 
             </p>
         </div>
       </body>
@@ -289,8 +285,8 @@ tiles should be rendered as ESI links. See `plone.tiles`_ for more details.
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
         <title>Page title</title>
-        <meta name="tile-name" content="tile1" />
         <meta name="tile-name" content="tile3" />
+        <meta name="tile-name" content="tile1" />        
       </head>
       <body>
             <h1>Welcome!</h1>
@@ -339,25 +335,25 @@ Tile-page rendering works similarly:
     <html xmlns:esi="http://www.edge-delivery.org/esi/1.0" xmlns="http://www.w3.org/1999/xhtml">
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
-        <meta name="tile-name" content="tile1" />
         <meta name="tile-name" content="tile3" />
+        <meta name="tile-name" content="tile1" />
       </head>
       <body>
-        <div id="layout-esi-tile">
-            <esi:include src="http://nohost/plone/@@test.tile3/tile2/@@esi-body?" />
+        <div id="page-non-esi-tile">
+            <p>
+                Non-ESI tile with query string foo=bar
+            </p>
+        </div>
+        <div id="page-esi-tile">
+            <esi:include src="http://nohost/plone/@@test.tile3/tile4/@@esi-body?foo=bar" />
         </div>
         <div id="layout-non-esi-tile">
             <p>
                 Non-ESI tile with query string 
             </p>
         </div>
-        <div id="page-esi-tile">
-            <esi:include src="http://nohost/plone/@@test.tile3/tile4/@@esi-body?foo=bar" />
-        </div>
-        <div id="page-non-esi-tile">
-            <p>
-                Non-ESI tile with query string foo=bar
-            </p>
+        <div id="layout-esi-tile">
+            <esi:include src="http://nohost/plone/@@test.tile3/tile2/@@esi-body?" />
         </div>
       </body>
     </html>

@@ -28,18 +28,19 @@ consists of the following steps:
    The rest of the content page is discarded.
 5. Resolve and obtain tiles. A tile is a placeholder element in the page
    which will be replaced by the contents of a document referenced by a URL.
-   Again, the tile is identified by a ``<link />`` element in the head of
-   the rendered page.
+   
+   A tile in the head of the page is identified by a ``<link />`` element
+   with ``rel="tile"`` and an ``href`` containing to the tile URL.
+   
+   A tile in the body of the page is identified by a placeholder element with
+   the the CSS class ``tile-placeholder`` and an attribute ``data-tile-href``
+   containing the tile URL.
    
    Note that at this point, panel merging has taken place, so if a panel in
    the content page contains tiles, the associated ``<link >`` tags will be
    carried over into the merged page. Also note that it is possible to have
    tiles outside of panels - the two concepts are not directly related.
-   
-   The format of a tile link is: ``<link rel="tile" target="..."
-   href="..." />``. The ``target`` attribute indicates the id of the
-   placeholder element. The ``href`` indicates the URL of the tile.
-   
+
    The ``plone.tiles`` package provides a framework for writing tiles,
    although in reality a tile can be any HTML page.
 6. Place tiles into the page. The tile should resolve to a full HTML
@@ -96,9 +97,9 @@ content and layout pages could just as easily be created by views of content
 objects, or even resources external to Zope/Plone.
 
 First, we will create a resource representing the site layout and its panels.
-This includes some resources and other elements in the ``<head />``, ``<link
-/>`` tags which identify tile placeholders and panels, as well as content
-inside and outside panels. The tiles in this case are managed by
+This includes some resources and other elements in the ``<head />``,
+``<link />`` tags which identify tile placeholders and panels, as well as
+content inside and outside panels. The tiles in this case are managed by
 ``plone.tiles``, and are both of the same type.
 
     >>> layoutHTML = """\
@@ -121,8 +122,6 @@ inside and outside panels. The tiles in this case are managed by
     ...         <link rel="panel" rev="panel2" target="panel2" />
     ...         <link rel="panel" rev="panel3" target="panel3" />
     ... 
-    ...         <link rel="tile" target="layout-tile1" href="./@@test.tile1/tile1" />
-    ...         <link rel="tile" target="layout-tile2" href="./@@test.tile1/tile2" />
     ...         <link rel="tile" href="./@@test.tile_nobody/tile_css" />
     ...     </head>
     ...     <body>
@@ -130,11 +129,11 @@ inside and outside panels. The tiles in this case are managed by
     ...         <div id="panel1">Layout panel 1</div>
     ...         <div id="panel2">
     ...             Layout panel 2
-    ...             <div id="layout-tile1">Layout tile 1 placeholder</div>
+    ...             <div id="layout-tile1" class="tile-placeholder" data-tile-href="./@@test.tile1/tile1">Layout tile 1 placeholder</div>
     ...         </div>
     ...         <div id="panel3">
     ...             Layout panel 3
-    ...             <div id="layout-tile2">Layout tile 2 placeholder</div>
+    ...             <div id="layout-tile2" class="tile-placeholder" data-tile-href="./@@test.tile1/tile2">Layout tile 2 placeholder</div>
     ...         </div>
     ...     </body>
     ... </html>
@@ -180,8 +179,6 @@ that.
         <link rel="panel" rev="panel1" target="panel1" />
         <link rel="panel" rev="panel2" target="panel2" />
         <link rel="panel" rev="panel3" target="panel3" />
-        <link rel="tile" target="layout-tile1" href="./@@test.tile1/tile1" />
-        <link rel="tile" target="layout-tile2" href="./@@test.tile1/tile2" />
         <link rel="tile" href="./@@test.tile_nobody/tile_css" />
       </head>
       <body>
@@ -189,11 +186,11 @@ that.
             <div id="panel1">Layout panel 1</div>
             <div id="panel2">
                 Layout panel 2
-                <div id="layout-tile1">Layout tile 1 placeholder</div>
+                <div id="layout-tile1" class="tile-placeholder" data-tile-href="./@@test.tile1/tile1">Layout tile 1 placeholder</div>
             </div>
             <div id="panel3">
                 Layout panel 3
-                <div id="layout-tile2">Layout tile 2 placeholder</div>
+                <div id="layout-tile2" class="tile-placeholder" data-tile-href="./@@test.tile1/tile2">Layout tile 2 placeholder</div>
             </div>
         </body>
     </html>
@@ -225,24 +222,20 @@ the ``@@default-site-layout`` indirection view:
     ...         <script type="text/javascript">alert('page');</script>
     ...         
     ...         <link rel="layout" href="./@@default-site-layout"/>
-    ...         
-    ...         <link rel="tile" target="page-tile2" href="./@@test.tile1/tile2?magicNumber:int=2" />
-    ...         <link rel="tile" target="page-tile3" href="./@@test.tile1/tile3" />
-    ...         <link rel="tile" target="page-tile4" href="./@@test.tile1/tile4" />
     ...     </head>
     ...     <body>
     ...         <h1>Welcome!</h1>
     ...         <div id="panel1">
     ...             Page panel 1
-    ...             <div id="page-tile2">Page tile 2 placeholder</div>
+    ...             <div id="page-tile2" class="tile-placeholder" data-tile-href="./@@test.tile1/tile2?magicNumber:int=2">Page tile 2 placeholder</div>
     ...         </div>
     ...         <div id="panel2">
     ...             Page panel 2
-    ...             <div id="page-tile3">Page tile 3 placeholder</div>
+    ...             <div id="page-tile3" class="tile-placeholder" data-tile-href="./@@test.tile1/tile3">Page tile 3 placeholder</div>
     ...         </div>
     ...         <div id="panel4">
     ...             Page panel 4 (ignored)
-    ...             <div id="page-tile4">Page tile 4 placeholder</div>
+    ...             <div id="page-tile4" class="tile-placeholder" data-tile-href="./@@test.tile1/tile4">Page tile 4 placeholder</div>
     ...         </div>
     ...     </body>
     ... </html>
@@ -365,8 +358,8 @@ working, it should perform its magic. We make sure that Zope is in
         <script type="text/javascript">alert('page');</script>
         <link rel="stylesheet" type="text/css" href="tiled.css" />
         <meta name="tile-name" content="tile2" />
-        <meta name="tile-name" content="tile2" />
         <meta name="tile-name" content="tile3" />
+        <meta name="tile-name" content="tile2" />
       </head>
       <body>
             <h1>Welcome!</h1>
@@ -442,18 +435,10 @@ We then try to access the same page again.
         <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
         <link rel="stylesheet" type="text/css" href="tiled.css" />
         <meta name="tile-name" content="tile2" />
-        <meta name="tile-name" content="tile2" />
         <meta name="tile-name" content="tile3" />
+        <meta name="tile-name" content="tile2" />
       </head>
       <body>
-        <div id="layout-tile2">
-            <p>
-                This is a demo tile with id tile2
-            </p>
-            <p>
-                Magic number: -1; Form: []; Query string: 
-            </p>
-        </div>
         <div id="page-tile2">
             <p>
                 This is a demo tile with id tile2
@@ -465,6 +450,14 @@ We then try to access the same page again.
         <div id="page-tile3">
             <p>
                 This is a demo tile with id tile3
+            </p>
+            <p>
+                Magic number: -1; Form: []; Query string: 
+            </p>
+        </div>
+        <div id="layout-tile2">
+            <p>
+                This is a demo tile with id tile2
             </p>
             <p>
                 Magic number: -1; Form: []; Query string: 

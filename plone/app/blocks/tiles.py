@@ -22,23 +22,18 @@ def renderTiles(request, tree):
                 request.environ[ESI_HEADER_KEY] = 'true'
 
     # Find tiles in the merged document.
-    tiles = utils.findTiles(request, tree, remove=True)
+    tiles = utils.findTiles(request, tree, removeHeadLinks=True)
 
     root = tree.getroot()
     headNode = root.find('head')
 
     # Resolve each tile and place it into the tilepage body
-    for (tileId, (tileHref, hasTarget)) in sorted(tiles.items(),
-                                                  cmp=utils.tileSort):
+    for tileId, tileHref, tileNode in tiles:
         
         tileTree = utils.resolve(tileHref)
 
         if tileTree is not None:
             tileRoot = tileTree.getroot()
-
-            tileTarget = utils.xpath1("//*[@id='%s']" % tileId, root)
-            if hasTarget and tileTarget is None:
-                continue
 
             # merge tile head into the page's head
             tileHead = tileRoot.find('head')
@@ -46,20 +41,31 @@ def renderTiles(request, tree):
                 for tileHeadChild in tileHead:
                     headNode.append(tileHeadChild)
 
-            # No target? Then we're done.
-            if not hasTarget:
-                continue
+            if tileNode is not None:
 
-            # clear children, but keep attributes
-            oldAttrib = dict(tileTarget.attrib)
-            tileTarget.clear()
-            tileTarget.attrib.update(oldAttrib)
+                # clear children of the tile placeholder, but keep attributes
+                oldAttrib = {}
+                for attribName, attribValue in tileNode.attrib.items():
+                    # Remove tile metadata
+                    if attribName == 'data-tile-href':
+                        continue
+                    if attribName == 'class' and 'tile-placeholder' in attribValue:
+                        attribValue = " ".join([v for v in attribValue.split(" ") if v != "tile-placeholder"])
+                        if attribValue != "":
+                            oldAttrib[attribName] = attribValue
+                    else:
+                        oldAttrib[attribName] = attribValue
 
-            # insert tile target with tile body
-            tileBody = tileRoot.find('body')
-            if tileBody is not None:
-                tileTarget.text = tileBody.text
-                for tileBodyChild in tileBody:
-                    tileTarget.append(tileBodyChild)
+                tileNode.clear()
+                tileNode.attrib.update(oldAttrib)
+
+                # Remove tile-specific attributes
+
+                # insert tile target with tile body
+                tileBody = tileRoot.find('body')
+                if tileBody is not None:
+                    tileNode.text = tileBody.text
+                    for tileBodyChild in tileBody:
+                        tileNode.append(tileBodyChild)
 
     return tree
