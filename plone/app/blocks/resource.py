@@ -1,4 +1,5 @@
 import urlparse
+import Globals
 
 from zope.interface import implements
 
@@ -17,7 +18,7 @@ from plone.resource.manifest import getAllResources
 
 from plone.registry.interfaces import IRecordModifiedEvent
 
-from plone.memoize.volatile import cache, store_on_context
+from plone.memoize.volatile import cache, DontCache, store_on_context
 
 from plone.app.blocks.interfaces import SITE_LAYOUT_RESOURCE_NAME
 from plone.app.blocks.interfaces import SITE_LAYOUT_FILE_NAME
@@ -78,6 +79,9 @@ def cacheKey(method, self):
     """Invalidate if the fti is modified, the global registry is modified,
     or the content is modified
     """
+    
+    if Globals.DevelopmentMode:
+        raise DontCache()
     
     catalog = getToolByName(self.context, 'portal_catalog')
     
