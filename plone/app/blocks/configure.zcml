@@ -16,6 +16,11 @@
     
     <include package="plone.app.registry" />
     
+    <permission
+        id="plone.ManageSiteLayouts"
+        title="Plone: Manage Site Layouts"
+        />
+    
     <genericsetup:registerProfile
         name="default"
         title="Blocks rendering engine"

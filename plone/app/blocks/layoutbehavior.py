@@ -23,19 +23,19 @@ class ILayoutAware(Interface):
         )
     
     pageSiteLayout = schema.Choice(
-            title=_(u"Section layout"),
-            description=_(u"Current site layout"),
+            title=_(u"Page site layout"),
+            description=_(u"Site layout to apply to the current page"),
             vocabulary="plone.availableSiteLayouts",
             required=False,
         )
     
     sectionSiteLayout = schema.Choice(
-            title=_(u"Section layout"),
-            description=_(u"Default site layout for pages in this section"),
+            title=_(u"Section site layout"),
+            description=_(u"Site layout to apply to pages under this section"),
             vocabulary="plone.availableSiteLayouts",
             required=False,
         )
-    
+
 try:
     from plone.autoform.interfaces import IFormFieldProvider
     alsoProvides(ILayoutAware, IFormFieldProvider)
