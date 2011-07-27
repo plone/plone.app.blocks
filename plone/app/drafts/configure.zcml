@@ -11,7 +11,7 @@
     <include package=".browser" />
     <adapter factory=".proxy.AliasAnnotations" />
     <adapter factory=".current.DefaultCurrentDraftManagement" />
-    
+    <include package="Products.CMFCore" file="permissions.zcml" />
     <five:registerClass
         class=".storage.Storage"
         meta_type="Plone Drafts Storage"
