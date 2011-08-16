@@ -54,12 +54,11 @@ def resolveResource(url):
     """Resolve the given URL to a unicode string. If the URL is an absolute
     path, it will be made relative to the Plone site root.
     """
-    
     if url.startswith('/'):
         site = getSite()
         portal_url = getToolByName(site, 'portal_url')
-        url = portal_url.getPortalObject().absolute_url_path() + url
-    
+	url = '/'.join(site.getPhysicalPath()) + url
+
     response = subrequest(url)
     if response.status == 404:
         raise NotFound(url)
