@@ -103,8 +103,8 @@ We will also register a simple layout and a simple page using these tiles.
     ...     <body>
     ...         <h1>Welcome!</h1>
     ...         <div id="panel1">Content goes here</div>
-    ...         <div id="layout-non-esi-tile" class="tile-placeholder" data-tile-href="./@@test.tile2/tile1">Layout tile 1 placeholder</div>
-    ...         <div id="layout-esi-tile" class="tile-placeholder" data-tile-href="./@@test.tile3/tile2">Layout tile 2 placeholder</div>
+    ...         <div id="layout-non-esi-tile" class="tile-placeholder" data-tile="./@@test.tile2/tile1">Layout tile 1 placeholder</div>
+    ...         <div id="layout-esi-tile" class="tile-placeholder" data-tile="./@@test.tile3/tile2">Layout tile 2 placeholder</div>
     ...     </body>
     ... </html>
     ... """
@@ -132,8 +132,8 @@ directly.
     ...     </head>
     ...     <body>
     ...         <div id="panel1">
-    ...             <div id="page-non-esi-tile" class="tile-placeholder" data-tile-href="./@@test.tile2/tile3?foo=bar">Page tile 3 placeholder</div>
-    ...             <div id="page-esi-tile" class="tile-placeholder" data-tile-href="./@@test.tile3/tile4?foo=bar">Page tile 4 placeholder</div>
+    ...             <div id="page-non-esi-tile" class="tile-placeholder" data-tile="./@@test.tile2/tile3?foo=bar">Page tile 3 placeholder</div>
+    ...             <div id="page-esi-tile" class="tile-placeholder" data-tile="./@@test.tile3/tile4?foo=bar">Page tile 4 placeholder</div>
     ...         </div>
     ...     </body>
     ... </html>

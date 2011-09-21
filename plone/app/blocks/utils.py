@@ -159,7 +159,7 @@ def findTiles(request, tree, removeHeadLinks=False, ignoreHeadTiles=False):
     # Find tiles in the body
     for tileNode in tree.getroot().cssselect(".tile-placeholder"):
         tileId = tileNode.get('id', None)
-        tileHref = tileNode.get('data-tile-href', None)
+        tileHref = tileNode.get('data-tile', None)
 
         if tileHref is not None:
             

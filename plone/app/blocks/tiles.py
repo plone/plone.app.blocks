@@ -47,7 +47,7 @@ def renderTiles(request, tree):
                 oldAttrib = {}
                 for attribName, attribValue in tileNode.attrib.items():
                     # Remove tile metadata
-                    if attribName == 'data-tile-href':
+                    if attribName == 'data-tile':
                         continue
                     if attribName == 'class' and 'tile-placeholder' in attribValue:
                         attribValue = " ".join([v for v in attribValue.split(" ") if v != "tile-placeholder"])
