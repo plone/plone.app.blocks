@@ -24,7 +24,8 @@ from zExceptions import NotFound
 from Products.CMFCore.utils import getToolByName
 
 headXPath = etree.XPath("/html/head")
-layoutXPath = etree.XPath("/html/head/link[@rel='layout']")
+layoutAttrib = 'data-layout'
+layoutXPath = etree.XPath("/html/@" + layoutAttrib)
 headTileXPath = etree.XPath("/html/head/link[@rel='tile']")
 panelXPath = etree.XPath("/html/head/link[@rel='panel']")
 

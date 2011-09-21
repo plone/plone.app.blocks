@@ -17,7 +17,7 @@ The stages are:
     done its job.
     
  plone.app.blocks.tilepage (order 8500 - option 1)
-    Turns a page with a blocks rel="layout" link into a page full of tiles
+    Turns a page with a blocks data-layout attribute into a page full of tiles
     with an <?xml-stylesheet ?> PI pointing to dynamic XSLT stylesheet (see
     below). This version is only executed if the published view provides the
     ITilePageRendered interface.
@@ -82,9 +82,9 @@ directory name) as the title.
 
 The current default site layout can be identified by the ``plone.registry``
 key ``plone.defaultSiteLayout``, which is set to ``None`` by default. To
-create a layout link that always uses the current site default, use::
+always use the current site default, use::
 
-    <link rel="layout" href="./@@default-site-layout" />
+    <html data-layout="./@@default-site-layout">
 
 The ``@@default-site-layout`` view will render the current default site
 layout.
@@ -104,10 +104,9 @@ The ``ILayoutAware`` interface defines three properties:
   used for pages *underneath* the given page (but not for the page itself).
   Again, it can be ``None`` if the default is to be used.
 
-To make use of the page site layout, make use of the following site layout
-link::
+To make use of the page site layout, use the following:
 
-    <link rel="layout" href="./@@default-site-layout" />
+    <html data-layout="./@@default-site-layout">
 
 See ``rendering.txt`` for detailed examples of how the processing is applied,
 and ``esi.txt`` for details about how Edge Side Includes can be supported.

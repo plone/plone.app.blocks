@@ -17,11 +17,7 @@ def merge(request, pageTree, removePanelLinks=True, removeLayoutLink=True):
     """
 
     # Find layout node
-    layoutNode = utils.xpath1(utils.layoutXPath, pageTree)
-    if layoutNode is None:
-        return None
-
-    layoutHref = layoutNode.get('href')
+    layoutHref = utils.xpath1(utils.layoutXPath, pageTree)
     if layoutHref is None:
         return None
 
@@ -57,6 +53,6 @@ def merge(request, pageTree, removePanelLinks=True, removeLayoutLink=True):
     utils.mergeHead(pageTree, layoutTree, headerReplace, headerAppend)
 
     if removeLayoutLink:
-        layoutNode.getparent().remove(layoutNode)
+        del pageTree.getroot().attrib[utils.layoutAttrib]
 
     return layoutTree

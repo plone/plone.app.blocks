@@ -5,8 +5,8 @@ This doctest illustrates the blocks rendering process. At a high level, it
 consists of the following steps:
 
 0. Obtain the content page, an HTML document.
-1. Look for a site layout link in the content page ``<head />``. This
-   takes the form of a tag like ``<link rel="layout" href="..." />``.
+1. Look for a site layout link in the content page. This takes the form of an
+   attribute on the html tag like ``<html data-layout="..." />``.
    
    Usually, the site layout URL will refer to a resource in a resource
    directory of type ``sitelayout``, e.g. ``/++sitelayout++foo/site.html``,
@@ -215,13 +215,11 @@ the ``@@default-site-layout`` indirection view:
 
     >>> pageHTML = """\
     ... <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-    ... <html>
+    ... <html data-layout="./@@default-site-layout">
     ...     <head>
     ...         <title>Page title</title>
     ...         <link rel="stylesheet" href="/layout/page.css" />
     ...         <script type="text/javascript">alert('page');</script>
-    ...         
-    ...         <link rel="layout" href="./@@default-site-layout"/>
     ...     </head>
     ...     <body>
     ...         <h1>Welcome!</h1>

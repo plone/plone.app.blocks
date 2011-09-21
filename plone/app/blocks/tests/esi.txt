@@ -125,10 +125,9 @@ directly.
 
     >>> pageHTML = u"""\
     ... <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-    ... <html>
+    ... <html data-layout="./@@test-layout">
     ...     <head>
     ...         <title>Page title</title>
-    ...         <link rel="layout" href="./@@test-layout"/>
     ...     </head>
     ...     <body>
     ...         <div id="panel1">

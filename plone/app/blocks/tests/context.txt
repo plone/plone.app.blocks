@@ -29,17 +29,15 @@ and page layouts, respectively::
     ...	    def __call__(self):
     ...         return u"""
     ... <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-    ... <html>
-    ...   <head>
-    ...     <link rel="layout" href="./@@site-layout" />
-    ...   </head>
+    ... <html data-layout="./@@site-layout">
+    ...   <head></head>
     ...   <body>
     ...     <div id="content">%s</div>
     ...   </body>
     ... </html>
     ... """ % self.context.Title()
 
-Observe that the ``<link rel="layout" href="./@@site-layout" />`` tag references a
+Observe that the ``<html data-layout="./@@site-layout">`` tag references a
 relative URL.
 
 Next, we initialize and register the browser views as ZCML handlers would::
