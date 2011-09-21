@@ -27,7 +27,7 @@ headXPath = etree.XPath("/html/head")
 layoutAttrib = 'data-layout'
 layoutXPath = etree.XPath("/html/@" + layoutAttrib)
 headTileXPath = etree.XPath("/html/head/link[@rel='tile']")
-panelXPath = etree.XPath("/html/head/link[@rel='panel']")
+panelXPath = etree.XPath("//*[@data-panel]")
 
 logger = logging.getLogger('plone.app.blocks')
 

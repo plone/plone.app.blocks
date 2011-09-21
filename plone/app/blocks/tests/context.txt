@@ -16,10 +16,9 @@ and page layouts, respectively::
     ... <html>
     ...   <head>
     ...     <title>%s</title>
-    ...     <link rel="panel" rev="content" target="content" />
     ...   </head>
     ...   <body>
-    ...     <div id="content">Site layout content</div>
+    ...     <div data-panel="content">Site layout content</div>
     ...   </body>
     ... </html>
     ... """ % self.context.Title()
@@ -32,7 +31,7 @@ and page layouts, respectively::
     ... <html data-layout="./@@site-layout">
     ...   <head></head>
     ...   <body>
-    ...     <div id="content">%s</div>
+    ...     <div data-panel="content">%s</div>
     ...   </body>
     ... </html>
     ... """ % self.context.Title()
@@ -68,4 +67,4 @@ the default title of the portal object, ``Plone site`` will be used::
     >>> print browser.contents
     <!DOCTYPE html...
         <title>Plone site</title>...
-        <div id="content">Plone site</div>...
+        <div>Plone site</div>...

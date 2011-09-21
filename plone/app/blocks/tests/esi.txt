@@ -98,11 +98,10 @@ We will also register a simple layout and a simple page using these tiles.
     ... <html>
     ...     <head>
     ...         <title>Layout title</title>
-    ...         <link rel="panel" rev="panel1" target="panel1" />
     ...     </head>
     ...     <body>
     ...         <h1>Welcome!</h1>
-    ...         <div id="panel1">Content goes here</div>
+    ...         <div data-panel="panel1">Content goes here</div>
     ...         <div id="layout-non-esi-tile" class="tile-placeholder" data-tile="./@@test.tile2/tile1">Layout tile 1 placeholder</div>
     ...         <div id="layout-esi-tile" class="tile-placeholder" data-tile="./@@test.tile3/tile2">Layout tile 2 placeholder</div>
     ...     </body>
@@ -130,7 +129,7 @@ directly.
     ...         <title>Page title</title>
     ...     </head>
     ...     <body>
-    ...         <div id="panel1">
+    ...         <div data-panel="panel1">
     ...             <div id="page-non-esi-tile" class="tile-placeholder" data-tile="./@@test.tile2/tile3?foo=bar">Page tile 3 placeholder</div>
     ...             <div id="page-esi-tile" class="tile-placeholder" data-tile="./@@test.tile3/tile4?foo=bar">Page tile 4 placeholder</div>
     ...         </div>
@@ -188,7 +187,7 @@ be rendered as normal.
       </head>
       <body>
             <h1>Welcome!</h1>
-            <div id="panel1">
+            <div>
                 <div id="page-non-esi-tile">
             <p>
                 Non-ESI tile with query string foo=bar
@@ -255,7 +254,7 @@ Tile-page rendering should work similarly:
     <xsl:template match="/">
     <html><head><title>Page title</title></head><body>
             <h1>Welcome!</h1>
-            <div id="panel1">
+            <div>
                 <xsl:copy-of select="/html/body/div[@id='page-non-esi-tile']"/><xsl:copy-of select="/html/body/div[@id='page-esi-tile']"/></div>
         <xsl:copy-of select="/html/body/div[@id='layout-non-esi-tile']"/><xsl:copy-of select="/html/body/div[@id='layout-esi-tile']"/></body></html></xsl:template>
     </xsl:stylesheet>
@@ -289,7 +288,7 @@ tiles should be rendered as ESI links. See `plone.tiles`_ for more details.
       </head>
       <body>
             <h1>Welcome!</h1>
-            <div id="panel1">
+            <div>
                 <div id="page-non-esi-tile">
             <p>
                 Non-ESI tile with query string foo=bar
@@ -364,7 +363,7 @@ Tile-page rendering works similarly:
     <xsl:template match="/">
     <html><head><title>Page title</title></head><body>
             <h1>Welcome!</h1>
-            <div id="panel1">
+            <div>
                 <xsl:copy-of select="/html/body/div[@id='page-non-esi-tile']"/><xsl:copy-of select="/html/body/div[@id='page-esi-tile']"/></div>
         <xsl:copy-of select="/html/body/div[@id='layout-non-esi-tile']"/><xsl:copy-of select="/html/body/div[@id='layout-esi-tile']"/></body></html></xsl:template>
     </xsl:stylesheet>

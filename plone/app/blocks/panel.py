@@ -30,24 +30,22 @@ def merge(request, pageTree, removePanelLinks=True, removeLayoutLink=True):
 
     # Map page panels onto the layout
 
-    for panelLinkNode in utils.panelXPath(layoutTree):
-        panelId = panelLinkNode.get('target')
-        panelName = panelLinkNode.get('rev')
+    pagePanels = dict(
+        (node.attrib['data-panel'], node)
+        for node in utils.panelXPath(pageTree)
+        )
 
-        if panelId and panelName:
+    for layoutPanelNode in utils.panelXPath(layoutTree):
+        panelId = layoutPanelNode.attrib['data-panel']
+        pagePanelNode = pagePanels.get(panelId, None)
 
-            layoutPanelXPath = etree.XPath("//*[@id='%s']" % panelId)
-            layoutPanelNode = utils.xpath1(layoutPanelXPath, layoutTree)
-
-            pagePanelXPath = etree.XPath("//*[@id='%s']" % panelName)
-            pagePanelNode = utils.xpath1(pagePanelXPath, pageTree)
-
-            if layoutPanelNode is not None and pagePanelNode is not None:
-                layoutPanelNode.getparent().replace(layoutPanelNode,
-                                                    pagePanelNode)
-
-        if removePanelLinks:
-            panelLinkNode.getparent().remove(panelLinkNode)
+        if pagePanelNode is not None:
+            layoutPanelNode.getparent().replace(layoutPanelNode,
+                                                pagePanelNode)
+            if removePanelLinks:
+                del pagePanelNode.attrib['data-panel']
+        elif removePanelLinks:
+            del layoutPanelNode.attrib['data-panel']
 
     # Merge the head of both documents
     utils.mergeHead(pageTree, layoutTree, headerReplace, headerAppend)

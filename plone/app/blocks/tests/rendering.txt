@@ -16,11 +16,8 @@ consists of the following steps:
 3. Extract panels from the site layout.
 
    A panel is an element (usually a ``<div />``) in the layout page with a
-   particular id. That id is identified by a ``<link />`` tag in the head of
-   the layout page, which looks like this: ``<link rel="panel" rev="panel1"
-   target="panel1" />``. Here, the ``target`` attribute specifies the id of an
-   element in the layout page, and the ``rev`` attribute specifies an id which
-   *may* be used in the content page.
+   data-panel attribute, for example: ``<div data-panel="panel1" />``. The
+   attribute specifies an id which *may* be used in the content page.
 4. Merge panels. This is the process which applies the layout to the
    unstyled page. All panels in the layout page that have a matching
    element in the content page, are replaced by the content page element.
@@ -118,20 +115,16 @@ content inside and outside panels. The tiles in this case are managed by
     ...         }
     ...         </style>
     ... 
-    ...         <link rel="panel" rev="panel1" target="panel1" />
-    ...         <link rel="panel" rev="panel2" target="panel2" />
-    ...         <link rel="panel" rev="panel3" target="panel3" />
-    ... 
     ...         <link rel="tile" href="./@@test.tile_nobody/tile_css" />
     ...     </head>
     ...     <body>
     ...         <h1>Welcome!</h1>
-    ...         <div id="panel1">Layout panel 1</div>
-    ...         <div id="panel2">
+    ...         <div data-panel="panel1">Layout panel 1</div>
+    ...         <div data-panel="panel2">
     ...             Layout panel 2
     ...             <div id="layout-tile1" class="tile-placeholder" data-tile="./@@test.tile1/tile1">Layout tile 1 placeholder</div>
     ...         </div>
-    ...         <div id="panel3">
+    ...         <div data-panel="panel3">
     ...             Layout panel 3
     ...             <div id="layout-tile2" class="tile-placeholder" data-tile="./@@test.tile1/tile2">Layout tile 2 placeholder</div>
     ...         </div>
@@ -176,19 +169,16 @@ that.
                 padding: 5px;
             }
             </style>
-        <link rel="panel" rev="panel1" target="panel1" />
-        <link rel="panel" rev="panel2" target="panel2" />
-        <link rel="panel" rev="panel3" target="panel3" />
         <link rel="tile" href="./@@test.tile_nobody/tile_css" />
       </head>
       <body>
             <h1>Welcome!</h1>
-            <div id="panel1">Layout panel 1</div>
-            <div id="panel2">
+            <div data-panel="panel1">Layout panel 1</div>
+            <div data-panel="panel2">
                 Layout panel 2
                 <div id="layout-tile1" class="tile-placeholder" data-tile="./@@test.tile1/tile1">Layout tile 1 placeholder</div>
             </div>
-            <div id="panel3">
+            <div data-panel="panel3">
                 Layout panel 3
                 <div id="layout-tile2" class="tile-placeholder" data-tile="./@@test.tile1/tile2">Layout tile 2 placeholder</div>
             </div>
@@ -223,15 +213,15 @@ the ``@@default-site-layout`` indirection view:
     ...     </head>
     ...     <body>
     ...         <h1>Welcome!</h1>
-    ...         <div id="panel1">
+    ...         <div data-panel="panel1">
     ...             Page panel 1
     ...             <div id="page-tile2" class="tile-placeholder" data-tile="./@@test.tile1/tile2?magicNumber:int=2">Page tile 2 placeholder</div>
     ...         </div>
-    ...         <div id="panel2">
+    ...         <div data-panel="panel2">
     ...             Page panel 2
     ...             <div id="page-tile3" class="tile-placeholder" data-tile="./@@test.tile1/tile3">Page tile 3 placeholder</div>
     ...         </div>
-    ...         <div id="panel4">
+    ...         <div data-panel="panel4">
     ...             Page panel 4 (ignored)
     ...             <div id="page-tile4" class="tile-placeholder" data-tile="./@@test.tile1/tile4">Page tile 4 placeholder</div>
     ...         </div>
@@ -361,7 +351,7 @@ working, it should perform its magic. We make sure that Zope is in
       </head>
       <body>
             <h1>Welcome!</h1>
-            <div id="panel1">
+            <div>
                 Page panel 1
                 <div id="page-tile2">
             <p>
@@ -371,7 +361,7 @@ working, it should perform its magic. We make sure that Zope is in
                 Magic number: 2; Form: [('magicNumber', 2)]; Query string: magicNumber:int=2
             </p>
         </div></div>
-            <div id="panel2">
+            <div>
                 Page panel 2
                 <div id="page-tile3">
             <p>
@@ -381,7 +371,7 @@ working, it should perform its magic. We make sure that Zope is in
                 Magic number: -1; Form: []; Query string: 
             </p>
         </div></div>
-            <div id="panel3">
+            <div>
                 Layout panel 3
                 <div id="layout-tile2">
             <p>
@@ -488,13 +478,13 @@ reference a URL with a different number, forcing a fresh copy to be fetched.
             }
             </style><title>Page title</title><link rel="stylesheet" href="/layout/page.css"/><script type="text/javascript">alert('page');</script></head><body>
             <h1>Welcome!</h1>
-            <div id="panel1">
+            <div>
                 Page panel 1
                 <xsl:copy-of select="/html/body/div[@id='page-tile2']"/></div>
-            <div id="panel2">
+            <div>
                 Page panel 2
                 <xsl:copy-of select="/html/body/div[@id='page-tile3']"/></div>
-            <div id="panel3">
+            <div>
                 Layout panel 3
                 <xsl:copy-of select="/html/body/div[@id='layout-tile2']"/></div>
         </body></html></xsl:template>
@@ -524,7 +514,7 @@ applied to the content.
         </head>
         <body>
             <h1>Welcome!</h1>
-            <div id="panel1">
+            <div>
                 Page panel 1
                 <div id="page-tile2">
                     <p>
@@ -535,7 +525,7 @@ applied to the content.
                     </p>
                 </div>
             </div>
-            <div id="panel2">
+            <div>
                 Page panel 2
                 <div id="page-tile3">
                     <p>
@@ -546,7 +536,7 @@ applied to the content.
                     </p>
                 </div>
             </div>
-            <div id="panel3">
+            <div>
                 Layout panel 3
                 <div id="layout-tile2">
                     <p>
