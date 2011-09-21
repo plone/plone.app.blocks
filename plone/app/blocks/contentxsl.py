@@ -50,11 +50,11 @@ class ContentXSL(object):
 
         tree = panel.merge(self.request, tree)
         if tree is None:
-            raise TypeError("Page could not be merged")
-
-        # Find tiles
-        tiles = utils.findTiles(self.request, tree, remove=True)
-
+            raise ValueError("Page could not be merged")
+        
+        # Find tiles and remove head links if applicable (before we reuse the tree)
+        tiles = utils.findTiles(self.request, tree, removeHeadLinks=True, ignoreHeadTiles=True)
+        
         # Build the stylesheet
         xsltRoot = etree.fromstring(XSLT_BOILERPLATE)
         xsltTree = xsltRoot.getroottree()
@@ -64,19 +64,14 @@ class ContentXSL(object):
         # Copy the whole content HTML file into the XSLT as the template
         xsltTemplate.append(tree.getroot())
 
-        for (tileId, (tileHref, hasTarget)) in sorted(tiles.items(),
-                                                      cmp=utils.tileSort):
+        for tileId, tileHref, tileNode in tiles:
 
-            if not hasTarget:
-                continue
-
-            tileTarget = utils.xpath1("//*[@id='%s']" % tileId, xsltTemplate)
-            if tileTarget is None:
+            if tileNode is None:
                 continue
 
             # Replace the tile placeholder's contents with an <xsl:copy-of />
-            tileTarget.getparent().replace(
-                tileTarget, E("{%s}copy-of" % XSLT_NS,
+            tileNode.getparent().replace(
+                tileNode, E("{%s}copy-of" % XSLT_NS,
                               select="/html/body/div[@id='%s']" % tileId))
 
         # Make sure we have the correct content type

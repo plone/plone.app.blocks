@@ -25,7 +25,7 @@ def createTilePage(request, tree):
             if registry.forInterface(IBlocksSettings).esi:
                 request.environ[ESI_HEADER_KEY] = 'true'
 
-    # Find tiles in the merged document.
+    # Find tiles in the merged document before we clear it out.
     tiles = utils.findTiles(request, tree)
 
     # Change the merged document into a tile page (rather forcefully)
@@ -61,7 +61,7 @@ def createTilePage(request, tree):
     htmlNode.append(bodyNode)
 
     # Resolve each tile and place it into the tilepage body
-    for (tileId, (tileHref, hasTarget)) in sorted(tiles.items(), cmp=utils.tileSort):
+    for tileId, tileHref, tileNode in tiles:
         
         tileTree = utils.resolve(tileHref)
         if tileTree is not None:
@@ -73,18 +73,18 @@ def createTilePage(request, tree):
                 for tileHeadChild in tileHead:
                     headNode.append(tileHeadChild)
 
-            # add tile body
+            # add tile body if applicable
             tileBody = tileRoot.find('body')
 
-            newTileNode = E.DIV()
-            newTileNode.attrib['id'] = tileId
-
             if tileBody is not None:
-                newTileNode.text = tileBody.text
-                for tileBodyChild in tileBody:
-                    newTileNode.append(tileBodyChild)
+                newTileNode = E.DIV()
+                newTileNode.attrib['id'] = tileId
 
-            if hasTarget:
+                if tileBody is not None:
+                    newTileNode.text = tileBody.text
+                    for tileBodyChild in tileBody:
+                        newTileNode.append(tileBodyChild)
+
                 bodyNode.append(newTileNode)
 
     # Make the tile page XSLT

@@ -25,7 +25,7 @@ from Products.CMFCore.utils import getToolByName
 
 headXPath = etree.XPath("/html/head")
 layoutXPath = etree.XPath("/html/head/link[@rel='layout']")
-tileXPath = etree.XPath("/html/head/link[@rel='tile']")
+headTileXPath = etree.XPath("/html/head/link[@rel='tile']")
 panelXPath = etree.XPath("/html/head/link[@rel='panel']")
 
 logger = logging.getLogger('plone.app.blocks')
@@ -124,50 +124,54 @@ def mergeHead(srcTree, destTree, headerReplace, headerAppend):
             destHead.append(srcTag)
 
 
-def findTiles(request, tree, remove=False):
+def findTiles(request, tree, removeHeadLinks=False, ignoreHeadTiles=False):
+    """Given a request and an lxml tree with the body, return a list of
+    tuples of tile id, absolute tile href (including query string) and the
+    tile placeholder node.
 
-    """Given a request and an lxml tree with the body, return a dict
-    of tile id to a tuple of absolute tile href (including query
-    string) and a marker specifying whether this is a tile with an
-    actual target or not. The latter is needed for tiles that need to
-    only merge into the head.
-
-    If remove is true, tile links are removed once complete.
+    If removeHeadLinks is true, tile links in the head are removed once
+    complete. This is useful if we know that the tile's head will be merged
+    into the rendered head anyway. In this case, the tile placeholder node 
+    will be None.
+    
+    If ignoreHeadTiles is true, tile links in the head are ignored entirely.
     """
-
-    tiles = {}
+    
+    tiles = []
     baseURL = request.getURL()
 
-    # Find all tiles that exist in the page
-    for tileNode in tileXPath(tree):
+    # Find tiles in the head of the page
+    if not ignoreHeadTiles or removeHeadLinks:
+        for tileNode in headTileXPath(tree):
+            tileHref = tileNode.get('href', None)
 
-        # If we do not have an id, generate one
-        tileId = tileNode.get('target', None)
-        tileHref = tileNode.get('href', None)
-        hasTarget = True
+            if tileHref is not None:
+                tileId = "__tile_%s" % uuid.uuid4()
+                tileHref = urljoin(baseURL, tileHref)
+            
+                if removeHeadLinks:
+                    tileNode.getparent().remove(tileNode)
+                    tileNode = None
+                
+                if not ignoreHeadTiles:
+                    tiles.append((tileId, tileHref, tileNode,))
 
-        if tileId is None:
-            tileId = "__tile_%s" % uuid.uuid1()
-            hasTarget = False
+    # Find tiles in the body
+    for tileNode in tree.getroot().cssselect(".tile-placeholder"):
+        tileId = tileNode.get('id', None)
+        tileHref = tileNode.get('data-tile-href', None)
 
         if tileHref is not None:
+            
+            # If we do not have an id, generate one
+            if tileId is None:
+                tileId = "__tile_%s" % uuid.uuid4()
+                tileNode.attrib['id'] = tileId
+            
             tileHref = urljoin(baseURL, tileHref)
-            tileTargetXPath = etree.XPath("//*[@id='%s']" % tileId)
-            tileTargetNode = xpath1(tileTargetXPath, tree)
-            if (not hasTarget) or (tileTargetNode is not None):
-                tiles[tileId] = (tileHref, hasTarget)
-
-        if remove:
-            tileNode.getparent().remove(tileNode)
+            tiles.append((tileId, tileHref, tileNode,))
 
     return tiles
-
-
-def tileSort(tile0, tile1):
-    """Sort entries from findTiles on ID
-    """
-
-    return cmp(tile0[0], tile1[0])
 
 def getDefaultSiteLayout(context):
     """Get the path to the site layout to use by default for the given content
