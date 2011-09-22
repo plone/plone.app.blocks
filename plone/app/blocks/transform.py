@@ -53,6 +53,9 @@ class ParseXML(object):
     implements(ITransform)
 
     order = 8000
+    
+    # Tests set this to True
+    pretty_print = False
 
     def __init__(self, published, request):
         self.published = published
@@ -78,7 +81,7 @@ class ParseXML(object):
             return None
 
         try:
-            result = getHTMLSerializer(result, pretty_print=True,
+            result = getHTMLSerializer(result, pretty_print=self.pretty_print,
                                        encoding=encoding)
             self.request['plone.app.blocks.enabled'] = True
             return result
