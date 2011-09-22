@@ -38,13 +38,9 @@ def merge(request, pageTree, removePanelLinks=True, removeLayoutLink=True):
     for layoutPanelNode in utils.panelXPath(layoutTree):
         panelId = layoutPanelNode.attrib['data-panel']
         pagePanelNode = pagePanels.get(panelId, None)
-
         if pagePanelNode is not None:
-            layoutPanelNode.getparent().replace(layoutPanelNode,
-                                                pagePanelNode)
-            if removePanelLinks:
-                del pagePanelNode.attrib['data-panel']
-        elif removePanelLinks:
+            utils.replace_content(layoutPanelNode, pagePanelNode)
+        if removePanelLinks:
             del layoutPanelNode.attrib['data-panel']
 
     # Merge the head of both documents

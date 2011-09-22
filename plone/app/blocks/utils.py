@@ -164,6 +164,13 @@ def replace_with_children(element, wrapper):
         for child in children:
             parent.insert(index, child)
 
+def replace_content(element, wrapper):
+    """Similar to above but keeps parent tag
+    """
+    element.text = wrapper.text
+    del element[:]
+    element.extend(wrapper.getchildren())
+
 def getDefaultSiteLayout(context):
     """Get the path to the site layout to use by default for the given content
     object
