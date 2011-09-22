@@ -169,7 +169,7 @@ be rendered as normal.
       </head>
       <body>
             <h1>Welcome!</h1>
-            <div>
+            <div data-panel="panel1">
             <p>
                 Non-ESI tile with query string foo=bar
             </p>
@@ -215,7 +215,7 @@ tiles should be rendered as ESI links. See `plone.tiles`_ for more details.
       </head>
       <body>
             <h1>Welcome!</h1>
-            <div>
+            <div data-panel="panel1">
             <p>
                 Non-ESI tile with query string foo=bar
             </p>

@@ -2,7 +2,7 @@ from plone.app.blocks import utils
 from lxml import etree
 from urlparse import urljoin
 
-def merge(request, pageTree, removePanelLinks=True, removeLayoutLink=True):
+def merge(request, pageTree, removePanelLinks=False, removeLayoutLink=True):
     """Perform panel merging for the given page.
 
     Returns None if the page has no layout.

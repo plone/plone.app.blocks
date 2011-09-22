@@ -318,7 +318,7 @@ working, it should perform its magic. We make sure that Zope is in
       </head>
       <body>
             <h1>Welcome!</h1>
-            <div>
+            <div data-panel="panel1">
                 Page panel 1
             <p>
                 This is a demo tile with id tile2
@@ -327,7 +327,7 @@ working, it should perform its magic. We make sure that Zope is in
                 Magic number: 2; Form: [('magicNumber', 2)]; Query string: magicNumber:int=2
             </p>
             </div>
-            <div>
+            <div data-panel="panel2">
                 Page panel 2
             <p>
                 This is a demo tile with id tile3
@@ -336,7 +336,7 @@ working, it should perform its magic. We make sure that Zope is in
                 Magic number: -1; Form: []; Query string: 
             </p>
             </div>
-            <div>
+            <div data-panel="panel3">
                 Layout panel 3
             <p>
                 This is a demo tile with id tile2
