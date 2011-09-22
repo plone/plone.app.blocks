@@ -26,7 +26,8 @@ from Products.CMFCore.utils import getToolByName
 headXPath = etree.XPath("/html/head")
 layoutAttrib = 'data-layout'
 layoutXPath = etree.XPath("/html/@" + layoutAttrib)
-headTileXPath = etree.XPath("/html/head/link[@rel='tile']")
+headTileXPath = etree.XPath("/html/head//*[@data-tile]")
+bodyTileXPath = etree.XPath("/html/body//*[@data-tile]")
 panelXPath = etree.XPath("//*[@data-panel]")
 
 logger = logging.getLogger('plone.app.blocks')
@@ -124,55 +125,44 @@ def mergeHead(srcTree, destTree, headerReplace, headerAppend):
         for srcTag in appendXPath(srcTree):
             destHead.append(srcTag)
 
+def append_text(element, text):
+    if text:
+        element.text = (element.text or '') + text
 
-def findTiles(request, tree, removeHeadLinks=False, ignoreHeadTiles=False):
-    """Given a request and an lxml tree with the body, return a list of
-    tuples of tile id, absolute tile href (including query string) and the
-    tile placeholder node.
+def append_tail(element, text):
+    if text:
+        element.tail = (element.tail or '') + text
 
-    If removeHeadLinks is true, tile links in the head are removed once
-    complete. This is useful if we know that the tile's head will be merged
-    into the rendered head anyway. In this case, the tile placeholder node 
-    will be None.
-    
-    If ignoreHeadTiles is true, tile links in the head are ignored entirely.
+
+def replace_with_children(element, wrapper):
+    """element.replace also replaces the tail and forgets the wrapper.text
     """
-    
-    tiles = []
-    baseURL = request.getURL()
-
-    # Find tiles in the head of the page
-    if not ignoreHeadTiles or removeHeadLinks:
-        for tileNode in headTileXPath(tree):
-            tileHref = tileNode.get('href', None)
-
-            if tileHref is not None:
-                tileId = "__tile_%s" % uuid.uuid4()
-                tileHref = urljoin(baseURL, tileHref)
-            
-                if removeHeadLinks:
-                    tileNode.getparent().remove(tileNode)
-                    tileNode = None
-                
-                if not ignoreHeadTiles:
-                    tiles.append((tileId, tileHref, tileNode,))
-
-    # Find tiles in the body
-    for tileNode in tree.getroot().cssselect(".tile-placeholder"):
-        tileId = tileNode.get('id', None)
-        tileHref = tileNode.get('data-tile', None)
-
-        if tileHref is not None:
-            
-            # If we do not have an id, generate one
-            if tileId is None:
-                tileId = "__tile_%s" % uuid.uuid4()
-                tileNode.attrib['id'] = tileId
-            
-            tileHref = urljoin(baseURL, tileHref)
-            tiles.append((tileId, tileHref, tileNode,))
-
-    return tiles
+    # XXX needs tests
+    parent = element.getparent()
+    index = parent.index(element)
+    if index == 0:
+        previous = None
+    else:
+        previous = parent[index-1]
+    if wrapper is None:
+        children = []
+    else:
+        if index == 0:
+            append_text(parent, wrapper.text)
+        else:
+            append_tail(previous, wrapper.text)
+        children = wrapper.getchildren()
+    parent.remove(element)
+    if not children:
+        if index == 0:
+            append_text(parent, element.tail)
+        else:
+            append_tail(previous, element.tail)
+    else:
+        append_tail(children[-1], element.tail)
+        children.reverse()
+        for child in children:
+            parent.insert(index, child)
 
 def getDefaultSiteLayout(context):
     """Get the path to the site layout to use by default for the given content

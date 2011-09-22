@@ -8,7 +8,7 @@ from plone.tiles.interfaces import ESI_HEADER
 
 from zope.interface import implements
 
-from plone.app.blocks import tilepage, panel, tiles
+from plone.app.blocks import panel, tiles
 from plone.tiles import esi
 
 
@@ -118,37 +118,6 @@ class MergePanels(object):
         self.request['plone.app.blocks.merged'] = True
 
         result.tree = tree
-        return result
-
-
-class CreateTilePage(object):
-    """Turn a panel-merged page into a tile page. Assumes the input result is
-    an lxml tree and returns an lxml tree for later serialization.
-    """
-
-    implements(ITransform)
-
-    order = 8500
-
-    def __init__(self, published, request):
-        self.published = published
-        self.request = request
-
-    def transformString(self, result, encoding):
-        return None
-
-    def transformUnicode(self, result, encoding):
-        return None
-
-    def transformIterable(self, result, encoding):
-        if not self.request.get('plone.app.blocks.enabled', False) or \
-            not isinstance(result, XMLSerializer):
-            return None
-        
-        if not self.request.get('plone.app.blocks.merged', False):
-            return None
-        
-        result.tree = tilepage.createTilePage(self.request, result.tree)
         return result
 
 

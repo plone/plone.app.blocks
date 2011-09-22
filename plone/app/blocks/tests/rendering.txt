@@ -26,17 +26,13 @@ consists of the following steps:
 5. Resolve and obtain tiles. A tile is a placeholder element in the page
    which will be replaced by the contents of a document referenced by a URL.
    
-   A tile in the head of the page is identified by a ``<link />`` element
-   with ``rel="tile"`` and an ``href`` containing to the tile URL.
-   
-   A tile in the body of the page is identified by a placeholder element with
-   the the CSS class ``tile-placeholder`` and an attribute ``data-tile``
-   containing the tile URL.
+   A tile is identified by a placeholder element with a ``data-tile``
+   attribute containing the tile URL.
    
    Note that at this point, panel merging has taken place, so if a panel in
-   the content page contains tiles, the associated ``<link >`` tags will be
-   carried over into the merged page. Also note that it is possible to have
-   tiles outside of panels - the two concepts are not directly related.
+   the content page contains tiles, they will be carried over into the merged
+   page. Also note that it is possible to have tiles outside of panels - the
+   two concepts are not directly related.
 
    The ``plone.tiles`` package provides a framework for writing tiles,
    although in reality a tile can be any HTML page.
@@ -45,27 +41,6 @@ consists of the following steps:
    be merged into the ``<head />`` of the rendered content. The contents of
    the ``<body />`` of the tile content are put into the rendered document
    at the tile placeholder.
-
-There is one slight variation of steps 5-6, which can be used to render pages
-more efficiently in some cases where a caching proxy (such as Squid or
-Varnish) is used. This involves the following steps:
-
-* If the view or resource being published is marked with the marker
-  interface ``plone.app.blocks.interfaces.ITilePageRendered``, a simple page
-  is produced containing the rendered version of all tiles, but none of the
-  other static content. This "tile page" has an ``<?xml-stylesheet ?>``
-  processing instruction referencing a view ``@@blocks-static-content`` in
-  the context of the original resource.
-* When this XSL stylesheet is applied (either client-side by the browser, or
-  by a processing step in front of Zope, say in Apache), the
-  ``@@blocks-static-content`` view generates an XSLT document which can
-  transform the tile page into the final rendered output.
-
-The idea behind this approach is that the tile page contains all the dynamic
-parts of the page, whilst the content XSLT contains all the static content and
-the instructions for placing the dynamic content on the page. This XSLT
-document can thus be generated once and cached "forever", until the static
-content (i.e. the layout as applied to the content page) is changed.
 
 Rendering step-by-step
 ----------------------
@@ -115,18 +90,18 @@ content inside and outside panels. The tiles in this case are managed by
     ...         }
     ...         </style>
     ... 
-    ...         <link rel="tile" href="./@@test.tile_nobody/tile_css" />
+    ...         <link rel="stylesheet" data-tile="./@@test.tile_nobody/tile_css" />
     ...     </head>
     ...     <body>
     ...         <h1>Welcome!</h1>
     ...         <div data-panel="panel1">Layout panel 1</div>
     ...         <div data-panel="panel2">
     ...             Layout panel 2
-    ...             <div id="layout-tile1" class="tile-placeholder" data-tile="./@@test.tile1/tile1">Layout tile 1 placeholder</div>
+    ...             <div id="layout-tile1" data-tile="./@@test.tile1/tile1">Layout tile 1 placeholder</div>
     ...         </div>
     ...         <div data-panel="panel3">
     ...             Layout panel 3
-    ...             <div id="layout-tile2" class="tile-placeholder" data-tile="./@@test.tile1/tile2">Layout tile 2 placeholder</div>
+    ...             <div id="layout-tile2" data-tile="./@@test.tile1/tile2">Layout tile 2 placeholder</div>
     ...         </div>
     ...     </body>
     ... </html>
@@ -169,18 +144,18 @@ that.
                 padding: 5px;
             }
             </style>
-        <link rel="tile" href="./@@test.tile_nobody/tile_css" />
+        <link rel="stylesheet" data-tile="./@@test.tile_nobody/tile_css" />
       </head>
       <body>
             <h1>Welcome!</h1>
             <div data-panel="panel1">Layout panel 1</div>
             <div data-panel="panel2">
                 Layout panel 2
-                <div id="layout-tile1" class="tile-placeholder" data-tile="./@@test.tile1/tile1">Layout tile 1 placeholder</div>
+                <div id="layout-tile1" data-tile="./@@test.tile1/tile1">Layout tile 1 placeholder</div>
             </div>
             <div data-panel="panel3">
                 Layout panel 3
-                <div id="layout-tile2" class="tile-placeholder" data-tile="./@@test.tile1/tile2">Layout tile 2 placeholder</div>
+                <div id="layout-tile2" data-tile="./@@test.tile1/tile2">Layout tile 2 placeholder</div>
             </div>
         </body>
     </html>
@@ -215,15 +190,15 @@ the ``@@default-site-layout`` indirection view:
     ...         <h1>Welcome!</h1>
     ...         <div data-panel="panel1">
     ...             Page panel 1
-    ...             <div id="page-tile2" class="tile-placeholder" data-tile="./@@test.tile1/tile2?magicNumber:int=2">Page tile 2 placeholder</div>
+    ...             <div id="page-tile2" data-tile="./@@test.tile1/tile2?magicNumber:int=2">Page tile 2 placeholder</div>
     ...         </div>
     ...         <div data-panel="panel2">
     ...             Page panel 2
-    ...             <div id="page-tile3" class="tile-placeholder" data-tile="./@@test.tile1/tile3">Page tile 3 placeholder</div>
+    ...             <div id="page-tile3" data-tile="./@@test.tile1/tile3">Page tile 3 placeholder</div>
     ...         </div>
     ...         <div data-panel="panel4">
     ...             Page panel 4 (ignored)
-    ...             <div id="page-tile4" class="tile-placeholder" data-tile="./@@test.tile1/tile4">Page tile 4 placeholder</div>
+    ...             <div id="page-tile4" data-tile="./@@test.tile1/tile4">Page tile 4 placeholder</div>
     ...         </div>
     ...     </body>
     ... </html>
@@ -341,10 +316,10 @@ working, it should perform its magic. We make sure that Zope is in
                 padding: 5px;
             }
             </style>
+        <link rel="stylesheet" type="text/css" href="tiled.css" />
         <title>Page title</title>
         <link rel="stylesheet" href="/layout/page.css" />
         <script type="text/javascript">alert('page');</script>
-        <link rel="stylesheet" type="text/css" href="tiled.css" />
         <meta name="tile-name" content="tile2" />
         <meta name="tile-name" content="tile3" />
         <meta name="tile-name" content="tile2" />
@@ -353,34 +328,31 @@ working, it should perform its magic. We make sure that Zope is in
             <h1>Welcome!</h1>
             <div>
                 Page panel 1
-                <div id="page-tile2">
             <p>
                 This is a demo tile with id tile2
             </p>
             <p>
                 Magic number: 2; Form: [('magicNumber', 2)]; Query string: magicNumber:int=2
             </p>
-        </div></div>
+            </div>
             <div>
                 Page panel 2
-                <div id="page-tile3">
             <p>
                 This is a demo tile with id tile3
             </p>
             <p>
                 Magic number: -1; Form: []; Query string: 
             </p>
-        </div></div>
+            </div>
             <div>
                 Layout panel 3
-                <div id="layout-tile2">
             <p>
                 This is a demo tile with id tile2
             </p>
             <p>
                 Magic number: -1; Form: []; Query string: 
             </p>
-        </div></div>
+            </div>
         </body>
     </html>
 
@@ -394,158 +366,3 @@ Notice how:
 * The tiles have been rendered, replacing the relevant placeholders
 * The ``<head />`` section from the rendered tiles has been merged into the
   ``<head />`` of the output page.
-
-Tile page rendering
--------------------
-
-Let's now see how the page rendering would work if the content page indicated
-that it wanted to use tile page rendering. In this mode, the dynamic parts
-of the pages (represented by tiles) are rendered as one document, and the
-static parts are incorporated into a generated XSLT transformation. The
-idea is that these can be cached separately, and that the transform may
-take place in a caching proxy, web server or even the browser.
-
-First, we mark the view with the relevant marker interface.
-
-    >>> from plone.app.blocks.interfaces import ITilePageRendered
-    >>> from zope.interface import classImplements
-    >>> classImplements(Page, ITilePageRendered)
-
-We then try to access the same page again.
-
-    >>> browser.open(portal.absolute_url() + '/@@test-page')
-    >>> tilePageContents = browser.contents
-    >>> print tilePageContents
-    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-    <?xml-stylesheet type="text/xsl" href="http://nohost/plone/@@test-page/@@blocks-static-content/...xsl?" ?>
-    <html xmlns="http://www.w3.org/1999/xhtml">
-      <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
-        <link rel="stylesheet" type="text/css" href="tiled.css" />
-        <meta name="tile-name" content="tile2" />
-        <meta name="tile-name" content="tile3" />
-        <meta name="tile-name" content="tile2" />
-      </head>
-      <body>
-        <div id="page-tile2">
-            <p>
-                This is a demo tile with id tile2
-            </p>
-            <p>
-                Magic number: 2; Form: [('magicNumber', 2)]; Query string: magicNumber:int=2
-            </p>
-        </div>
-        <div id="page-tile3">
-            <p>
-                This is a demo tile with id tile3
-            </p>
-            <p>
-                Magic number: -1; Form: []; Query string: 
-            </p>
-        </div>
-        <div id="layout-tile2">
-            <p>
-                This is a demo tile with id tile2
-            </p>
-            <p>
-                Magic number: -1; Form: []; Query string: 
-            </p>
-        </div>
-      </body>
-    </html>
-
-Notice how this page contains all the dynamic tile content (including the
-``<head />`` portions), but none of the static content or panels from the 
-layout.
-
-When the XML stylesheet processing instruction is fulfilled, it will fetch
-a URL like this. Note that the ellipsis is used because the modification time
-of the context object (the portal in this case) is added on the traversal
-path. This is not actually used, but allows aggressive caching of the XSLT
-file in a caching proxy. Once the context is modified, the tile page will
-reference a URL with a different number, forcing a fresh copy to be fetched.
-
-    >>> browser.open(portal.absolute_url() + '/@@test-page/@@blocks-static-content/1258209736.89.xsl')
-    >>> tilePageXSLTContents = browser.contents
-    >>> print tilePageXSLTContents
-    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
-    <xsl:template match="/">
-    <html><head><link rel="stylesheet" href="/layout/style.css"/><script type="text/javascript">alert('layout');</script><style type="text/css">
-            div {
-                margin: 5px;
-                border: dotted black 1px;
-                padding: 5px;
-            }
-            </style><title>Page title</title><link rel="stylesheet" href="/layout/page.css"/><script type="text/javascript">alert('page');</script></head><body>
-            <h1>Welcome!</h1>
-            <div>
-                Page panel 1
-                <xsl:copy-of select="/html/body/div[@id='page-tile2']"/></div>
-            <div>
-                Page panel 2
-                <xsl:copy-of select="/html/body/div[@id='page-tile3']"/></div>
-            <div>
-                Layout panel 3
-                <xsl:copy-of select="/html/body/div[@id='layout-tile2']"/></div>
-        </body></html></xsl:template>
-    </xsl:stylesheet>
-    <BLANKLINE>
-
-For the sake of completeness, let's show what would happen if this XSLT was
-applied to the content.
-
-    >>> from lxml import etree, html
-    >>> tilePageTransform = etree.XSLT(etree.fromstring(tilePageXSLTContents))
-    >>> tilePageResult = tilePageTransform(html.fromstring(tilePageContents))
-    >>> print html.tostring(tilePageResult, pretty_print=True)
-    <html>
-        <head>
-            <link rel="stylesheet" href="/layout/style.css">
-            <script type="text/javascript">alert('layout');</script><style type="text/css">
-                    div {
-                        margin: 5px;
-                        border: dotted black 1px;
-                        padding: 5px;
-                    }
-            </style>
-            <title>Page title</title>
-            <link rel="stylesheet" href="/layout/page.css">
-            <script type="text/javascript">alert('page');</script>
-        </head>
-        <body>
-            <h1>Welcome!</h1>
-            <div>
-                Page panel 1
-                <div id="page-tile2">
-                    <p>
-                        This is a demo tile with id tile2
-                    </p>
-                    <p>
-                        Magic number: 2; Form: [('magicNumber', 2)]; Query string: magicNumber:int=2
-                    </p>
-                </div>
-            </div>
-            <div>
-                Page panel 2
-                <div id="page-tile3">
-                    <p>
-                        This is a demo tile with id tile3
-                    </p>
-                    <p>
-                        Magic number: -1; Form: []; Query string: 
-                    </p>
-                </div>
-            </div>
-            <div>
-                Layout panel 3
-                <div id="layout-tile2">
-                    <p>
-                        This is a demo tile with id tile2
-                    </p>
-                    <p>
-                        Magic number: -1; Form: []; Query string: 
-                    </p>
-                </div>
-            </div>
-        </body>
-    </html>
