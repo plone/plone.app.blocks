@@ -2,14 +2,6 @@ from plone.app.blocks import utils
 from lxml import etree
 from urlparse import urljoin
 
-headerReplace = [etree.XPath("/html/head/%s" % tag) for tag in ('title',
-                                                                'base',)]
-headerAppend = [etree.XPath("/html/head/%s" % tag) for tag in ('style',
-                                                               'link',
-                                                               'script',
-                                                               'meta')]
-
-
 def merge(request, pageTree, removePanelLinks=True, removeLayoutLink=True):
     """Perform panel merging for the given page.
 
@@ -42,9 +34,6 @@ def merge(request, pageTree, removePanelLinks=True, removeLayoutLink=True):
             utils.replace_content(layoutPanelNode, pagePanelNode)
         if removePanelLinks:
             del layoutPanelNode.attrib['data-panel']
-
-    # Merge the head of both documents
-    utils.mergeHead(pageTree, layoutTree, headerReplace, headerAppend)
 
     if removeLayoutLink:
         del pageTree.getroot().attrib[utils.layoutAttrib]

@@ -21,7 +21,6 @@ consists of the following steps:
 4. Merge panels. This is the process which applies the layout to the
    unstyled page. All panels in the layout page that have a matching
    element in the content page, are replaced by the content page element.
-   The ``<head />`` of the content page is merged into the layout page.
    The rest of the content page is discarded.
 5. Resolve and obtain tiles. A tile is a placeholder element in the page
    which will be replaced by the contents of a document referenced by a URL.
@@ -181,11 +180,6 @@ the ``@@default-site-layout`` indirection view:
     >>> pageHTML = """\
     ... <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     ... <html data-layout="./@@default-site-layout">
-    ...     <head>
-    ...         <title>Page title</title>
-    ...         <link rel="stylesheet" href="/layout/page.css" />
-    ...         <script type="text/javascript">alert('page');</script>
-    ...     </head>
     ...     <body>
     ...         <h1>Welcome!</h1>
     ...         <div data-panel="panel1">
@@ -307,6 +301,7 @@ working, it should perform its magic. We make sure that Zope is in
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
+        <title>Layout title</title>
         <link rel="stylesheet" href="/layout/style.css" />
         <script type="text/javascript">alert('layout');</script>
         <style type="text/css">
@@ -317,9 +312,6 @@ working, it should perform its magic. We make sure that Zope is in
             }
             </style>
         <link rel="stylesheet" type="text/css" href="tiled.css" />
-        <title>Page title</title>
-        <link rel="stylesheet" href="/layout/page.css" />
-        <script type="text/javascript">alert('page');</script>
         <meta name="tile-name" content="tile2" />
         <meta name="tile-name" content="tile3" />
         <meta name="tile-name" content="tile2" />

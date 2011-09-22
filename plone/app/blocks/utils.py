@@ -93,38 +93,6 @@ def xpath1(xpath, node, strict=True):
         else:
             return result
 
-
-def mergeHead(srcTree, destTree, headerReplace, headerAppend):
-    """Merge the <head /> sections.
-
-     - Any node in the source matching an xpath in the list headerReplace
-        will be appended to dest's head. If there is a corresponding tag
-        in the dest already, it will be removed.
-
-     - Any node in the source matching an xpath in the list headerAppend will
-        be appended to dest's head regardless of whether a corresponding
-        tag exists there already.
-    """
-
-    srcHead = xpath1(headXPath, srcTree)
-    destHead = xpath1(headXPath, destTree)
-
-    if srcHead is None or destHead is None:
-        return
-
-    for replaceXPath in headerReplace:
-        destTags = replaceXPath(destTree)
-        srcTags = replaceXPath(srcTree)
-        if len(srcTags) > 0:
-            for destTag in destTags:
-                destTag.getparent().remove(destTag)
-            for srcTag in srcTags:
-                destHead.append(srcTag)
-
-    for appendXPath in headerAppend:
-        for srcTag in appendXPath(srcTree):
-            destHead.append(srcTag)
-
 def append_text(element, text):
     if text:
         element.text = (element.text or '') + text

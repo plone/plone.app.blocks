@@ -125,9 +125,6 @@ directly.
     >>> pageHTML = u"""\
     ... <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     ... <html data-layout="./@@test-layout">
-    ...     <head>
-    ...         <title>Page title</title>
-    ...     </head>
     ...     <body>
     ...         <div data-panel="panel1">
     ...             <div id="page-non-esi-tile" data-tile="./@@test.tile2/tile3?foo=bar">Page tile 3 placeholder</div>
@@ -164,7 +161,7 @@ be rendered as normal.
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
-        <title>Page title</title>
+        <title>Layout title</title>
         <meta name="tile-name" content="tile3" />
         <meta name="tile-name" content="tile4" />
         <meta name="tile-name" content="tile1" />
@@ -212,7 +209,7 @@ tiles should be rendered as ESI links. See `plone.tiles`_ for more details.
     <html xmlns:esi="http://www.edge-delivery.org/esi/1.0" xmlns="http://www.w3.org/1999/xhtml">
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
-        <title>Page title</title>
+        <title>Layout title</title>
         <meta name="tile-name" content="tile3" />
         <meta name="tile-name" content="tile1" />        
       </head>
