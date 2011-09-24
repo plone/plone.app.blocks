@@ -110,7 +110,7 @@ class DefaultSiteLayout(BrowserView):
     
     The idea is that you can do:
     
-        <link rel="layout" href="./@@default-site-layout" />
+        <html data-layout="./@@default-site-layout">
         
     and always get the correct site layout for the page, taking section-
     specific settings into account.
@@ -145,8 +145,8 @@ class PageSiteLayout(DefaultSiteLayout):
     
     The idea is that you can do:
     
-        <link rel="layout" href="./@@page-site-layout" />
-        
+        <html data-layout="./@@page-site-layout">
+    
     and always get the correct site layout for the page, taking section-
     and page-specific settings into account.
     """

@@ -87,22 +87,10 @@
         factory=".transform.MergePanels"
         />
     
-    <!-- 8500a: If the published view opts into it, render a tilepage with only
-         the dynamic elements and reference a content.xsl that will include
-         the static elements
-     -->
-    <adapter
-        for=".interfaces.ITilePageRendered .interfaces.IBlocksLayer"
-        name="plone.app.blocks.tilepage"
-        factory=".transform.CreateTilePage"
-        />
-
-    <!-- 8500b: Simpler transform that just finds and includes tiles in the
-         output
-      -->
+    <!-- 8500: Finds and includes tiles in the output -->
     <adapter
        for="* .interfaces.IBlocksLayer"
-       name="plone.app.blocks.tilepage"
+       name="plone.app.blocks.tiles"
        factory=".transform.IncludeTiles"
        />
     
@@ -123,16 +111,6 @@
         for="plone.tiles.esi.ESIBody .interfaces.IBlocksLayer"
         name="plone.app.blocks.parsexml"
         factory=".transform.DisableParsing"
-        />
-    
-    <!-- The content XSLT view -->
-    
-    <browser:page
-        name="blocks-static-content"
-        for="*"
-        layer=".interfaces.IBlocksLayer"
-        permission="zope.Public"
-        class=".contentxsl.ContentXSL"
         />
     
 </configure>

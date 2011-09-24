@@ -16,10 +16,9 @@ and page layouts, respectively::
     ... <html>
     ...   <head>
     ...     <title>%s</title>
-    ...     <link rel="panel" rev="content" target="content" />
     ...   </head>
     ...   <body>
-    ...     <div id="content">Site layout content</div>
+    ...     <div data-panel="content">Site layout content</div>
     ...   </body>
     ... </html>
     ... """ % self.context.Title()
@@ -29,17 +28,15 @@ and page layouts, respectively::
     ...	    def __call__(self):
     ...         return u"""
     ... <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-    ... <html>
-    ...   <head>
-    ...     <link rel="layout" href="./@@site-layout" />
-    ...   </head>
+    ... <html data-layout="./@@site-layout">
+    ...   <head></head>
     ...   <body>
-    ...     <div id="content">%s</div>
+    ...     <div data-panel="content">%s</div>
     ...   </body>
     ... </html>
     ... """ % self.context.Title()
 
-Observe that the ``<link rel="layout" href="./@@site-layout" />`` tag references a
+Observe that the ``<html data-layout="./@@site-layout">`` tag references a
 relative URL.
 
 Next, we initialize and register the browser views as ZCML handlers would::
@@ -70,4 +67,4 @@ the default title of the portal object, ``Plone site`` will be used::
     >>> print browser.contents
     <!DOCTYPE html...
         <title>Plone site</title>...
-        <div id="content">Plone site</div>...
+        <div data-panel="content">Plone site</div>...
