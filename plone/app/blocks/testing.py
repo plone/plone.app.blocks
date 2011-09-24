@@ -3,6 +3,8 @@ from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import IntegrationTesting
 from plone.app.testing import FunctionalTesting
 
+from plone.testing import Layer
+
 from zope.configuration import xmlconfig
 
 class BlocksLayer(PloneSandboxLayer):
@@ -41,6 +43,19 @@ class BlocksLayer(PloneSandboxLayer):
         # install into the Plone site
         self.applyProfile(portal, 'plone.app.blocks:default')
 
+
+class PrettyPrintLayer(Layer):
+
+    def setUp(self):
+        from plone.app.blocks.transform import ParseXML
+        ParseXML.pretty_print = True
+
+    def tearDown(self):
+        from plone.app.blocks.transform import ParseXML
+        ParseXML.pretty_print = False
+
 BLOCKS_FIXTURE = BlocksLayer()
+PRETTY_PRINT_FIXTURE = PrettyPrintLayer()
 BLOCKS_INTEGRATION_TESTING = IntegrationTesting(bases=(BLOCKS_FIXTURE,), name="Blocks:Integration")
 BLOCKS_FUNCTIONAL_TESTING = FunctionalTesting(bases=(BLOCKS_FIXTURE,), name="Blocks:Functional")
+BLOCKS_FUNCTIONAL_TESTING_PRETTY_PRINT = FunctionalTesting(bases=(PRETTY_PRINT_FIXTURE, BLOCKS_FIXTURE,), name="Blocks:Functional Pretty Printing")

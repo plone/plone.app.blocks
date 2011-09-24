@@ -24,9 +24,11 @@ from zExceptions import NotFound
 from Products.CMFCore.utils import getToolByName
 
 headXPath = etree.XPath("/html/head")
-layoutXPath = etree.XPath("/html/head/link[@rel='layout']")
-tileXPath = etree.XPath("/html/head/link[@rel='tile']")
-panelXPath = etree.XPath("/html/head/link[@rel='panel']")
+layoutAttrib = 'data-layout'
+layoutXPath = etree.XPath("/html/@" + layoutAttrib)
+headTileXPath = etree.XPath("/html/head//*[@data-tile]")
+bodyTileXPath = etree.XPath("/html/body//*[@data-tile]")
+panelXPath = etree.XPath("//*[@data-panel]")
 
 logger = logging.getLogger('plone.app.blocks')
 
@@ -91,83 +93,51 @@ def xpath1(xpath, node, strict=True):
         else:
             return result
 
+def append_text(element, text):
+    if text:
+        element.text = (element.text or '') + text
 
-def mergeHead(srcTree, destTree, headerReplace, headerAppend):
-    """Merge the <head /> sections.
+def append_tail(element, text):
+    if text:
+        element.tail = (element.tail or '') + text
 
-     - Any node in the source matching an xpath in the list headerReplace
-        will be appended to dest's head. If there is a corresponding tag
-        in the dest already, it will be removed.
 
-     - Any node in the source matching an xpath in the list headerAppend will
-        be appended to dest's head regardless of whether a corresponding
-        tag exists there already.
+def replace_with_children(element, wrapper):
+    """element.replace also replaces the tail and forgets the wrapper.text
     """
+    # XXX needs tests
+    parent = element.getparent()
+    index = parent.index(element)
+    if index == 0:
+        previous = None
+    else:
+        previous = parent[index-1]
+    if wrapper is None:
+        children = []
+    else:
+        if index == 0:
+            append_text(parent, wrapper.text)
+        else:
+            append_tail(previous, wrapper.text)
+        children = wrapper.getchildren()
+    parent.remove(element)
+    if not children:
+        if index == 0:
+            append_text(parent, element.tail)
+        else:
+            append_tail(previous, element.tail)
+    else:
+        append_tail(children[-1], element.tail)
+        children.reverse()
+        for child in children:
+            parent.insert(index, child)
 
-    srcHead = xpath1(headXPath, srcTree)
-    destHead = xpath1(headXPath, destTree)
-
-    if srcHead is None or destHead is None:
-        return
-
-    for replaceXPath in headerReplace:
-        destTags = replaceXPath(destTree)
-        srcTags = replaceXPath(srcTree)
-        if len(srcTags) > 0:
-            for destTag in destTags:
-                destTag.getparent().remove(destTag)
-            for srcTag in srcTags:
-                destHead.append(srcTag)
-
-    for appendXPath in headerAppend:
-        for srcTag in appendXPath(srcTree):
-            destHead.append(srcTag)
-
-
-def findTiles(request, tree, remove=False):
-
-    """Given a request and an lxml tree with the body, return a dict
-    of tile id to a tuple of absolute tile href (including query
-    string) and a marker specifying whether this is a tile with an
-    actual target or not. The latter is needed for tiles that need to
-    only merge into the head.
-
-    If remove is true, tile links are removed once complete.
+def replace_content(element, wrapper):
+    """Similar to above but keeps parent tag
     """
-
-    tiles = {}
-    baseURL = request.getURL()
-
-    # Find all tiles that exist in the page
-    for tileNode in tileXPath(tree):
-
-        # If we do not have an id, generate one
-        tileId = tileNode.get('target', None)
-        tileHref = tileNode.get('href', None)
-        hasTarget = True
-
-        if tileId is None:
-            tileId = "__tile_%s" % uuid.uuid1()
-            hasTarget = False
-
-        if tileHref is not None:
-            tileHref = urljoin(baseURL, tileHref)
-            tileTargetXPath = etree.XPath("//*[@id='%s']" % tileId)
-            tileTargetNode = xpath1(tileTargetXPath, tree)
-            if (not hasTarget) or (tileTargetNode is not None):
-                tiles[tileId] = (tileHref, hasTarget)
-
-        if remove:
-            tileNode.getparent().remove(tileNode)
-
-    return tiles
-
-
-def tileSort(tile0, tile1):
-    """Sort entries from findTiles on ID
-    """
-
-    return cmp(tile0[0], tile1[0])
+    element.text = wrapper.text
+    del element[:]
+    element.extend(wrapper.getchildren())
 
 def getDefaultSiteLayout(context):
     """Get the path to the site layout to use by default for the given content
