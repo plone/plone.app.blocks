@@ -120,6 +120,10 @@ class MergePanels(object):
         # has happened
         self.request['plone.app.blocks.merged'] = True
 
+        tree = panel.merge(self.request, result.tree)
+        if tree is None:
+            return None
+
         result.tree = tree
         return result
 
