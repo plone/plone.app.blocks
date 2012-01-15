@@ -149,9 +149,6 @@ class IncludeTiles(object):
             not isinstance(result, XMLSerializer):
             return None
 
-        if not self.request.get('plone.app.blocks.merged', False):
-            return None
-        
         result.tree = tiles.renderTiles(self.request, result.tree)
         return result
 
