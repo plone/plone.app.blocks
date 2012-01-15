@@ -1,7 +1,4 @@
 import logging
-import uuid
-
-from urlparse import urljoin
 
 from lxml import etree
 from lxml import html
