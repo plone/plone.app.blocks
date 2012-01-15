@@ -26,8 +26,9 @@ from Products.CMFCore.utils import getToolByName
 headXPath = etree.XPath("/html/head")
 layoutAttrib = 'data-layout'
 layoutXPath = etree.XPath("/html/@" + layoutAttrib)
-headTileXPath = etree.XPath("/html/head//*[@data-tile]")
-bodyTileXPath = etree.XPath("/html/body//*[@data-tile]")
+tileAttrib = 'data-tile'
+headTileXPath = etree.XPath("/html/head//*[@" + tileAttrib + "]")
+bodyTileXPath = etree.XPath("/html/body//*[@" + tileAttrib + "]")
 panelXPath = etree.XPath("//*[@data-panel]")
 
 logger = logging.getLogger('plone.app.blocks')
