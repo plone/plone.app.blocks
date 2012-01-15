@@ -16,12 +16,15 @@ def renderTiles(request, tree):
     Assumes panel merging has already happened.
     """
 
+    settings = None
+    registry = queryUtility(IRegistry)
+    if registry is not None:
+        settings = registry.forInterface(IBlocksSettings, False)
+
     # Optionally enable ESI rendering in tiles that support this
     if not request.getHeader(ESI_HEADER):
-        registry = queryUtility(IRegistry)
-        if registry is not None:
-            if registry.forInterface(IBlocksSettings).esi:
-                request.environ[ESI_HEADER_KEY] = 'true'
+        if settings is not None and settings.esi:
+            request.environ[ESI_HEADER_KEY] = 'true'
 
     root = tree.getroot()
     headNode = root.find('head')
@@ -43,6 +46,9 @@ def renderTiles(request, tree):
             if tileHead is not None:
                 for tileHeadChild in tileHead:
                     headNode.append(tileHeadChild)
-            utils.replace_with_children(tileNode, tileRoot.find('body'))
+            if settings is not None and settings.retain_tile_links:
+                utils.replace_content(tileNode, tileRoot.find('body'))
+            else:
+                utils.replace_with_children(tileNode, tileRoot.find('body'))
 
     return tree

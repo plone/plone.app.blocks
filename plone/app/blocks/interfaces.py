@@ -35,6 +35,13 @@ class IBlocksSettings(Interface):
                           u"invoked directly."),
             default=False,
         )
+    
+    retain_tile_links = schema.Bool(
+        title = _(u'Retain tile placeholders'),
+        description = _(u'If True, tile placeholder divs will be removed '
+            'during tile rendering. If false, they will be retained.'),
+        default = False,
+        )
 
 class IOmittedField(Interface):
     """Marker interface for schema fields not to be shown to users
