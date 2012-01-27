@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.0a2 (2011-10-11)
+------------------
+
+- Added MANIFEST.in to fix our previous release. It was missing the history file.
+
+
 1.0a1 (2011-10-10)
 ------------------
 
