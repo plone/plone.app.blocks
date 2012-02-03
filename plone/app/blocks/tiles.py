@@ -28,14 +28,14 @@ def renderTiles(request, tree):
     baseURL = request.getURL()
 
     for tileNode in utils.headTileXPath(tree):
-        tileHref = urljoin(baseURL, tileNode.attrib['data-tile'])
+        tileHref = urljoin(baseURL, tileNode.attrib[utils.tileAttrib])
         tileTree = utils.resolve(tileHref)
         if tileTree is not None:
             tileRoot = tileTree.getroot()
-            utils.replace_with_children(tileNode, tileRoot.find('head'))
+            utils.replace_content(tileNode, tileRoot.find('head'))
 
     for tileNode in utils.bodyTileXPath(tree):
-        tileHref = urljoin(baseURL, tileNode.attrib['data-tile'])
+        tileHref = urljoin(baseURL, tileNode.attrib[utils.tileAttrib])
         tileTree = utils.resolve(tileHref)
         if tileTree is not None:
             tileRoot = tileTree.getroot()
@@ -43,6 +43,6 @@ def renderTiles(request, tree):
             if tileHead is not None:
                 for tileHeadChild in tileHead:
                     headNode.append(tileHeadChild)
-            utils.replace_with_children(tileNode, tileRoot.find('body'))
+            utils.replace_content(tileNode, tileRoot.find('body'))
 
     return tree
