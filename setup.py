@@ -6,7 +6,7 @@ version = '1.0a1'
 setup(name='plone.app.blocks',
       version=version,
       description="Implements the in-Plone blocks rendering process",
-      long_description=open("README.txt").read() + "\n" +
+      long_description=open("README.rst").read() + "\n" +
           open(os.path.join("docs", "HISTORY.txt")).read() + "\n" +
           open(os.path.join("plone", "app", "blocks", "tests", "rendering.txt")).read() + "\n" +
           open(os.path.join("plone", "app", "blocks", "tests", "esi.txt")).read(),
