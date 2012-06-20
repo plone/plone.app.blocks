@@ -1,6 +1,6 @@
 from plone.app.blocks import utils
-from lxml import etree
 from urlparse import urljoin
+
 
 def merge(request, pageTree, removePanelLinks=False, removeLayoutLink=True):
     """Perform panel merging for the given page.

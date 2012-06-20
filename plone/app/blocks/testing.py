@@ -7,6 +7,7 @@ from plone.testing import Layer
 
 from zope.configuration import xmlconfig
 
+
 class BlocksLayer(PloneSandboxLayer):
 
     defaultBases = (PLONE_FIXTURE,)
@@ -15,7 +16,7 @@ class BlocksLayer(PloneSandboxLayer):
         # load ZCML
         import plone.app.blocks
         self.loadZCML(package=plone.app.blocks)
-        
+
         # Register directory for testing
         xmlconfig.string("""\
 <configure
@@ -23,13 +24,13 @@ class BlocksLayer(PloneSandboxLayer):
     xmlns:plone="http://namespaces.plone.org/plone"
     i18n_domain="plone"
     package="plone.app.blocks.tests">
-    
+
     <plone:static
         type="sitelayout"
         name="testlayout1"
         directory="resources/sitelayout/testlayout1"
         />
-    
+
     <plone:static
         type="sitelayout"
         name="testlayout2"

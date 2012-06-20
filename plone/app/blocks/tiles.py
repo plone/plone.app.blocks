@@ -9,6 +9,7 @@ from plone.tiles.interfaces import ESI_HEADER, ESI_HEADER_KEY
 from plone.app.blocks.interfaces import IBlocksSettings
 from plone.app.blocks import utils
 
+
 def renderTiles(request, tree):
     """Find all tiles in the given response, contained in the lxml element
     tree `tree`, and insert them into the ouput.

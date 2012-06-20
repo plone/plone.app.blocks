@@ -30,6 +30,7 @@ panelXPath = etree.XPath("//*[@data-panel]")
 
 logger = logging.getLogger('plone.app.blocks')
 
+
 def extractCharset(response, default='utf-8'):
     """Get the charset of the given response
     """
@@ -46,9 +47,10 @@ def extractCharset(response, default='utf-8'):
 def resolve(url):
     """Resolve the given URL to an lxml tree.
     """
-    
+
     resolved = resolveResource(url)
     return html.fromstring(resolved).getroottree()
+
 
 def resolveResource(url):
     """Resolve the given URL to a unicode string. If the URL is an absolute
@@ -57,21 +59,21 @@ def resolveResource(url):
     if url.startswith('/'):
         site = getSite()
         portal_url = getToolByName(site, 'portal_url')
-	url = '/'.join(site.getPhysicalPath()) + url
+    url = '/'.join(site.getPhysicalPath()) + url
 
     response = subrequest(url)
     if response.status == 404:
         raise NotFound(url)
-    
+
     resolved = response.getBody()
-    
+
     if isinstance(resolved, str):
         charset = extractCharset(response)
         resolved = resolved.decode(charset)
-    
+
     if response.status != 200:
         raise RuntimeError(resolved)
-    
+
     return resolved
 
 
@@ -91,9 +93,11 @@ def xpath1(xpath, node, strict=True):
         else:
             return result
 
+
 def append_text(element, text):
     if text:
         element.text = (element.text or '') + text
+
 
 def append_tail(element, text):
     if text:
@@ -109,7 +113,7 @@ def replace_with_children(element, wrapper):
     if index == 0:
         previous = None
     else:
-        previous = parent[index-1]
+        previous = parent[index - 1]
     if wrapper is None:
         children = []
     else:
@@ -130,6 +134,7 @@ def replace_with_children(element, wrapper):
         for child in children:
             parent.insert(index, child)
 
+
 def replace_content(element, wrapper):
     """Similar to above but keeps parent tag
     """
@@ -137,11 +142,12 @@ def replace_content(element, wrapper):
     del element[:]
     element.extend(wrapper.getchildren())
 
+
 def getDefaultSiteLayout(context):
     """Get the path to the site layout to use by default for the given content
     object
     """
-    
+
     # Note: the sectionSiteLayout on context is for pages *under* context, not
     # necessarily context itself
 
@@ -152,22 +158,23 @@ def getDefaultSiteLayout(context):
             if getattr(layoutAware, 'sectionSiteLayout', None):
                 return layoutAware.sectionSiteLayout
         parent = aq_parent(aq_inner(parent))
-    
+
     registry = queryUtility(IRegistry)
     if registry is None:
         return None
-    
+
     return registry.get(DEFAULT_SITE_LAYOUT_REGISTRY_KEY)
+
 
 def getLayoutAwareSiteLayout(context):
     """Get the path to the site layout for a page. This is generally only
     appropriate for the view of this page. For a generic template or view, use
     getDefaultSiteLayout(context) instead.
     """
-    
+
     layoutAware = ILayoutAware(context, None)
     if layoutAware is not None:
         if getattr(layoutAware, 'pageSiteLayout', None):
             return layoutAware.pageSiteLayout
-    
+
     return getDefaultSiteLayout(context)

@@ -36,9 +36,11 @@ class IBlocksSettings(Interface):
             default=False,
         )
 
+
 class IOmittedField(Interface):
     """Marker interface for schema fields not to be shown to users
     """
+
 
 class ILayoutField(Interface):
     """Marker interface for the layout field
