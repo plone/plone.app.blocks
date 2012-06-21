@@ -59,7 +59,7 @@ def resolveResource(url):
     if url.startswith('/'):
         site = getSite()
         portal_url = getToolByName(site, 'portal_url')
-    url = '/'.join(site.getPhysicalPath()) + url
+        url = '/'.join(site.getPhysicalPath()) + url
 
     response = subrequest(url)
     if response.status == 404:
