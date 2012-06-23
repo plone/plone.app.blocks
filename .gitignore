@@ -1,2 +1,5 @@
 *.pyc
-*egg-info*
+
+/plone.app.blocks.egg-info/
+/dist/
+/build/
