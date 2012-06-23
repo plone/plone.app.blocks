@@ -20,7 +20,7 @@ setup(
                 "tests", "rendering.txt")).read() + "\n" +
         open(os.path.join("plone", "app", "blocks",
                 "tests", "esi.txt")).read() + "\n" +
-        open("CANGELOG.rst").read(),
+        open("CHANGELOG.rst").read(),
     classifiers=[
         "Framework :: Plone",
         "Programming Language :: Python",
