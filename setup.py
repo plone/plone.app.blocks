@@ -46,19 +46,17 @@ setup(
         'zope.i18nmessageid',
         'repoze.xmliter',
         'plone.tiles',
+        'plone.behavior',
         'plone.subrequest',
         'plone.resource',
         'plone.memoize',
-        'plone.registry',
         'plone.transformchain',
+        'plone.registry',
+        'plone.app.registry',
         'Acquisition',
         'Products.CMFCore',
         'Zope2',
     ],
     tests_require=tests_require,
     extras_require={'test': tests_require},
-    entry_points="""
-        [z3c.autoinclude.plugin]
-        target = plone
-        """,
     )
