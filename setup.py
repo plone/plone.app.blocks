@@ -2,6 +2,14 @@ from setuptools import setup, find_packages
 import os
 
 version = '1.0'
+tests_require = [
+    'plone.testing',
+    'plone.app.testing',
+    'zope.configuration',
+    'transaction',
+    'Products.BTreeFolder2',
+    'zExceptions',
+    ]
 
 setup(
     name='plone.app.blocks',
@@ -30,17 +38,25 @@ setup(
     install_requires=[
         'setuptools',
         'lxml',
-        'plone.app.registry',
-        'plone.behavior',
-        'plone.resource',
-        'plone.subrequest',
-        'plone.tiles>=1.0a2',
-        'plone.transformchain',
+        'zope.interface',
+        'zope.component',
+        'zope.publisher',
+        'zope.schema',
+        'zope.site',
+        'zope.i18nmessageid',
         'repoze.xmliter',
+        'plone.tiles',
+        'plone.subrequest',
+        'plone.resource',
+        'plone.memoize',
+        'plone.registry',
+        'plone.transformchain',
+        'Acquisition',
+        'Products.CMFCore',
+        'Zope2',
     ],
-    extras_require={
-      'test': ['plone.app.testing'],
-    },
+    tests_require=tests_require,
+    extras_require={'test': tests_require},
     entry_points="""
         [z3c.autoinclude.plugin]
         target = plone
