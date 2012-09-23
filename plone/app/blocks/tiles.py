@@ -1,3 +1,4 @@
+from zExceptions import NotFound
 from urlparse import urljoin
 
 from zope.component import queryUtility
@@ -32,7 +33,10 @@ def renderTiles(request, tree):
         tileHref = tileNode.attrib[utils.tileAttrib]
         if not tileHref.startswith('/'):
             tileHref = urljoin(baseURL, tileHref)
-        tileTree = utils.resolve(tileHref)
+        try:
+            tileTree = utils.resolve(tileHref)
+        except NotFound:
+            continue
         if tileTree is not None:
             tileRoot = tileTree.getroot()
             utils.replace_content(tileNode, tileRoot.find('head'))
@@ -41,7 +45,10 @@ def renderTiles(request, tree):
         tileHref = tileNode.attrib[utils.tileAttrib]
         if not tileHref.startswith('/'):
             tileHref = urljoin(baseURL, tileHref)
-        tileTree = utils.resolve(tileHref)
+        try:
+            tileTree = utils.resolve(tileHref)
+        except NotFound:
+            continue
         if tileTree is not None:
             tileRoot = tileTree.getroot()
             tileHead = tileRoot.find('head')
