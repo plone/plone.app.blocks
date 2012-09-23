@@ -1,10 +1,11 @@
-Introduction
-============
+======================
+Introduction to Blocks
+======================
 
 This package implements the 'blocks' rendering model, by providing several
 transform stages that hook into ``plone.transformchain``.
 
-The stages are:
+The rendering stages are:
 
  plone.app.blocks.parsexml (order 8000)
     Turns the response in a ``repoze.xmliter`` ``XMLSerializer`` object.
@@ -80,7 +81,7 @@ The ``ILayoutAware`` interface defines three properties:
   used for pages *underneath* the given page (but not for the page itself).
   Again, it can be ``None`` if the default is to be used.
 
-To make use of the page site layout, use the following:
+To make use of the page site layout, use the following::
 
     <html data-layout="./@@default-site-layout">
 
