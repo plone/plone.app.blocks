@@ -170,21 +170,30 @@ be rendered as normal.
       <body>
             <h1>Welcome!</h1>
             <div data-panel="panel1">
+                <div id="page-non-esi-tile" data-tile="./@@test.tile2/tile3?foo=bar">
             <p>
                 Non-ESI tile with query string foo=bar
             </p>
+        </div>
+                <div id="page-esi-tile" data-tile="./@@test.tile3/tile4?foo=bar">
             <p>
                 ESI tile with query string foo=bar
             </p>
-           </div>
+        </div>
+            </div>
+            <div id="layout-non-esi-tile" data-tile="./@@test.tile2/tile1">
             <p>
                 Non-ESI tile with query string 
             </p>
+        </div>
+            <div id="layout-esi-tile" data-tile="./@@test.tile3/tile2">
             <p>
                 ESI tile with query string 
             </p>
+        </div>
         </body>
     </html>
+    <BLANKLINE>
 
 ESI enabled
 -----------
@@ -211,22 +220,31 @@ tiles should be rendered as ESI links. See `plone.tiles`_ for more details.
         <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
         <title>Layout title</title>
         <meta name="tile-name" content="tile3" />
-        <meta name="tile-name" content="tile1" />        
+        <meta name="tile-name" content="tile1" />
       </head>
       <body>
             <h1>Welcome!</h1>
             <div data-panel="panel1">
+                <div id="page-non-esi-tile" data-tile="./@@test.tile2/tile3?foo=bar">
             <p>
                 Non-ESI tile with query string foo=bar
             </p>
+        </div>
+                <div id="page-esi-tile" data-tile="./@@test.tile3/tile4?foo=bar">
             <esi:include src="http://nohost/plone/@@test.tile3/tile4/@@esi-body?foo=bar" />
+        </div>
             </div>
+            <div id="layout-non-esi-tile" data-tile="./@@test.tile2/tile1">
             <p>
                 Non-ESI tile with query string 
             </p>
+        </div>
+            <div id="layout-esi-tile" data-tile="./@@test.tile3/tile2">
             <esi:include src="http://nohost/plone/@@test.tile3/tile2/@@esi-body?" />
+        </div>
         </body>
     </html>
+    <BLANKLINE>
 
 When ESI rendering takes place, the following URLs will be called:
 
