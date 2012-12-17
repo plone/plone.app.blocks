@@ -57,6 +57,10 @@ class PrettyPrintLayer(Layer):
 
 BLOCKS_FIXTURE = BlocksLayer()
 PRETTY_PRINT_FIXTURE = PrettyPrintLayer()
-BLOCKS_INTEGRATION_TESTING = IntegrationTesting(bases=(BLOCKS_FIXTURE,), name="Blocks:Integration")
-BLOCKS_FUNCTIONAL_TESTING = FunctionalTesting(bases=(BLOCKS_FIXTURE,), name="Blocks:Functional")
-BLOCKS_FUNCTIONAL_TESTING_PRETTY_PRINT = FunctionalTesting(bases=(PRETTY_PRINT_FIXTURE, BLOCKS_FIXTURE,), name="Blocks:Functional Pretty Printing")
+BLOCKS_INTEGRATION_TESTING = IntegrationTesting(
+    bases=(BLOCKS_FIXTURE,), name="Blocks:Integration")
+BLOCKS_FUNCTIONAL_TESTING = FunctionalTesting(
+    bases=(BLOCKS_FIXTURE,), name="Blocks:Functional")
+BLOCKS_FUNCTIONAL_TESTING_PRETTY_PRINT = FunctionalTesting(
+    bases=(PRETTY_PRINT_FIXTURE, BLOCKS_FIXTURE,),
+    name="Blocks:Functional Pretty Printing")

@@ -18,7 +18,6 @@ from Acquisition import aq_parent
 
 from zExceptions import NotFound
 
-from Products.CMFCore.utils import getToolByName
 
 headXPath = etree.XPath("/html/head")
 layoutAttrib = 'data-layout'

@@ -46,7 +46,8 @@ class TestSiteLayout(unittest.TestCase):
 
         self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = None
 
-        view = getMultiAdapter((self.portal, self.request,), name=u'default-site-layout')
+        view = getMultiAdapter((self.portal, self.request,),
+                               name=u'default-site-layout')
         self.assertRaises(NotFound, view)
 
     def test_default_site_layout(self):
@@ -54,15 +55,18 @@ class TestSiteLayout(unittest.TestCase):
         if hasattr(self.portal, ATTR):
             delattr(self.portal, ATTR)
 
-        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = '/++sitelayout++testlayout1/site.html'
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
+            '/++sitelayout++testlayout1/site.html'
 
-        view = getMultiAdapter((self.portal, self.request,), name=u'default-site-layout')
+        view = getMultiAdapter((self.portal, self.request,),
+                               name=u'default-site-layout')
         rendered = view()
 
         self.assertTrue(u"Layout title" in rendered)
 
     def test_default_site_layout_section_override(self):
-        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = '/++sitelayout++testlayout1/site.html'
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
+            '/++sitelayout++testlayout1/site.html'
 
         class FolderLayoutAware(object):
             implements(ILayoutAware)
@@ -79,16 +83,19 @@ class TestSiteLayout(unittest.TestCase):
         sm = getSiteManager()
         sm.registerAdapter(FolderLayoutAware)
 
-        view = getMultiAdapter((self.portal['f1']['d1'], self.request,), name=u'default-site-layout')
+        view = getMultiAdapter((self.portal['f1']['d1'], self.request,),
+                               name=u'default-site-layout')
         rendered = view()
 
         self.assertFalse(u"Layout title" in rendered)
         self.assertTrue(u"Layout 2 title" in rendered)
 
     def test_default_site_layout_section_no_override(self):
-        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = '/++sitelayout++testlayout1/site.html'
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
+            '/++sitelayout++testlayout1/site.html'
 
-        view = getMultiAdapter((self.portal['f1']['d1'], self.request,), name=u'default-site-layout')
+        view = getMultiAdapter((self.portal['f1']['d1'], self.request,),
+                               name=u'default-site-layout')
         rendered = view()
 
         self.assertFalse(u"Layout 2 title" in rendered)
@@ -101,28 +108,30 @@ class TestSiteLayout(unittest.TestCase):
 
         resources = getToolByName(self.portal, 'portal_resources')
         resources._setOb('sitelayout', BTreeFolder2('sitelayout'))
-        resources['sitelayout']._setOb('testlayout3', BTreeFolder2('testlayout3'))
-        resources['sitelayout']['testlayout3']._setOb('site.html',
-                File('site.html', 'site.html', StringIO(
-                            '<html><head><title>ZODB test</title></head></html>')
-                        )
-            )
+        resources['sitelayout']._setOb('testlayout3',
+                                       BTreeFolder2('testlayout3'))
+        resources['sitelayout']['testlayout3']._setOb(
+            'site.html', File('site.html', 'site.html', StringIO(
+                '<html><head><title>ZODB test</title></head></html>'))
+        )
 
-        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = '/++sitelayout++testlayout3/site.html'
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
+            '/++sitelayout++testlayout3/site.html'
 
-        view = getMultiAdapter((self.portal, self.request,), name=u'default-site-layout')
+        view = getMultiAdapter((self.portal, self.request,),
+                               name=u'default-site-layout')
         rendered = view()
 
         self.assertTrue(u"ZODB test" in rendered)
 
         resources['sitelayout']['testlayout3']._delOb('site.html')
-        resources['sitelayout']['testlayout3']._setOb('site.html',
-                File('site.html', 'site.html', StringIO(
-                            '<html><head><title>Cache test</title></head></html>')
-                        )
-            )
+        resources['sitelayout']['testlayout3']._setOb(
+            'site.html', File('site.html', 'site.html', StringIO(
+                '<html><head><title>Cache test</title></head></html>'))
+        )
 
-        view = getMultiAdapter((self.portal, self.request,), name=u'default-site-layout')
+        view = getMultiAdapter((self.portal, self.request,),
+                               name=u'default-site-layout')
         rendered = view()
 
         self.assertFalse(u"Cache test" in rendered)  # hidden by cache
@@ -135,16 +144,18 @@ class TestSiteLayout(unittest.TestCase):
 
         resources = getToolByName(self.portal, 'portal_resources')
         resources._setOb('sitelayout', BTreeFolder2('sitelayout'))
-        resources['sitelayout']._setOb('testlayout3', BTreeFolder2('testlayout3'))
-        resources['sitelayout']['testlayout3']._setOb('site.html',
-                File('site.html', 'site.html', StringIO(
-                            '<html><head><title>ZODB test</title></head></html>')
-                        )
-            )
+        resources['sitelayout']._setOb('testlayout3',
+                                       BTreeFolder2('testlayout3'))
+        resources['sitelayout']['testlayout3']._setOb(
+            'site.html', File('site.html', 'site.html', StringIO(
+                '<html><head><title>ZODB test</title></head></html>'))
+        )
 
-        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = '/++sitelayout++testlayout3/site.html'
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
+            '/++sitelayout++testlayout3/site.html'
 
-        view = getMultiAdapter((self.portal, self.request,), name=u'default-site-layout')
+        view = getMultiAdapter((self.portal, self.request,),
+                               name=u'default-site-layout')
         rendered = view()
 
         self.assertTrue(u"ZODB test" in rendered)
@@ -155,13 +166,13 @@ class TestSiteLayout(unittest.TestCase):
 
         # Modify the site layout
         resources['sitelayout']['testlayout3']._delOb('site.html')
-        resources['sitelayout']['testlayout3']._setOb('site.html',
-                File('site.html', 'site.html', StringIO(
-                            '<html><head><title>Cache test</title></head></html>')
-                        )
-            )
+        resources['sitelayout']['testlayout3']._setOb(
+            'site.html', File('site.html', 'site.html', StringIO(
+                '<html><head><title>Cache test</title></head></html>'))
+        )
 
-        view = getMultiAdapter((self.portal, self.request,), name=u'default-site-layout')
+        view = getMultiAdapter((self.portal, self.request,),
+                               name=u'default-site-layout')
         rendered = view()
 
         self.assertTrue(u"Cache test" in rendered)
@@ -172,17 +183,21 @@ class TestSiteLayout(unittest.TestCase):
         if hasattr(self.portal, ATTR):
             delattr(self.portal, ATTR)
 
-        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = '/++sitelayout++testlayout1/site.html'
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
+            '/++sitelayout++testlayout1/site.html'
 
-        view = getMultiAdapter((self.portal, self.request,), name=u'default-site-layout')
+        view = getMultiAdapter((self.portal, self.request,),
+                               name=u'default-site-layout')
         rendered = view()
 
         self.assertTrue(u"Layout title" in rendered)
 
         # Trigger invalidation by modifying the global site layout selection
-        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = '/++sitelayout++testlayout2/mylayout.html'
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
+            '/++sitelayout++testlayout2/mylayout.html'
 
-        view = getMultiAdapter((self.portal, self.request,), name=u'default-site-layout')
+        view = getMultiAdapter((self.portal, self.request,),
+                               name=u'default-site-layout')
         rendered = view()
 
         self.assertTrue(u"Layout 2 title" in rendered)

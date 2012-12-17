@@ -25,7 +25,7 @@ def merge(request, pageTree, removePanelLinks=False, removeLayoutLink=True):
     pagePanels = dict(
         (node.attrib['data-panel'], node)
         for node in utils.panelXPath(pageTree)
-        )
+    )
 
     for layoutPanelNode in utils.panelXPath(layoutTree):
         panelId = layoutPanelNode.attrib['data-panel']

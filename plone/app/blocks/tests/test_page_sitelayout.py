@@ -35,17 +35,21 @@ class TestPageSiteLayout(unittest.TestCase):
 
     def test_page_site_layout_no_registry_key(self):
         self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = None
-        view = getMultiAdapter((self.portal['f1']['d1'], self.request,), name=u'page-site-layout')
+        view = getMultiAdapter((self.portal['f1']['d1'], self.request,),
+                               name=u'page-site-layout')
         self.assertRaises(NotFound, view)
 
     def test_page_site_layout_default(self):
-        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = '/++sitelayout++testlayout1/site.html'
-        view = getMultiAdapter((self.portal['f1']['d1'], self.request,), name=u'page-site-layout')
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
+            '/++sitelayout++testlayout1/site.html'
+        view = getMultiAdapter((self.portal['f1']['d1'], self.request,),
+                               name=u'page-site-layout')
         rendered = view()
         self.assertTrue(u"Layout title" in rendered)
 
     def test_page_site_layout_page_override(self):
-        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = '/++sitelayout++testlayout1/site.html'
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
+            '/++sitelayout++testlayout1/site.html'
 
         class DocumentLayoutAware(object):
             implements(ILayoutAware)
@@ -61,7 +65,8 @@ class TestPageSiteLayout(unittest.TestCase):
         sm = getGlobalSiteManager()
         sm.registerAdapter(DocumentLayoutAware)
 
-        view = getMultiAdapter((self.portal['f1']['d1'], self.request,), name=u'page-site-layout')
+        view = getMultiAdapter((self.portal['f1']['d1'], self.request,),
+                               name=u'page-site-layout')
         rendered = view()
 
         sm.unregisterAdapter(DocumentLayoutAware)
@@ -70,7 +75,8 @@ class TestPageSiteLayout(unittest.TestCase):
         self.assertTrue(u"Layout 2 title" in rendered)
 
     def test_page_site_layout_section_override(self):
-        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = '/++sitelayout++testlayout1/site.html'
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
+            '/++sitelayout++testlayout1/site.html'
 
         class FolderLayoutAware(object):
             implements(ILayoutAware)
@@ -86,7 +92,8 @@ class TestPageSiteLayout(unittest.TestCase):
         sm = getGlobalSiteManager()
         sm.registerAdapter(FolderLayoutAware)
 
-        view = getMultiAdapter((self.portal['f1']['d1'], self.request,), name=u'page-site-layout')
+        view = getMultiAdapter((self.portal['f1']['d1'], self.request,),
+                               name=u'page-site-layout')
         rendered = view()
 
         sm.unregisterAdapter(FolderLayoutAware)
@@ -95,7 +102,8 @@ class TestPageSiteLayout(unittest.TestCase):
         self.assertTrue(u"Layout 2 title" in rendered)
 
     def test_page_site_layout_cache(self):
-        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = '/++sitelayout++testlayout1/site.html'
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
+            '/++sitelayout++testlayout1/site.html'
 
         currentSectionSiteLayout = '/++sitelayout++testlayout2/mylayout.html'
 
@@ -116,7 +124,8 @@ class TestPageSiteLayout(unittest.TestCase):
         sm = getGlobalSiteManager()
         sm.registerAdapter(FolderLayoutAware)
 
-        view = getMultiAdapter((self.portal['f1']['d1'], self.request,), name=u'page-site-layout')
+        view = getMultiAdapter((self.portal['f1']['d1'], self.request,),
+                               name=u'page-site-layout')
         rendered = view()
 
         self.assertFalse(u"Layout title" in rendered)
@@ -125,7 +134,8 @@ class TestPageSiteLayout(unittest.TestCase):
         # Change the section value
         currentSectionSiteLayout = '/++sitelayout++testlayout1/site.html'
 
-        view = getMultiAdapter((self.portal['f1']['d1'], self.request,), name=u'page-site-layout')
+        view = getMultiAdapter((self.portal['f1']['d1'], self.request,),
+                               name=u'page-site-layout')
         rendered = view()
 
         sm.unregisterAdapter(FolderLayoutAware)
@@ -136,7 +146,8 @@ class TestPageSiteLayout(unittest.TestCase):
 
     def test_page_site_layout_cache_invalidate_mtime(self):
 
-        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = '/++sitelayout++testlayout1/site.html'
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
+            '/++sitelayout++testlayout1/site.html'
 
         currentSectionSiteLayout = '/++sitelayout++testlayout2/mylayout.html'
 
@@ -157,7 +168,8 @@ class TestPageSiteLayout(unittest.TestCase):
         sm = getGlobalSiteManager()
         sm.registerAdapter(FolderLayoutAware)
 
-        view = getMultiAdapter((self.portal['f1']['d1'], self.request,), name=u'page-site-layout')
+        view = getMultiAdapter((self.portal['f1']['d1'], self.request,),
+                               name=u'page-site-layout')
         rendered = view()
 
         self.assertFalse(u"Layout title" in rendered)
@@ -170,7 +182,8 @@ class TestPageSiteLayout(unittest.TestCase):
         # Change the section value
         currentSectionSiteLayout = '/++sitelayout++testlayout1/site.html'
 
-        view = getMultiAdapter((self.portal['f1']['d1'], self.request,), name=u'page-site-layout')
+        view = getMultiAdapter((self.portal['f1']['d1'], self.request,),
+                               name=u'page-site-layout')
         rendered = view()
 
         sm.unregisterAdapter(FolderLayoutAware)
@@ -180,7 +193,8 @@ class TestPageSiteLayout(unittest.TestCase):
         self.assertFalse(u"Layout 2 title" in rendered)
 
     def test_page_site_layout_cache_invalidate_catalog_counter(self):
-        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = '/++sitelayout++testlayout1/site.html'
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
+            '/++sitelayout++testlayout1/site.html'
 
         currentSectionSiteLayout = '/++sitelayout++testlayout2/mylayout.html'
 
@@ -201,7 +215,8 @@ class TestPageSiteLayout(unittest.TestCase):
         sm = getGlobalSiteManager()
         sm.registerAdapter(FolderLayoutAware)
 
-        view = getMultiAdapter((self.portal['f1']['d1'], self.request,), name=u'page-site-layout')
+        view = getMultiAdapter((self.portal['f1']['d1'], self.request,),
+                               name=u'page-site-layout')
         rendered = view()
 
         self.assertFalse(u"Layout title" in rendered)
@@ -213,7 +228,8 @@ class TestPageSiteLayout(unittest.TestCase):
         # Change the section value
         currentSectionSiteLayout = '/++sitelayout++testlayout1/site.html'
 
-        view = getMultiAdapter((self.portal['f1']['d1'], self.request,), name=u'page-site-layout')
+        view = getMultiAdapter((self.portal['f1']['d1'], self.request,),
+                               name=u'page-site-layout')
         rendered = view()
 
         sm.unregisterAdapter(FolderLayoutAware)
@@ -223,7 +239,8 @@ class TestPageSiteLayout(unittest.TestCase):
         self.assertFalse(u"Layout 2 title" in rendered)
 
     def test_page_site_layout_cache_invalidate_registry_key(self):
-        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = '/++sitelayout++testlayout1/site.html'
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
+            '/++sitelayout++testlayout1/site.html'
 
         currentSectionSiteLayout = '/++sitelayout++testlayout2/mylayout.html'
 
@@ -244,19 +261,22 @@ class TestPageSiteLayout(unittest.TestCase):
         sm = getGlobalSiteManager()
         sm.registerAdapter(FolderLayoutAware)
 
-        view = getMultiAdapter((self.portal['f1']['d1'], self.request,), name=u'page-site-layout')
+        view = getMultiAdapter((self.portal['f1']['d1'], self.request,),
+                               name=u'page-site-layout')
         rendered = view()
 
         self.assertFalse(u"Layout title" in rendered)
         self.assertTrue(u"Layout 2 title" in rendered)
 
         # Trigger invalidation by modifying the global registry key
-        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = '/++sitelayout++testlayout2/mylayout.html'
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
+            '/++sitelayout++testlayout2/mylayout.html'
 
         # Change the section value
         currentSectionSiteLayout = '/++sitelayout++testlayout1/site.html'
 
-        view = getMultiAdapter((self.portal['f1']['d1'], self.request,), name=u'page-site-layout')
+        view = getMultiAdapter((self.portal['f1']['d1'], self.request,),
+                               name=u'page-site-layout')
         rendered = view()
 
         sm.unregisterAdapter(FolderLayoutAware)

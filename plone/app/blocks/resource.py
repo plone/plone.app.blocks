@@ -73,9 +73,9 @@ class AvailableLayoutsVocabulary(object):
         return SimpleVocabulary(items)
 
 AvailableSiteLayoutsVocabularyFactory = AvailableLayoutsVocabulary(
-        SITE_LAYOUT_MANIFEST_FORMAT,
-        SITE_LAYOUT_FILE_NAME,
-    )
+    SITE_LAYOUT_MANIFEST_FORMAT,
+    SITE_LAYOUT_FILE_NAME,
+)
 
 
 def cacheKey(method, self):
@@ -89,9 +89,9 @@ def cacheKey(method, self):
     catalog = getToolByName(self.context, 'portal_catalog')
 
     return (
-            getattr(self.context, '_p_mtime', None),
-            catalog.getCounter(),
-        )
+        getattr(self.context, '_p_mtime', None),
+        catalog.getCounter(),
+    )
 
 
 @adapter(IRecordModifiedEvent)

@@ -9,23 +9,25 @@ tests_require = [
     'transaction',
     'Products.BTreeFolder2',
     'zExceptions',
-    ]
+]
 
 setup(
     name='plone.app.blocks',
     version=version,
     description="Implements the in-Plone blocks rendering process",
-    long_description=open("README.rst").read() + "\n" +
+    long_description='%s\n%s\n%s\n%s' % (
+        open("README.rst").read(),
         open(os.path.join("plone", "app", "blocks",
-                "tests", "rendering.txt")).read() + "\n" +
+                          "tests", "rendering.txt")).read(),
         open(os.path.join("plone", "app", "blocks",
-                "tests", "esi.txt")).read() + "\n" +
+                          "tests", "esi.txt")).read(),
         open("CHANGELOG.rst").read(),
+    ),
     classifiers=[
         "Framework :: Plone",
         "Programming Language :: Python",
         "Topic :: Software Development :: Libraries :: Python Modules",
-        ],
+    ],
     keywords='plone blocks deco',
     author='Martin Aspeli, Laurence Rowe',
     author_email='optilude@gmail.com',
@@ -59,4 +61,4 @@ setup(
     ],
     tests_require=tests_require,
     extras_require={'test': tests_require},
-    )
+)

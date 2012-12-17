@@ -8,10 +8,11 @@ from plone.resource.manifest import ManifestFormat
 SITE_LAYOUT_RESOURCE_NAME = "sitelayout"
 SITE_LAYOUT_FILE_NAME = "site.html"
 
-SITE_LAYOUT_MANIFEST_FORMAT = ManifestFormat(SITE_LAYOUT_RESOURCE_NAME,
-        keys=('title', 'description', 'file'),
-        defaults={'file': SITE_LAYOUT_FILE_NAME},
-    )
+SITE_LAYOUT_MANIFEST_FORMAT = ManifestFormat(
+    SITE_LAYOUT_RESOURCE_NAME,
+    keys=('title', 'description', 'file'),
+    defaults={'file': SITE_LAYOUT_FILE_NAME},
+)
 
 DEFAULT_SITE_LAYOUT_REGISTRY_KEY = 'plone.defaultSiteLayout'
 
@@ -29,12 +30,12 @@ class IBlocksSettings(Interface):
     """
 
     esi = schema.Bool(
-            title=_(u"Enable Edge Side Includes"),
-            description=_(u"Allows tiles which support Edge Side Includes "
-                          u"(ESI) to be rendered as ESI links instead of "
-                          u"invoked directly."),
-            default=False,
-        )
+        title=_(u"Enable Edge Side Includes"),
+        description=_(u"Allows tiles which support Edge Side Includes "
+                      u"(ESI) to be rendered as ESI links instead of "
+                      u"invoked directly."),
+        default=False,
+    )
 
 
 class IOmittedField(Interface):
