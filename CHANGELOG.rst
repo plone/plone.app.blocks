@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.1 (unreleased)
+1.1 (2012-12-17)
 ----------------
 
 - make sure to use correct url of tile
