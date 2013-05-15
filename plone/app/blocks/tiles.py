@@ -28,7 +28,9 @@ def renderTiles(request, tree):
     root = tree.getroot()
     headNode = root.find('head')
     baseURL = request.getURL()
-
+    if request.getVirtualRoot():
+        # plone.subrequest deals with VHM requests
+        baseURL = ''
     for tileNode in utils.headTileXPath(tree):
         tileHref = tileNode.attrib[utils.tileAttrib]
         if not tileHref.startswith('/'):
