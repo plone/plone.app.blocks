@@ -234,11 +234,11 @@ life, these could be registered using the standard ``<browser:page />`` and
     ...             This is a demo tile with id %(name)s
     ...         </p>
     ...         <p>
-    ...             Magic number: %(number)d; Form: %(form)s; Query string: %(queryString)s
+    ...             Magic number: %(number)d; Form: %(form)s; Query string: %(queryString)s; URL: %(url)s
     ...         </p>
     ...     </body>
     ... </html>""" % dict(name=self.id, number=self.data['magicNumber'] or -1,
-    ...                   form=sorted(self.request.form.items()), queryString=self.request['QUERY_STRING'])
+    ...                   form=sorted(self.request.form.items()), queryString=self.request['QUERY_STRING'], url=self.request.getURL())
 
 Let's add another tile, this time only a head part. This could for example
 be a tile that only needs to insert some CSS.
@@ -327,7 +327,7 @@ working, it should perform its magic. We make sure that Zope is in
                 This is a demo tile with id tile2
             </p>
             <p>
-                Magic number: 2; Form: [('magicNumber', 2)]; Query string: magicNumber:int=2
+                Magic number: 2; Form: [('magicNumber', 2)]; Query string: magicNumber:int=2; URL: http://nohost/plone/@@test.tile1/tile2
             </p>
         </div>
             </div>
@@ -338,7 +338,7 @@ working, it should perform its magic. We make sure that Zope is in
                 This is a demo tile with id tile3
             </p>
             <p>
-                Magic number: -1; Form: []; Query string: 
+                Magic number: -1; Form: []; Query string: ; URL: http://nohost/plone/@@test.tile1/tile3
             </p>
         </div>
             </div>
@@ -349,7 +349,7 @@ working, it should perform its magic. We make sure that Zope is in
                 This is a demo tile with id tile2
             </p>
             <p>
-                Magic number: -1; Form: []; Query string: 
+                Magic number: -1; Form: []; Query string: ; URL: http://nohost/plone/@@test.tile1/tile2
             </p>
         </div>
             </div>
@@ -367,3 +367,32 @@ Notice how:
 * The tiles have been rendered, replacing the relevant placeholders
 * The ``<head />`` section from the rendered tiles has been merged into the
   ``<head />`` of the output page.
+
+Using VHM
+~~~~~~~~~~~~~~~~~~
+
+Make sure to have a clean browser ::
+
+    >>> browser = Browser(app)
+    >>> browser.handleErrors = False
+
+Using Virtual Host Monster we rewrite the url to consider all content being under /::
+
+    >>> vhm_url = 'http://nohost/VirtualHostBase/http/nohost:80/plone/VirtualHostRoot/'
+    >>> browser.open(vhm_url + '/@@test-page')
+
+Tiles should return an url according to this::
+
+    >>> 'Magic number: -1; Form: []; Query string: ; URL: http://nohost/@@test.tile1/tile2' in browser.contents
+    True
+
+Now we deal with _vh_* arguments. We expect our site to be under a subdir with id *subplone* ::
+
+    >>> vhm_url = 'http://nohost/VirtualHostBase/http/nohost:80/plone/VirtualHostRoot/_vh_subplone'
+    >>> browser.open(vhm_url + '/@@test-page')
+
+Tiles should return an url according to this::
+
+    >>> 'Magic number: -1; Form: []; Query string: ; URL: http://nohost/subplone/@@test.tile1/tile2' in browser.contents
+    True
+
