@@ -15,6 +15,9 @@ def merge(request, pageTree, removePanelLinks=False, removeLayoutLink=True):
 
     # Resolve layout tree
     baseURL = request.getURL()
+    if request.getVirtualRoot():
+        # plone.subrequest deals with VHM requests
+        baseURL = ''
     layoutHref = urljoin(baseURL, layoutHref)  # turn the link absolute
     layoutTree = utils.resolve(layoutHref)
     if layoutTree is None:
