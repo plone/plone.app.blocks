@@ -80,8 +80,9 @@ class ParseXML(object):
             return None
 
         try:
-            root = etree.ElementTree(etree.fromstring(''.join(result)))
-            result = XMLSerializer(root, html.tostring, self.pretty_print)
+            if not isinstance(result, XMLSerializer):
+                root = etree.ElementTree(etree.fromstring(''.join(result)))
+                result = XMLSerializer(root, html.tostring, self.pretty_print)
             self.request['plone.app.blocks.enabled'] = True
             return result
         except (TypeError, etree.ParseError):
