@@ -131,21 +131,22 @@ that.
     >>> print browser.contents
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
-      <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
-        <title>Layout title</title>
-        <link rel="stylesheet" href="/layout/style.css" />
-        <script type="text/javascript">alert('layout');</script>
-        <style type="text/css">
+        <head><meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
+            <title>Layout title</title>
+            <link rel="stylesheet" href="/layout/style.css" />
+            <script type="text/javascript">alert('layout');</script>
+    <BLANKLINE>
+            <style type="text/css">
             div {
                 margin: 5px;
                 border: dotted black 1px;
                 padding: 5px;
             }
             </style>
-        <link rel="stylesheet" data-tile="./@@test.tile_nobody/tile_css" />
-      </head>
-      <body>
+    <BLANKLINE>
+            <link rel="stylesheet" data-tile="./@@test.tile_nobody/tile_css" />
+        </head>
+        <body>
             <h1>Welcome!</h1>
             <div data-panel="panel1">Layout panel 1</div>
             <div data-panel="panel2">
@@ -158,6 +159,7 @@ that.
             </div>
         </body>
     </html>
+    <BLANKLINE>
 
 We can now set this as the site-wide default layout by setting the registry
 key ``plone.defaultSiteLayout``. There are two indirection views,
@@ -296,29 +298,29 @@ working, it should perform its magic. We make sure that Zope is in
 "development mode" to get pretty-printed output.
 
     >>> browser.open(portal.absolute_url() + '/@@test-page')
-    >>> print browser.contents
+
+    >> print browser.contents
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
-      <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
-        <title>Layout title</title>
-        <link rel="stylesheet" href="/layout/style.css" />
-        <script type="text/javascript">alert('layout');</script>
-        <style type="text/css">
+        <head><meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
+            <title>Layout title</title>
+            <link rel="stylesheet" href="/layout/style.css" />
+            <script type="text/javascript">alert('layout');</script>
+    <BLANKLINE>
+            <style type="text/css">
             div {
                 margin: 5px;
                 border: dotted black 1px;
                 padding: 5px;
             }
             </style>
-        <link rel="stylesheet" data-tile="./@@test.tile_nobody/tile_css">
-          <link rel="stylesheet" type="text/css" href="tiled.css" />
+    <BLANKLINE>
         </link>
         <meta name="tile-name" content="tile2" />
         <meta name="tile-name" content="tile3" />
         <meta name="tile-name" content="tile2" />
-      </head>
-      <body>
+        </head>
+        <body>
             <h1>Welcome!</h1>
             <div data-panel="panel1">
                 Page panel 1
