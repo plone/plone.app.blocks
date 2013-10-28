@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.2'
+version = '1.1.2dev'
 tests_require = [
     'plone.testing',
     'plone.app.testing',
@@ -18,9 +18,9 @@ setup(
     long_description='%s\n%s\n%s\n%s' % (
         open("README.rst").read(),
         open(os.path.join("plone", "app", "blocks",
-                          "tests", "rendering.txt")).read(),
+                          "tests", "rendering.rst")).read(),
         open(os.path.join("plone", "app", "blocks",
-                          "tests", "esi.txt")).read(),
+                          "tests", "esi.rst")).read(),
         open("CHANGELOG.rst").read(),
     ),
     classifiers=[
