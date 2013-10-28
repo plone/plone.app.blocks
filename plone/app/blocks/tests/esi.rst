@@ -24,7 +24,7 @@ compose the page from fragments that may be cached individually.
 Test setup
 ----------
 
-Let's first register a two very simple tiles. One uses ESI, one does not.
+Let's first register a two very simple tiles. One uses ESI, one does not::
 
     >>> from plone.tiles.esi import ESITile
     >>> from plone.tiles import Tile
@@ -74,7 +74,7 @@ Let's first register a two very simple tiles. One uses ESI, one does not.
     ...     description=u"A tile used for testing",
     ...     add_permission="cmf.ManagePortal")
 
-Register these in the same way that the ZCML handlers would, more or less.
+Register these in the same way that the ZCML handlers would, more or less::
 
     >>> from Products.Five.security import protectClass
     >>> protectClass(NonESITile, 'zope2.View')
@@ -91,7 +91,7 @@ Register these in the same way that the ZCML handlers would, more or less.
     >>> provideAdapter(SimpleESITile, (Interface, Interface,), Interface, u'test.tile3',)
     >>> provideUtility(testTile3Type, name=u'test.tile3')
 
-We will also register a simple layout and a simple page using these tiles.
+We will also register a simple layout and a simple page using these tiles::
 
     >>> layoutHTML = u"""\
     ... <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -110,7 +110,7 @@ We will also register a simple layout and a simple page using these tiles.
 
 To keep things simple, we'll skip the resource directory and layout
 indirection view, instead just referencing a view containing the layout
-directly.
+directly::
 
     >>> from zope.publisher.browser import BrowserView
     >>> class Layout(BrowserView):
@@ -147,7 +147,7 @@ ESI disabled
 ------------
 
 We first render the page without enabling ESI. The ESI-capable tiles should
-be rendered as normal.
+be rendered as normal::
 
     >>> from plone.testing.z2 import Browser
     >>> app = layer['app']
@@ -158,16 +158,15 @@ be rendered as normal.
     >>> browser.open(portal.absolute_url() + '/@@test-page')
     >>> print browser.contents
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-    <html xmlns="http://www.w3.org/1999/xhtml">
-      <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
-        <title>Layout title</title>
-        <meta name="tile-name" content="tile3" />
-        <meta name="tile-name" content="tile4" />
-        <meta name="tile-name" content="tile1" />
-        <meta name="tile-name" content="tile2" />
-      </head>
-      <body>
+    <html>
+        <head>
+            <title>Layout title</title>
+        <meta name="tile-name" content="tile3">
+        <meta name="tile-name" content="tile4">
+        <meta name="tile-name" content="tile1">
+        <meta name="tile-name" content="tile2">
+        </head>
+        <body>
             <h1>Welcome!</h1>
             <div data-panel="panel1">
                 <div id="page-non-esi-tile" data-tile="./@@test.tile2/tile3?foo=bar">
@@ -200,7 +199,7 @@ ESI enabled
 
 We can now enable ESI. This could be done using GenericSetup (with the
 ``registry.xml`` import step), or through the configuration registry
-control panel. In code, it is done like so:
+control panel. In code, it is done like so::
 
     >>> from zope.component import getUtility
     >>> from plone.registry.interfaces import IRegistry
@@ -210,19 +209,18 @@ control panel. In code, it is done like so:
     >>> import transaction; transaction.commit()
 
 We can now perform the same rendering again. This time, the ESI-capable
-tiles should be rendered as ESI links. See `plone.tiles`_ for more details.
+tiles should be rendered as ESI links. See `plone.tiles`_ for more details::
 
     >>> browser.open(portal.absolute_url() + '/@@test-page')
     >>> print browser.contents
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-    <html xmlns:esi="http://www.edge-delivery.org/esi/1.0" xmlns="http://www.w3.org/1999/xhtml">
-      <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
-        <title>Layout title</title>
-        <meta name="tile-name" content="tile3" />
-        <meta name="tile-name" content="tile1" />
-      </head>
-      <body>
+    <html xmlns:esi="http://www.edge-delivery.org/esi/1.0">
+        <head>
+            <title>Layout title</title>
+        <meta name="tile-name" content="tile3">
+        <meta name="tile-name" content="tile1">
+        </head>
+        <body>
             <h1>Welcome!</h1>
             <div data-panel="panel1">
                 <div id="page-non-esi-tile" data-tile="./@@test.tile2/tile3?foo=bar">
@@ -246,7 +244,7 @@ tiles should be rendered as ESI links. See `plone.tiles`_ for more details.
     </html>
     <BLANKLINE>
 
-When ESI rendering takes place, the following URLs will be called:
+When ESI rendering takes place, the following URLs will be called::
 
     >>> browser.open("http://nohost/plone/@@test.tile3/tile4/@@esi-body?foo=bar")
     >>> print browser.contents

@@ -45,7 +45,7 @@ Rendering step-by-step
 ----------------------
 
 Let us now illustrate the rendering process. We'll need a few variables
-defined first:
+defined first::
 
     >>> from plone.testing.z2 import Browser
     >>> import transaction
@@ -71,7 +71,7 @@ First, we will create a resource representing the site layout and its panels.
 This includes some resources and other elements in the ``<head />``,
 ``<link />`` tags which identify tile placeholders and panels, as well as
 content inside and outside panels. The tiles in this case are managed by
-``plone.tiles``, and are both of the same type.
+``plone.tiles``, and are both of the same type::
 
     >>> layoutHTML = """\
     ... <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -109,7 +109,7 @@ content inside and outside panels. The tiles in this case are managed by
 We can create an in-ZODB resource directory of type ``sitelayout`` that
 contains this layout. Another way would be to register a resource directory
 in a package using ZCML, or use a global resource directory. See
-``plone.resource`` for more details.
+``plone.resource`` for more details::
 
     >>> from Products.CMFCore.utils import getToolByName
     >>> from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2
@@ -125,27 +125,28 @@ in a package using ZCML, or use a global resource directory. See
     
 This resource can now be accessed using the path
 ``/++sitelayout++mylayout/site.html``. Let's render it on its own to verify
-that.
+that::
 
     >>> browser.open(portal.absolute_url() + '/++sitelayout++mylayout/site.html')
     >>> print browser.contents
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-    <html xmlns="http://www.w3.org/1999/xhtml">
-      <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
-        <title>Layout title</title>
-        <link rel="stylesheet" href="/layout/style.css" />
-        <script type="text/javascript">alert('layout');</script>
-        <style type="text/css">
+    <html>
+        <head>
+            <title>Layout title</title>
+            <link rel="stylesheet" href="/layout/style.css">
+            <script type="text/javascript">alert('layout');</script>
+    <BLANKLINE>
+            <style type="text/css">
             div {
                 margin: 5px;
                 border: dotted black 1px;
                 padding: 5px;
             }
             </style>
-        <link rel="stylesheet" data-tile="./@@test.tile_nobody/tile_css" />
-      </head>
-      <body>
+    <BLANKLINE>
+            <link rel="stylesheet" data-tile="./@@test.tile_nobody/tile_css">
+        </head>
+        <body>
             <h1>Welcome!</h1>
             <div data-panel="panel1">Layout panel 1</div>
             <div data-panel="panel2">
@@ -158,12 +159,13 @@ that.
             </div>
         </body>
     </html>
+    <BLANKLINE>
 
 We can now set this as the site-wide default layout by setting the registry
 key ``plone.defaultSiteLayout``. There are two indirection views,
 ``@@default-site-layout`` and ``@@page-site-layout``, that respect this
 registry setting. By using one of these views to reference the layout of
-a given page, we can manage the default site layout centrally.
+a given page, we can manage the default site layout centrally::
 
     >>> from zope.component import getUtility
     >>> from plone.registry.interfaces import IRegistry
@@ -175,7 +177,7 @@ Creating a page layout and tiles
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Next, we will define the markup of a content page that uses this layout via
-the ``@@default-site-layout`` indirection view:
+the ``@@default-site-layout`` indirection view::
 
     >>> pageHTML = """\
     ... <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -204,7 +206,7 @@ which we can use to test tile rendering.
 We do this in code for the purposes of the test, and we have to apply security
 because we will shortly render those pages using the test publisher. In real
 life, these could be registered using the standard ``<browser:page />`` and
-``<plone:tile />`` directives.
+``<plone:tile />`` directives::
 
     >>> from zope.publisher.browser import BrowserView
     >>> from zope.interface import Interface, implements
@@ -241,7 +243,7 @@ life, these could be registered using the standard ``<browser:page />`` and
     ...                   form=sorted(self.request.form.items()), queryString=self.request['QUERY_STRING'], url=self.request.getURL())
 
 Let's add another tile, this time only a head part. This could for example
-be a tile that only needs to insert some CSS.
+be a tile that only needs to insert some CSS::
 
     >>> class TestTileNoBody(Tile):
     ...     __name__ = 'test.tile_nobody'
@@ -255,7 +257,7 @@ be a tile that only needs to insert some CSS.
     ... </html>"""
 
 We register these views and tiles in the same way the ZCML handlers for
-``<browser:page />`` and ``<plone:tile />`` would:
+``<browser:page />`` and ``<plone:tile />`` would::
     
     >>> from plone.tiles.type import TileType
     >>> from Products.Five.security import protectClass
@@ -293,32 +295,29 @@ Rendering the page
 
 We can now render the page. Provided ``plone.app.blocks`` is installed and
 working, it should perform its magic. We make sure that Zope is in
-"development mode" to get pretty-printed output.
+"development mode" to get pretty-printed output::
 
     >>> browser.open(portal.absolute_url() + '/@@test-page')
     >>> print browser.contents
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-    <html xmlns="http://www.w3.org/1999/xhtml">
-      <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
-        <title>Layout title</title>
-        <link rel="stylesheet" href="/layout/style.css" />
-        <script type="text/javascript">alert('layout');</script>
-        <style type="text/css">
+    <html>
+        <head>
+            <title>Layout title</title>
+            <link rel="stylesheet" href="/layout/style.css">
+            <script type="text/javascript">alert('layout');</script>
+    <BLANKLINE>
+            <style type="text/css">
             div {
                 margin: 5px;
                 border: dotted black 1px;
                 padding: 5px;
             }
             </style>
-        <link rel="stylesheet" data-tile="./@@test.tile_nobody/tile_css">
-          <link rel="stylesheet" type="text/css" href="tiled.css" />
-        </link>
-        <meta name="tile-name" content="tile2" />
-        <meta name="tile-name" content="tile3" />
-        <meta name="tile-name" content="tile2" />
-      </head>
-      <body>
+    <BLANKLINE>
+            <link rel="stylesheet" data-tile="./@@test.tile_nobody/tile_css">
+        <meta name="tile-name" content="tile2">
+        <meta name="tile-name" content="tile3">
+        <body>
             <h1>Welcome!</h1>
             <div data-panel="panel1">
                 Page panel 1
@@ -357,7 +356,8 @@ working, it should perform its magic. We make sure that Zope is in
     </html>
     <BLANKLINE>
 
-Notice how:
+Notice how
+~~~~~~~~~~
 
 * Panels from the page have been merged into the layout, replacing the
   corresponding panels there.
@@ -369,7 +369,7 @@ Notice how:
   ``<head />`` of the output page.
 
 Using VHM
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~
 
 Make sure to have a clean browser ::
 

@@ -1,6 +1,5 @@
-from lxml import etree
+from lxml import etree, html
 
-from repoze.xmliter.utils import getHTMLSerializer
 from repoze.xmliter.serializer import XMLSerializer
 
 from plone.transformchain.interfaces import ITransform
@@ -81,8 +80,9 @@ class ParseXML(object):
             return None
 
         try:
-            result = getHTMLSerializer(result, pretty_print=self.pretty_print,
-                                       encoding=encoding)
+            if not isinstance(result, XMLSerializer):
+                root = etree.ElementTree(etree.fromstring(''.join(result)))
+                result = XMLSerializer(root, html.tostring, self.pretty_print)
             self.request['plone.app.blocks.enabled'] = True
             return result
         except (TypeError, etree.ParseError):
