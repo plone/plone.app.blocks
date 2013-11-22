@@ -7,6 +7,9 @@ Changelog
 - Solve issue with VHM and tile rendering. Fixes 
   https://dev.plone.org/ticket/13581 [ericof]
 
+- Added z3c.autoinclude support
+  [cdw9, calvinhp]
+
 1.1 (2012-12-17)
 ----------------
 
