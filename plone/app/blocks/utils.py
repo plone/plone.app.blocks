@@ -136,9 +136,12 @@ def replace_with_children(element, wrapper):
 def replace_content(element, wrapper):
     """Similar to above but keeps parent tag
     """
-    element.text = wrapper.text
     del element[:]
-    element.extend(wrapper.getchildren())
+    if wrapper is None:
+        element.text = ''
+    else:
+        element.text = wrapper.text
+        element.extend(wrapper.getchildren())
 
 
 def getDefaultSiteLayout(context):
