@@ -84,9 +84,11 @@
     <adapter factory=".registry.BlocksRegistry" />
 
     <!-- Field -->
-    <adapter factory=".widget.LayoutFieldWidget" />
+    <adapter
+        factory=".widget.LayoutFieldWidget"
+        zcml:condition="installed plone.app.widgets"
+        />
 
-    
     <!-- The transform pipeline -->
     
     <!-- 8000: Turn the response into an lxml tree for further manipulation -->
