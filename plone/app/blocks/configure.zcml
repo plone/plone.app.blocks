@@ -78,6 +78,14 @@
         permission="zope.Public"
         class=".resource.PageSiteLayout"
         />
+
+    <!-- Registry configuration for blocks -->
+
+    <adapter factory=".registry.BlocksRegistry" />
+
+    <!-- Field -->
+    <adapter factory=".widget.LayoutFieldWidget" />
+
     
     <!-- The transform pipeline -->
     
