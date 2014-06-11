@@ -137,9 +137,7 @@ def replace_content(element, wrapper):
     """Similar to above but keeps parent tag
     """
     del element[:]
-    if wrapper is None:
-        element.text = ''
-    else:
+    if wrapper is not None:
         element.text = wrapper.text
         element.extend(wrapper.getchildren())
 
