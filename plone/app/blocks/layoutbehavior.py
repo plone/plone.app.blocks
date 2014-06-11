@@ -34,15 +34,16 @@ class ILayoutAware(Interface):
     )
 
     pageSiteLayout = schema.Choice(
-        title=_(u"Page site layout"),
-        description=_(u"Site layout to apply to the current page"),
+        title=_(u"Site layout"),
+        description=_(u"Site layout to apply to the this page"),
         vocabulary="plone.availableSiteLayouts",
         required=False,
     )
 
     sectionSiteLayout = schema.Choice(
-        title=_(u"Section site layout"),
-        description=_(u"Site layout to apply to pages under this section"),
+        title=_(u"Sub-site site layout"),
+        description=_(u"Site layout to apply to pages under this section "
+                      u"(if this page is also used a container)"),
         vocabulary="plone.availableSiteLayouts",
         required=False,
     )
