@@ -4,7 +4,8 @@ from plone.testing import layered
 
 from plone.app.blocks.testing import BLOCKS_FUNCTIONAL_TESTING_PRETTY_PRINT
 
-optionflags = (doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+optionflags = (doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE |
+               doctest.REPORT_NDIFF)
 
 
 def test_suite():
