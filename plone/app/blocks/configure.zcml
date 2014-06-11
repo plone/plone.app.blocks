@@ -37,7 +37,14 @@
         provides=".layoutbehavior.ILayoutAware"
         />
     <adapter name="default" factory=".layoutbehavior.default_layout" />
-    
+
+    <browser:page
+        for=".layoutbehavior.ILayoutAware"
+        name="view"
+        class=".layoutbehavior.View"
+        permission="zope2.View"
+        />
+
     <!-- Register the resource traverser -->
     <adapter
         name="sitelayout"
