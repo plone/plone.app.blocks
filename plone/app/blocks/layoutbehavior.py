@@ -1,4 +1,5 @@
 from Products.CMFCore.utils import getToolByName
+from Products.Five import BrowserView
 from z3c.form.interfaces import IAddForm
 from z3c.form.widget import ComputedWidgetAttribute
 from zExceptions import NotFound
@@ -82,3 +83,16 @@ def getDefaultPageLayout(adapter):
 
 default_layout = ComputedWidgetAttribute(
     getDefaultPageLayout, view=IAddForm, field=ILayoutField)
+
+
+class View(BrowserView):
+    """Default view for a page
+    """
+
+    def __call__(self):
+        """Render the contents of the "content" field coming from
+        the ILayoutAware behavior.
+
+        This result is supposed to be transformed by plone.app.blocks.
+        """
+        return ILayoutAware(self.context).content
