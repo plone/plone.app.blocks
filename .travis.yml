@@ -1,7 +1,6 @@
 language: python
 python: "2.7"
 install:
-- curl -O https://downloads.buildout.org/2/bootstrap.py -k -L
 - python bootstrap.py -c travis.cfg
 - bin/buildout -N -t 3 -c travis.cfg
 script: bin/test
