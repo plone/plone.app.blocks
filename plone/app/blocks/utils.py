@@ -11,6 +11,7 @@ from plone.subrequest import subrequest
 from plone.registry.interfaces import IRegistry
 
 from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
+from plone.app.blocks.interfaces import DEFAULT_AJAX_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.layoutbehavior import ILayoutAware
 
 from Acquisition import aq_inner
@@ -189,6 +190,18 @@ def getDefaultSiteLayout(context):
     return registry.get(DEFAULT_SITE_LAYOUT_REGISTRY_KEY)
 
 
+def getDefaultAjaxLayout(context):
+    """Get the path to the site layout to use by default for the given content
+    object
+    """
+
+    registry = queryUtility(IRegistry)
+    if registry is None:
+        return None
+
+    return registry.get(DEFAULT_AJAX_LAYOUT_REGISTRY_KEY)
+
+
 def getLayoutAwareSiteLayout(context):
     """Get the path to the site layout for a page. This is generally only
     appropriate for the view of this page. For a generic template or view, use
@@ -264,7 +277,7 @@ def extractFieldInformation(schema, context, request, prefix):
             mergedTaggedValueDict(schema, WRITE_PERMISSIONS_KEY),
             context,
         )
-    
+
     read_only = []
     for name, mode in modes.items():
         if mode == HIDDEN_MODE:
