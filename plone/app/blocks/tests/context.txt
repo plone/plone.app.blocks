@@ -7,7 +7,7 @@ will be the Plone site itself) as part of the title and contents of the site
 and page layouts, respectively::
 
     >>> from zope.publisher.browser import BrowserView
-    
+
     >>> class SiteLayout(BrowserView):
     ...     __name__ = 'site-layout'
     ...	    def __call__(self):
@@ -40,7 +40,7 @@ Observe that the ``<html data-layout="./@@site-layout">`` tag references a
 relative URL.
 
 Next, we initialize and register the browser views as ZCML handlers would::
-        
+
     >>> from zope.interface import Interface
     >>> from Products.Five.security import protectClass
     >>> protectClass(SiteLayout, 'zope2.View')
