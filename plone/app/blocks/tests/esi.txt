@@ -117,7 +117,7 @@ directly.
     ...     __name__ = 'test-layout'
     ...     def __call__(self):
     ...         return layoutHTML
-    
+
     >>> protectClass(Layout, 'zope2.View')
     >>> InitializeClass(Layout)
     >>> provideAdapter(Layout, (Interface, Interface,), Interface, u'test-layout',)
@@ -138,7 +138,7 @@ directly.
     ...     __name__ = 'test-page'
     ...     def __call__(self):
     ...         return pageHTML
-    
+
     >>> protectClass(Page, 'zope2.View')
     >>> InitializeClass(Page)
     >>> provideAdapter(Page, (Interface, Interface,), Interface, u'test-page',)
@@ -159,38 +159,29 @@ be rendered as normal.
     >>> print browser.contents
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
-      <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
-        <title>Layout title</title>
+        <head><meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
+            <title>Layout title</title>
         <meta name="tile-name" content="tile3" />
         <meta name="tile-name" content="tile4" />
         <meta name="tile-name" content="tile1" />
         <meta name="tile-name" content="tile2" />
-      </head>
-      <body>
+        </head>
+        <body>
             <h1>Welcome!</h1>
             <div data-panel="panel1">
-                <div id="page-non-esi-tile" data-tile="./@@test.tile2/tile3?foo=bar">
             <p>
                 Non-ESI tile with query string foo=bar
             </p>
-        </div>
-                <div id="page-esi-tile" data-tile="./@@test.tile3/tile4?foo=bar">
             <p>
                 ESI tile with query string foo=bar
             </p>
-        </div>
             </div>
-            <div id="layout-non-esi-tile" data-tile="./@@test.tile2/tile1">
             <p>
-                Non-ESI tile with query string 
+                Non-ESI tile with query string
             </p>
-        </div>
-            <div id="layout-esi-tile" data-tile="./@@test.tile3/tile2">
             <p>
-                ESI tile with query string 
+                ESI tile with query string
             </p>
-        </div>
         </body>
     </html>
     <BLANKLINE>
@@ -216,32 +207,23 @@ tiles should be rendered as ESI links. See `plone.tiles`_ for more details.
     >>> print browser.contents
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns:esi="http://www.edge-delivery.org/esi/1.0" xmlns="http://www.w3.org/1999/xhtml">
-      <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
-        <title>Layout title</title>
+        <head><meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
+            <title>Layout title</title>
         <meta name="tile-name" content="tile3" />
         <meta name="tile-name" content="tile1" />
-      </head>
-      <body>
+        </head>
+        <body>
             <h1>Welcome!</h1>
             <div data-panel="panel1">
-                <div id="page-non-esi-tile" data-tile="./@@test.tile2/tile3?foo=bar">
             <p>
                 Non-ESI tile with query string foo=bar
             </p>
-        </div>
-                <div id="page-esi-tile" data-tile="./@@test.tile3/tile4?foo=bar">
             <esi:include src="http://nohost/plone/@@test.tile3/tile4/@@esi-body?foo=bar" />
-        </div>
             </div>
-            <div id="layout-non-esi-tile" data-tile="./@@test.tile2/tile1">
             <p>
-                Non-ESI tile with query string 
+                Non-ESI tile with query string
             </p>
-        </div>
-            <div id="layout-esi-tile" data-tile="./@@test.tile3/tile2">
             <esi:include src="http://nohost/plone/@@test.tile3/tile2/@@esi-body?" />
-        </div>
         </body>
     </html>
     <BLANKLINE>
@@ -256,8 +238,8 @@ When ESI rendering takes place, the following URLs will be called:
 
     >>> browser.open("http://nohost/plone/@@test.tile3/tile2/@@esi-body?")
     >>> print browser.contents
-     <p>
-        ESI tile with query string 
+    <p>
+        ESI tile with query string
     </p>
-    
+
 .. _plone.tiles: http://pypi.python.org/pypi/plone.tiles

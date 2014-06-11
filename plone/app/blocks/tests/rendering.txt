@@ -7,7 +7,7 @@ consists of the following steps:
 0. Obtain the content page, an HTML document.
 1. Look for a site layout link in the content page. This takes the form of an
    attribute on the html tag like ``<html data-layout="..." />``.
-   
+
    Usually, the site layout URL will refer to a resource in a resource
    directory of type ``sitelayout``, e.g. ``/++sitelayout++foo/site.html``,
    although the layout can be any URL. An absolute path like this will be
@@ -24,10 +24,10 @@ consists of the following steps:
    The rest of the content page is discarded.
 5. Resolve and obtain tiles. A tile is a placeholder element in the page
    which will be replaced by the contents of a document referenced by a URL.
-   
+
    A tile is identified by a placeholder element with a ``data-tile``
    attribute containing the tile URL.
-   
+
    Note that at this point, panel merging has taken place, so if a panel in
    the content page contains tiles, they will be carried over into the merged
    page. Also note that it is possible to have tiles outside of panels - the
@@ -49,10 +49,10 @@ defined first:
 
     >>> from plone.testing.z2 import Browser
     >>> import transaction
-    
+
     >>> app = layer['app']
     >>> portal = layer['portal']
-    
+
     >>> browser = Browser(app)
     >>> browser.handleErrors = False
 
@@ -80,7 +80,7 @@ content inside and outside panels. The tiles in this case are managed by
     ...         <title>Layout title</title>
     ...         <link rel="stylesheet" href="/layout/style.css" />
     ...         <script type="text/javascript">alert('layout');</script>
-    ... 
+    ...
     ...         <style type="text/css">
     ...         div {
     ...             margin: 5px;
@@ -88,7 +88,7 @@ content inside and outside panels. The tiles in this case are managed by
     ...             padding: 5px;
     ...         }
     ...         </style>
-    ... 
+    ...
     ...         <link rel="stylesheet" data-tile="./@@test.tile_nobody/tile_css" />
     ...     </head>
     ...     <body>
@@ -115,14 +115,14 @@ in a package using ZCML, or use a global resource directory. See
     >>> from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2
     >>> from StringIO import StringIO
     >>> from OFS.Image import File
-    
+
     >>> resources = getToolByName(portal, 'portal_resources')
     >>> resources._setOb('sitelayout', BTreeFolder2('sitelayout'))
     >>> resources['sitelayout']._setOb('mylayout', BTreeFolder2('mylayout'))
     >>> resources['sitelayout']['mylayout']._setOb('site.html', File('site.html', 'site.html', StringIO(layoutHTML)))
-    
+
     >>> transaction.commit()
-    
+
 This resource can now be accessed using the path
 ``/++sitelayout++mylayout/site.html``. Let's render it on its own to verify
 that.
@@ -131,11 +131,10 @@ that.
     >>> print browser.contents
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
-      <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
-        <title>Layout title</title>
-        <link rel="stylesheet" href="/layout/style.css" />
-        <script type="text/javascript">alert('layout');</script>
+      <head><meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
+          <title>Layout title</title>
+          <link rel="stylesheet" href="/layout/style.css" />
+          <script type="text/javascript">alert('layout');</script>
         <style type="text/css">
             div {
                 margin: 5px;
@@ -144,8 +143,8 @@ that.
             }
             </style>
         <link rel="stylesheet" data-tile="./@@test.tile_nobody/tile_css" />
-      </head>
-      <body>
+          </head>
+          <body>
             <h1>Welcome!</h1>
             <div data-panel="panel1">Layout panel 1</div>
             <div data-panel="panel2">
@@ -218,7 +217,7 @@ life, these could be registered using the standard ``<browser:page />`` and
 
     >>> class ITestTile(Interface):
     ...     magicNumber = schema.Int(title=u"Magic number", required=False)
-    
+
     >>> class TestTile(Tile):
     ...     __name__ = 'test.tile1' # normally set by ZCML handler
     ...
@@ -256,13 +255,13 @@ be a tile that only needs to insert some CSS.
 
 We register these views and tiles in the same way the ZCML handlers for
 ``<browser:page />`` and ``<plone:tile />`` would:
-    
+
     >>> from plone.tiles.type import TileType
     >>> from Products.Five.security import protectClass
     >>> from App.class_init import InitializeClass
     >>> from zope.component import provideAdapter, provideUtility
     >>> from zope.interface import Interface
-    
+
     >>> testTileType = TileType(
     ...     name=u'test.tile1',
     ...     title=u"Test tile",
@@ -275,7 +274,7 @@ We register these views and tiles in the same way the ZCML handlers for
     ...     title=u"Test tile using only a header",
     ...     description=u"Another tile used for testing",
     ...     add_permission="cmf.ManagePortal")
-    
+
     >>> protectClass(Page, 'zope2.View')
     >>> protectClass(TestTile, 'zope2.View')
 
@@ -299,8 +298,7 @@ working, it should perform its magic. We make sure that Zope is in
     >>> print browser.contents
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
-      <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
+      <head><meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
         <title>Layout title</title>
         <link rel="stylesheet" href="/layout/style.css" />
         <script type="text/javascript">alert('layout');</script>
@@ -311,9 +309,7 @@ working, it should perform its magic. We make sure that Zope is in
                 padding: 5px;
             }
             </style>
-        <link rel="stylesheet" data-tile="./@@test.tile_nobody/tile_css">
-          <link rel="stylesheet" type="text/css" href="tiled.css" />
-        </link>
+        <link rel="stylesheet" type="text/css" href="tiled.css" />
         <meta name="tile-name" content="tile2" />
         <meta name="tile-name" content="tile3" />
         <meta name="tile-name" content="tile2" />
@@ -322,36 +318,30 @@ working, it should perform its magic. We make sure that Zope is in
             <h1>Welcome!</h1>
             <div data-panel="panel1">
                 Page panel 1
-                <div id="page-tile2" data-tile="./@@test.tile1/tile2?magicNumber:int=2">
             <p>
                 This is a demo tile with id tile2
             </p>
             <p>
                 Magic number: 2; Form: [('magicNumber', 2)]; Query string: magicNumber:int=2; URL: http://nohost/plone/@@test.tile1/tile2
             </p>
-        </div>
             </div>
             <div data-panel="panel2">
                 Page panel 2
-                <div id="page-tile3" data-tile="./@@test.tile1/tile3">
             <p>
                 This is a demo tile with id tile3
             </p>
             <p>
                 Magic number: -1; Form: []; Query string: ; URL: http://nohost/plone/@@test.tile1/tile3
             </p>
-        </div>
             </div>
             <div data-panel="panel3">
                 Layout panel 3
-                <div id="layout-tile2" data-tile="./@@test.tile1/tile2">
             <p>
                 This is a demo tile with id tile2
             </p>
             <p>
                 Magic number: -1; Form: []; Query string: ; URL: http://nohost/plone/@@test.tile1/tile2
             </p>
-        </div>
             </div>
         </body>
     </html>
