@@ -58,7 +58,7 @@ class LayoutWidget(BaseWidget, z3cform_TextWidget):
         }
         result = adapted(**kwargs)
         result['can_change_layout'] = True
-        return result
+        return {'data': result}
 
     def _base_args(self):
         """Method which will calculate _base class arguments.
