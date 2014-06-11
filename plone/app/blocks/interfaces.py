@@ -18,6 +18,7 @@ SITE_LAYOUT_MANIFEST_FORMAT = ManifestFormat(
 )
 
 DEFAULT_SITE_LAYOUT_REGISTRY_KEY = 'plone.defaultSiteLayout'
+DEFAULT_AJAX_LAYOUT_REGISTRY_KEY = 'plone.defaultAjaxLayout'
 
 _ = MessageFactory('plone')
 
