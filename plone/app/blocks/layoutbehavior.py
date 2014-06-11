@@ -43,7 +43,7 @@ class ILayoutAware(Interface):
     sectionSiteLayout = schema.Choice(
         title=_(u"Sub-site site layout"),
         description=_(u"Site layout to apply to pages under this section "
-                      u"(if this page is also used a container)"),
+                      u"(if this page is also used as a container)"),
         vocabulary="plone.availableSiteLayouts",
         required=False,
     )
