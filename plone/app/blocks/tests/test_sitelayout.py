@@ -49,7 +49,7 @@ class TestSiteLayout(unittest.TestCase):
         if hasattr(self.portal, ATTR):
             delattr(self.portal, ATTR)
 
-        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = \
             '/++sitelayout++testlayout1/site.html'
 
         view = getMultiAdapter((self.portal, self.request,),
@@ -59,7 +59,7 @@ class TestSiteLayout(unittest.TestCase):
         self.assertTrue(u"Layout title" in rendered)
 
     def test_default_site_layout_section_override(self):
-        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = \
             '/++sitelayout++testlayout1/site.html'
 
         class FolderLayoutAware(object):
@@ -85,7 +85,7 @@ class TestSiteLayout(unittest.TestCase):
         self.assertTrue(u"Layout 2 title" in rendered)
 
     def test_default_site_layout_section_no_override(self):
-        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = \
             '/++sitelayout++testlayout1/site.html'
 
         view = getMultiAdapter((self.portal['f1']['d1'], self.request,),
@@ -109,7 +109,7 @@ class TestSiteLayout(unittest.TestCase):
                 '<html><head><title>ZODB test</title></head></html>'))
         )
 
-        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = \
             '/++sitelayout++testlayout3/site.html'
 
         view = getMultiAdapter((self.portal, self.request,),
@@ -145,7 +145,7 @@ class TestSiteLayout(unittest.TestCase):
                 '<html><head><title>ZODB test</title></head></html>'))
         )
 
-        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = \
             '/++sitelayout++testlayout3/site.html'
 
         view = getMultiAdapter((self.portal, self.request,),
@@ -177,7 +177,7 @@ class TestSiteLayout(unittest.TestCase):
         if hasattr(self.portal, ATTR):
             delattr(self.portal, ATTR)
 
-        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = \
             '/++sitelayout++testlayout1/site.html'
 
         view = getMultiAdapter((self.portal, self.request,),
@@ -187,7 +187,7 @@ class TestSiteLayout(unittest.TestCase):
         self.assertTrue(u"Layout title" in rendered)
 
         # Trigger invalidation by modifying the global site layout selection
-        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = \
             '/++sitelayout++testlayout2/mylayout.html'
 
         view = getMultiAdapter((self.portal, self.request,),
