@@ -2,6 +2,18 @@
 Introduction to Blocks
 ======================
 
+.. image:: https://secure.travis-ci.org/plone/plone.app.blocks.png?branch=master
+    :alt: Travis CI badge
+    :target: http://travis-ci.org/plone/plone.app.blocks
+
+.. image:: https://coveralls.io/repos/plone/plone.app.blocks/badge.png?branch=master
+    :alt: Coveralls badge
+    :target: https://coveralls.io/r/plone/plone.app.blocks
+
+.. image:: https://pypip.in/d/plone.app.blocks/badge.png
+    :target: https://pypi.python.org/pypi/plone.app.blocks/
+    :alt: Downloads
+
 This package implements the 'blocks' rendering model, by providing several
 transform stages that hook into ``plone.transformchain``.
 
