@@ -60,7 +60,8 @@ class DecoGridSystem(object):
             if 'info' in element:
                 if 'pos' in element['info']:
                     if 'x' in element['info']['pos']:
-                        result += 'position-%d ' % element['info']['pos']['x'] - 1
+                        deco_pos = int(element['info']['pos']['x']) - 1
+                        result += 'position-%d ' % deco_pos
                     if 'width' in element['info']['pos']:
                         result += 'width-%d' % element['info']['pos']['width']
             return result
