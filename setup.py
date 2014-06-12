@@ -51,6 +51,8 @@ setup(
         'zope.i18nmessageid',
         'repoze.xmliter',
         'plone.tiles',
+        'plone.autoform',
+        'plone.supermodel',
         'plone.behavior',
         'plone.subrequest',
         'plone.resource',
