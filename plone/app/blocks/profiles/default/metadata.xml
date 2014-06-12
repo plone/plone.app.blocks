@@ -3,6 +3,9 @@
     <dependencies>
         <dependency>profile-plone.resource:default</dependency>
         <dependency>profile-plone.app.registry:default</dependency>
-        <dependency>profile-plone.app.widgets:default</dependency>
+        <!--
+            XXX: temp disabled for working with testing
+            <dependency>profile-plone.app.widgets:default</dependency>
+         -->
     </dependencies>
 </metadata>
