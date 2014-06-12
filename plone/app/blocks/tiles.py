@@ -1,15 +1,11 @@
 # -*- coding: utf-8 -*-
-from zExceptions import NotFound
-from urlparse import urljoin
-
-from zope.component import queryUtility
-
-from plone.registry.interfaces import IRegistry
-
-from plone.tiles.interfaces import ESI_HEADER, ESI_HEADER_KEY
-
 from plone.app.blocks.interfaces import IBlocksSettings
 from plone.app.blocks import utils
+from plone.registry.interfaces import IRegistry
+from plone.tiles.interfaces import ESI_HEADER, ESI_HEADER_KEY
+from urlparse import urljoin
+from zExceptions import NotFound
+from zope.component import queryUtility
 
 
 def renderTiles(request, tree):

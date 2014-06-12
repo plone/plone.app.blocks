@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-
-from zope.i18nmessageid import MessageFactory
-
-from zope.interface import Interface
-from zope import schema
-
 from plone.resource.manifest import ManifestFormat
-
-from plone.app.blocks import PloneMessageFactory as _
+from zope import schema
+from zope.i18nmessageid import MessageFactory
+from zope.interface import Interface
 
 
 SITE_LAYOUT_RESOURCE_NAME = "sitelayout"

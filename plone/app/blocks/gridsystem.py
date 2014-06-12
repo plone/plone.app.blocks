@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from plone.app.blocks import utils
-from urlparse import urljoin
 from zope.component import getUtility
-from zope.interface import implements, alsoProvides, Interface
+from zope.interface import Interface
+from zope.interface import implements
+
 import json
 
 

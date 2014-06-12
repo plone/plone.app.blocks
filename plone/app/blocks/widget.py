@@ -1,27 +1,25 @@
 # -*- coding: utf-8 -*-
-from plone.app.widgets.dx import BaseWidget
-from z3c.form.browser.text import TextWidget as z3cform_TextWidget
-from plone.app.widgets.base import InputWidget
-from zope.interface import implementsOnly
-from z3c.form.interfaces import ITextWidget
-from plone.registry.interfaces import IRegistry
-from zope.component import queryUtility
 from plone.app.blocks.interfaces import IBlocksRegistryAdapter
+from plone.app.blocks.layoutbehavior import ILayoutAware
+from plone.app.widgets.base import InputWidget
+from plone.app.widgets.base import dict_merge
+from plone.app.widgets.dx import BaseWidget
+from plone.registry.interfaces import IRegistry
+from z3c.form.browser.text import TextWidget as z3cform_TextWidget
+from z3c.form.interfaces import IFieldWidget
+from z3c.form.interfaces import IFormLayer
+from z3c.form.interfaces import ITextWidget
+from z3c.form.util import getSpecification
+from z3c.form.widget import FieldWidget
+from zope.component import adapter
+from zope.component import queryUtility
+from zope.interface import implementer
+from zope.interface import implementsOnly
+
 try:
     import json
 except:
     import simplejson as json
-
-from plone.app.widgets.base import dict_merge
-from z3c.form.util import getSpecification
-from z3c.form.widget import FieldWidget
-from zope.component import adapter
-from zope.interface import implementer
-from z3c.form.interfaces import IFieldWidget
-from z3c.form.interfaces import IFormLayer
-from plone.app.blocks.layoutbehavior import ILayoutAware
-
-
 
 
 class ILayoutWidget(ITextWidget):

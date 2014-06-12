@@ -1,45 +1,35 @@
 # -*- coding: utf-8 -*-
-import logging
-
-from lxml import etree
-from lxml import html
-
-from zope.component import queryUtility
-from zope.site.hooks import getSite
-
-from plone.subrequest import subrequest
-
-from plone.registry.interfaces import IRegistry
-
-from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
-from plone.app.blocks.interfaces import DEFAULT_AJAX_LAYOUT_REGISTRY_KEY
-from plone.app.blocks.layoutbehavior import ILayoutAware
-
+from AccessControl import getSecurityManager
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-
+from lxml import etree
+from lxml import html
+from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
+from plone.app.blocks.interfaces import DEFAULT_AJAX_LAYOUT_REGISTRY_KEY
+from plone.app.blocks.interfaces import IOmittedField
+from plone.app.blocks.layoutbehavior import ILayoutAware
+from plone.autoform.interfaces import OMITTED_KEY
+from plone.autoform.interfaces import WIDGETS_KEY
+from plone.autoform.interfaces import MODES_KEY
+from plone.autoform.interfaces import READ_PERMISSIONS_KEY
+from plone.autoform.interfaces import WRITE_PERMISSIONS_KEY
+from plone.autoform.utils import mergedTaggedValuesForIRO
+from plone.registry.interfaces import IRegistry
+from plone.subrequest import subrequest
+from plone.supermodel.utils import mergedTaggedValueDict
 from zExceptions import NotFound
-
+from z3c.form.interfaces import IEditForm
+from z3c.form.interfaces import IFieldWidget
+from z3c.form.interfaces import DISPLAY_MODE
+from z3c.form.interfaces import HIDDEN_MODE
+from zope.component import getMultiAdapter
+from zope.component import queryUtility
 from zope.interface import Interface
+from zope.security.interfaces import IPermission
+from zope.site.hooks import getSite
 from zope.schema.interfaces import IField
 
-from zope.security.interfaces import IPermission
-from AccessControl import getSecurityManager
-
-from z3c.form.interfaces import IEditForm, IFieldWidget, DISPLAY_MODE, \
-                                HIDDEN_MODE
-from plone.supermodel.utils import mergedTaggedValueDict, mergedTaggedValueList
-from plone.autoform.interfaces import IFormFieldProvider
-from plone.autoform.interfaces import OMITTED_KEY, WIDGETS_KEY, MODES_KEY
-from plone.autoform.interfaces import READ_PERMISSIONS_KEY, \
-                                      WRITE_PERMISSIONS_KEY
-from plone.autoform.utils import mergedTaggedValuesForIRO
-
-from plone.dexterity.interfaces import IDexterityFTI
-from plone.dexterity.utils import resolveDottedName
-
-from plone.app.blocks.interfaces import IOmittedField
-from zope.component import queryUtility, getMultiAdapter
+import logging
 
 
 headXPath = etree.XPath("/html/head")

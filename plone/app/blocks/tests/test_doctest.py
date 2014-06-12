@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-import unittest2 as unittest
-import doctest
+from plone.app.blocks.testing import BLOCKS_FUNCTIONAL_TESTING_PRETTY_PRINT
 from plone.testing import layered
 
-from plone.app.blocks.testing import BLOCKS_FUNCTIONAL_TESTING_PRETTY_PRINT
+import doctest
+import unittest2 as unittest
+
 
 optionflags = (doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE |
                doctest.REPORT_NDIFF)

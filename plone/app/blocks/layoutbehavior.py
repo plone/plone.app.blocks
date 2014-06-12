@@ -1,20 +1,19 @@
 # -*- coding: utf-8 -*-
 from Products.CMFCore.utils import getToolByName
 from Products.Five import BrowserView
+from plone.app.blocks.interfaces import _
+from plone.app.blocks.interfaces import ILayoutField
+from plone.app.blocks.interfaces import IOmittedField
 from z3c.form.interfaces import IAddForm
 from z3c.form.widget import ComputedWidgetAttribute
 from zExceptions import NotFound
+from zope import schema
 from zope.component.hooks import getSite
 from zope.interface import implements, alsoProvides, Interface
 
-from zope import schema
-
-from plone.app.blocks.interfaces import IOmittedField
-from plone.app.blocks.interfaces import ILayoutField
-
-from plone.app.blocks.interfaces import _
-
 import logging
+
+
 logger = logging.getLogger('plone.app.blocks')
 
 

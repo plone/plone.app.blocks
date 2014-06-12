@@ -1,39 +1,29 @@
 # -*- coding: utf-8 -*-
-import urlparse
-import Globals
-
-from zope.interface import implements
-
-from zope.component import adapter
-
-from zope.site.hooks import getSite
-
-from zope.publisher.browser import BrowserView
-
-from zope.schema.interfaces import IVocabularyFactory
-from zope.schema.vocabulary import SimpleVocabulary
-from zope.schema.vocabulary import SimpleTerm
-
-from plone.resource.traversal import ResourceTraverser
-from plone.resource.manifest import getAllResources
-
-from plone.registry.interfaces import IRecordModifiedEvent
-
-from plone.memoize.volatile import cache, DontCache, store_on_context
-
-from plone.app.blocks.interfaces import SITE_LAYOUT_RESOURCE_NAME
-from plone.app.blocks.interfaces import SITE_LAYOUT_FILE_NAME
-from plone.app.blocks.interfaces import SITE_LAYOUT_MANIFEST_FORMAT
-from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
-
-from plone.app.blocks.utils import resolveResource
-from plone.app.blocks.utils import getDefaultSiteLayout
-from plone.app.blocks.utils import getLayoutAwareSiteLayout
-
 from Acquisition import aq_parent
 from Products.CMFCore.utils import getToolByName
 from OFS.interfaces import ITraversable
+from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
+from plone.app.blocks.interfaces import SITE_LAYOUT_FILE_NAME
+from plone.app.blocks.interfaces import SITE_LAYOUT_MANIFEST_FORMAT
+from plone.app.blocks.interfaces import SITE_LAYOUT_RESOURCE_NAME
+from plone.app.blocks.utils import resolveResource
+from plone.app.blocks.utils import getDefaultSiteLayout
+from plone.app.blocks.utils import getLayoutAwareSiteLayout
+from plone.memoize.volatile import cache, DontCache, store_on_context
+from plone.registry.interfaces import IRecordModifiedEvent
+from plone.resource.manifest import getAllResources
+from plone.resource.traversal import ResourceTraverser
 from zExceptions import NotFound
+from zope.interface import implements
+from zope.component import adapter
+from zope.publisher.browser import BrowserView
+from zope.schema.interfaces import IVocabularyFactory
+from zope.schema.vocabulary import SimpleTerm
+from zope.schema.vocabulary import SimpleVocabulary
+from zope.site.hooks import getSite
+
+import Globals
+import urlparse
 
 
 class SiteLayoutTraverser(ResourceTraverser):
