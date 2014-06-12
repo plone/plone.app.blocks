@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import transaction
 import unittest2 as unittest
 
