@@ -97,5 +97,5 @@ To make use of the page site layout, use the following::
 
     <html data-layout="./@@default-site-layout">
 
-See ``rendering.txt`` for detailed examples of how the processing is applied,
-and ``esi.txt`` for details about how Edge Side Includes can be supported.
+See ``rendering.rst`` for detailed examples of how the processing is applied,
+and ``esi.rst`` for details about how Edge Side Includes can be supported.
