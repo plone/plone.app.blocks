@@ -156,11 +156,15 @@ be rendered as normal.
 
     >>> portal = layer['portal']
     >>> browser.open(portal.absolute_url() + '/@@test-page')
-    >>> print browser.contents
+
+Some cleanup is needed to cover lxml platform discrepancies...
+
+    >>> print browser.contents.replace('<head><meta', '<head>\n\t<meta')
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
-        <head><meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
-            <title>Layout title</title>
+        <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
+        <title>Layout title</title>
         <meta name="tile-name" content="tile3" />
         <meta name="tile-name" content="tile4" />
         <meta name="tile-name" content="tile1" />
@@ -204,11 +208,12 @@ We can now perform the same rendering again. This time, the ESI-capable
 tiles should be rendered as ESI links. See `plone.tiles`_ for more details.
 
     >>> browser.open(portal.absolute_url() + '/@@test-page')
-    >>> print browser.contents
+    >>> print browser.contents.replace('<head><meta', '<head>\n\t<meta')
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns:esi="http://www.edge-delivery.org/esi/1.0" xmlns="http://www.w3.org/1999/xhtml">
-        <head><meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
-            <title>Layout title</title>
+        <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
+        <title>Layout title</title>
         <meta name="tile-name" content="tile3" />
         <meta name="tile-name" content="tile1" />
         </head>
