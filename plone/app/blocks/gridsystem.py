@@ -64,7 +64,6 @@ class DecoGridSystem(object):
                         result += 'position-%d ' % deco_pos
                     if 'width' in element['info']['pos']:
                         result += 'width-%d' % element['info']['pos']['width']
-            return result
 
 
 def merge(request, layoutTree):
@@ -87,5 +86,5 @@ def merge(request, layoutTree):
                 layoutGridNode.attrib['class'] = layoutGridNode['class'] + ' ' + cssGridClass
             else:
                 layoutGridNode.attrib['class'] = cssGridClass
-
+        del layoutGridNode.attrib['data-grid']
     return layoutTree
