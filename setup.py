@@ -18,9 +18,9 @@ setup(
     long_description='%s\n%s\n%s\n%s' % (
         open("README.rst").read(),
         open(os.path.join("plone", "app", "blocks",
-                          "tests", "rendering.txt")).read(),
+                          "tests", "rendering.rst")).read(),
         open(os.path.join("plone", "app", "blocks",
-                          "tests", "esi.txt")).read(),
+                          "tests", "esi.rst")).read(),
         open("CHANGELOG.rst").read(),
     ),
     classifiers=[
