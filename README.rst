@@ -24,7 +24,7 @@ The rendering stages are:
     This is then used by the subsequent stages. If the input is not HTML,
     the transformation is aborted.
 
- plone.app.blocks.mergepanels (order 8300)
+ plone.app.blocks.mergepanels (order 8100)
     Looks up the site layout and executes the panel merge algorithm. Sets a
     request variable ('plone.app.blocks.merged') to indicate that it has
     done its job.

@@ -92,7 +92,7 @@ class MergePanels(object):
 
     implements(ITransform)
 
-    order = 8300
+    order = 8100
 
     def __init__(self, published, request):
         self.published = published
