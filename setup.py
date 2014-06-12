@@ -56,6 +56,7 @@ setup(
         'plone.transformchain',
         'plone.registry',
         'plone.app.registry',
+        'plone.app.widgets',
         'Acquisition',
         'Products.CMFCore',
         'Zope2',
