@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-from zope.component import adapts
-from zope.i18n import translate
-from zope.interface import implements
-from plone.registry.interfaces import IRegistry
-from plone.dexterity.utils import iterSchemataForType
 from Products.CMFCore.interfaces._content import IFolderish
 from operator import itemgetter
 from plone.app.blocks.interfaces import IBlocksRegistryAdapter
 from plone.app.blocks.utils import extractFieldInformation
+from plone.dexterity.utils import iterSchemataForType
+from plone.registry.interfaces import IRegistry
+from zope.component import adapts
+from zope.i18n import translate
+from zope.interface import implements
 
 
 class DottedDict(dict):

@@ -1,16 +1,12 @@
 # -*- coding: utf-8 -*-
 from lxml import etree
-
-from repoze.xmliter.utils import getHTMLSerializer
-from repoze.xmliter.serializer import XMLSerializer
-
-from plone.transformchain.interfaces import ITransform
-from plone.tiles.interfaces import ESI_HEADER
-
-from zope.interface import implements
-
 from plone.app.blocks import panel, tiles, gridsystem
 from plone.tiles import esi
+from plone.tiles.interfaces import ESI_HEADER
+from plone.transformchain.interfaces import ITransform
+from repoze.xmliter.serializer import XMLSerializer
+from repoze.xmliter.utils import getHTMLSerializer
+from zope.interface import implements
 
 
 class DisableParsing(object):

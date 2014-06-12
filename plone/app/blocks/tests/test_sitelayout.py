@@ -1,30 +1,23 @@
 # -*- coding: utf-8 -*-
-import transaction
-import unittest2 as unittest
-
-from StringIO import StringIO
 from OFS.Image import File
-
+from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2
+from Products.CMFPlone.utils import getToolByName
+from StringIO import StringIO
+from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
+from plone.app.blocks.layoutbehavior import ILayoutAware
+from plone.app.blocks.testing import BLOCKS_FUNCTIONAL_TESTING
+from plone.app.testing import setRoles, TEST_USER_ID
+from plone.registry.interfaces import IRegistry
+from plone.memoize.volatile import ATTR
 from zExceptions import NotFound
-
 from zope.component import adapts
 from zope.component import getUtility
 from zope.component import getMultiAdapter
 from zope.component import getSiteManager
 from zope.interface import implements
 
-from Products.CMFPlone.utils import getToolByName
-from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2
-
-from plone.registry.interfaces import IRegistry
-from plone.memoize.volatile import ATTR
-
-from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
-from plone.app.blocks.layoutbehavior import ILayoutAware
-
-from plone.app.testing import setRoles, TEST_USER_ID
-
-from plone.app.blocks.testing import BLOCKS_FUNCTIONAL_TESTING
+import transaction
+import unittest2 as unittest
 
 
 class TestSiteLayout(unittest.TestCase):
