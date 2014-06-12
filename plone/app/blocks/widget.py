@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from plone.app.widgets.dx import BaseWidget
 from z3c.form.browser.text import TextWidget as z3cform_TextWidget
 from plone.app.widgets.base import InputWidget

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from Products.CMFCore.utils import getToolByName
 from Products.Five import BrowserView
 from z3c.form.interfaces import IAddForm
