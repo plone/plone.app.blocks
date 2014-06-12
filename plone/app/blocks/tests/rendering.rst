@@ -128,10 +128,14 @@ This resource can now be accessed using the path
 that.
 
     >>> browser.open(portal.absolute_url() + '/++sitelayout++mylayout/site.html')
-    >>> print browser.contents
+
+Because of an annoying cross-platform inconsistency in lxml we need to sanitize the output a bit.
+
+    >>> print browser.contents.replace('<head><meta', '<head>\n\t<meta')
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
-      <head><meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
+      <head>
+          <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
           <title>Layout title</title>
           <link rel="stylesheet" href="/layout/style.css" />
           <script type="text/javascript">alert('layout');</script>
@@ -295,10 +299,11 @@ working, it should perform its magic. We make sure that Zope is in
 "development mode" to get pretty-printed output.
 
     >>> browser.open(portal.absolute_url() + '/@@test-page')
-    >>> print browser.contents
+    >>> print browser.contents.replace('<head><meta', '<head>\n\t<meta')
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
-      <head><meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
         <title>Layout title</title>
         <link rel="stylesheet" href="/layout/style.css" />
         <script type="text/javascript">alert('layout');</script>
