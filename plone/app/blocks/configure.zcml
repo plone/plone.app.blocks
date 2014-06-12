@@ -112,7 +112,7 @@
         factory=".transform.ParseXML"
         />
 
-    <!-- 8100: Locate the site layout and merge panels -->
+    <!-- 8300: Locate the site layout and merge panels -->
     <adapter
         for="* .interfaces.IBlocksLayer"
         name="plone.app.blocks.mergepanels"
