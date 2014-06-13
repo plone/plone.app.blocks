@@ -29,7 +29,14 @@
         for="Products.CMFPlone.interfaces.IPloneSiteRoot"
         provides="Products.GenericSetup.interfaces.EXTENSION"
         />
-    
+
+    <genericsetup:importStep
+        name="plone.app.blocks_default"
+        title="Blocks rendering engine setup"
+        description="Initializes registry values for default site layouts"
+        handler=".setuphandlers.step_setup_various"
+        />
+
     <!-- Register the layout behavior -->
     <plone:behavior
         title="Layout support"
