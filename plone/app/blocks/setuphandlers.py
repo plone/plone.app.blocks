@@ -22,7 +22,7 @@ def initialize_default_layout_registry_values(portal):
     for key, title, description, value in records:
         if not key in registry.records:
             registry.records[key] = Record(
-                field.TextLine(
+                field.BytesLine(
                     title=title,
                     description=description
                 ), value)
