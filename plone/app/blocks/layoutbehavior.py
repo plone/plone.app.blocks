@@ -2,9 +2,11 @@
 import logging
 
 from Products.Five import BrowserView
+from plone.autoform.directives import mode
 from plone.autoform.interfaces import IFormFieldProvider
 from plone.supermodel import model
 from plone.supermodel.directives import fieldset
+from z3c.form.interfaces import HIDDEN_MODE
 from zope.interface import implements
 from zope.interface import alsoProvides
 from zope import schema
@@ -29,8 +31,8 @@ class ILayoutAware(model.Schema):
     """Behavior interface to make a type support layout.
     """
     content = LayoutField(
-        title=_(u"Content"),
-        description=_(u"Content and content layout of this page"),
+        title=_(u"Custom layout"),
+        description=_(u"Custom content and content layout of this page"),
         required=False,
     )
 
