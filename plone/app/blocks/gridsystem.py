@@ -48,8 +48,8 @@ class DecoGridSystem(object):
 
     def transform(self, key):
         """ its possible:
-            row -> row
-            cell {xs:False, sm:False, md:True, lg:True, pos:{x:1 width:10}} ->
+            {type: row} -> row
+            {type: cell, info: {xs:False, sm:False, md:True, lg:true, pos:{x:1 width:10}}} ->
             cell position-1 width-10
         """
         element = json.loads(key)
