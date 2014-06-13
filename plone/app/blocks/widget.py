@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from Products.CMFDynamicViewFTI.interfaces import ISelectableBrowserDefault
+from Products.CMFCore.utils import getToolByName
 from plone.app.blocks.interfaces import IBlocksRegistryAdapter
 from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.app.widgets.base import InputWidget
@@ -7,6 +9,7 @@ from plone.app.widgets.dx import BaseWidget
 from plone.registry.interfaces import IRegistry
 from z3c.form.browser.text import TextWidget as z3cform_TextWidget
 from z3c.form.interfaces import IFieldWidget
+from z3c.form.interfaces import IAddForm
 from z3c.form.interfaces import IFormLayer
 from z3c.form.interfaces import ITextWidget
 from z3c.form.util import getSpecification
@@ -81,7 +84,48 @@ class LayoutWidget(BaseWidget, z3cform_TextWidget):
             self.get_options(),
             args['pattern_options'])
 
+        current_browser_layout = (
+            self._add_form_portal_type_default_view()
+            or self._context_selected_layout()
+        )
+        if current_browser_layout != 'view':  # 'view' means 'Custom layout'
+            args['pattern'] = self.pattern + '-disabled'
+
         return args
+
+    def _add_form_portal_type_default_view(self):
+        """Return the default view of the portal type of this add form
+        if we are on a add form
+        """
+        if not IAddForm.providedBy(getattr(self.form, '__parent__', None)):
+            return ''
+
+        portal_type = getattr(getattr(
+            self.form, '__parent__', self.form), 'portal_type', None)
+        if portal_type is None:
+            return ''
+
+        types_tool = getToolByName(self.context, 'portal_types')
+        fti = getattr(types_tool, portal_type, None)
+        if fti is None:
+            return ''
+
+        behaviors = getattr(fti, 'behaviors', None) or []
+        if not 'plone.app.blocks.layoutbehavior.ILayoutAware' in behaviors:
+            return ''
+
+        return fti.default_view
+
+    def _context_selected_layout(self):
+        """Return the current layout for the layout aware context if we
+        are on the layout aware context
+        """
+        if not ILayoutAware(self.context, None):
+            return ''
+        selectable_layout = ISelectableBrowserDefault(self.context, None)
+        if not selectable_layout:
+            return ''
+        return selectable_layout.getLayout()
 
 
 @adapter(getSpecification(ILayoutAware['content']), IFormLayer)
