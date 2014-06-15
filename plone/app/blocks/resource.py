@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
+import urlparse
+
 from Acquisition import aq_parent
 from Products.CMFCore.utils import getToolByName
 from OFS.interfaces import ITraversable
-from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
-from plone.app.blocks.interfaces import SITE_LAYOUT_FILE_NAME
-from plone.app.blocks.interfaces import SITE_LAYOUT_MANIFEST_FORMAT
-from plone.app.blocks.interfaces import SITE_LAYOUT_RESOURCE_NAME
-from plone.app.blocks.utils import resolveResource
-from plone.app.blocks.utils import getDefaultSiteLayout
-from plone.app.blocks.utils import getLayoutAwareSiteLayout
-from plone.memoize.volatile import cache, DontCache, store_on_context
+from plone.memoize import view
+from zope.annotation import IAnnotations
+from zope.annotation.attribute import AttributeAnnotations
+from zope.globalrequest import getRequest
+from plone.memoize.volatile import cache
+from plone.memoize.volatile import DontCache
+from plone.memoize.volatile import store_on_context
 from plone.registry.interfaces import IRecordModifiedEvent
 from plone.resource.manifest import getAllResources
 from plone.resource.traversal import ResourceTraverser
@@ -21,9 +22,15 @@ from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleTerm
 from zope.schema.vocabulary import SimpleVocabulary
 from zope.site.hooks import getSite
-
 import Globals
-import urlparse
+
+from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
+from plone.app.blocks.interfaces import SITE_LAYOUT_FILE_NAME
+from plone.app.blocks.interfaces import SITE_LAYOUT_MANIFEST_FORMAT
+from plone.app.blocks.interfaces import SITE_LAYOUT_RESOURCE_NAME
+from plone.app.blocks.utils import resolveResource
+from plone.app.blocks.utils import getDefaultSiteLayout
+from plone.app.blocks.utils import getLayoutAwareSiteLayout
 
 
 class SiteLayoutTraverser(ResourceTraverser):
@@ -36,6 +43,12 @@ class SiteLayoutTraverser(ResourceTraverser):
     name = SITE_LAYOUT_RESOURCE_NAME
 
 
+class AnnotationsDict(dict):
+    """Volatile annotations dictionary to pass to view.memoize_contextless when
+    request threadlocal is not set"""
+    implements(IAnnotations)
+
+
 class AvailableLayoutsVocabulary(object):
     """Vocabulary to return available layouts of a given type
     """
@@ -45,7 +58,9 @@ class AvailableLayoutsVocabulary(object):
     def __init__(self, format, defaultFilename):
         self.format = format
         self.defaultFilename = defaultFilename
+        self.request = getRequest() or AnnotationsDict()
 
+    @view.memoize_contextless
     def __call__(self, context):
         items = []
 
