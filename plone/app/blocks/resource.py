@@ -45,12 +45,12 @@ class SiteLayoutTraverser(ResourceTraverser):
 
 class AnnotationsDict(dict):
     """Volatile annotations dictionary to pass to view.memoize_contextless when
-    request threadlocal is not set"""
+    request thread local is not set"""
     implements(IAnnotations)
 
 
-class AvailableLayoutsVocabulary(object):
-    """Vocabulary to return available layouts of a given type
+class _AvailableLayoutsVocabulary(object):
+    """Vocabulary to return request cached available layouts of a given type
     """
 
     implements(IVocabularyFactory)
@@ -77,6 +77,23 @@ class AvailableLayoutsVocabulary(object):
             items.append(SimpleTerm(path, name, title))
 
         return SimpleVocabulary(items)
+
+
+class AvailableLayoutsVocabulary(object):
+    """Vocabulary to return available layouts of a given type
+    """
+
+    implements(IVocabularyFactory)
+
+    def __init__(self, format, defaultFilename):
+        self.format = format
+        self.defaultFilename = defaultFilename
+
+    def __call__(self, context):
+        # Instantiate the factory impl per call to support caching by request
+        fab = _AvailableLayoutsVocabulary(self.format, self.defaultFilename)
+        return fab(context)
+
 
 AvailableSiteLayoutsVocabularyFactory = AvailableLayoutsVocabulary(
     SITE_LAYOUT_MANIFEST_FORMAT,
