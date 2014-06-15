@@ -78,11 +78,14 @@ class ParseXML(object):
             return None
 
         try:
+            # Fix issue with layouts with CR+LF line endings losing their heads
+            # (this has been seen with downloaded themes with CR+LF endings)
+            result = (item.replace('&#13;\n', '\n') for item in result if item)
             result = getHTMLSerializer(result, pretty_print=self.pretty_print,
                                        encoding=encoding)
             self.request['plone.app.blocks.enabled'] = True
             return result
-        except (TypeError, etree.ParseError):
+        except (AttributeError, TypeError, etree.ParseError):
             return None
 
 
