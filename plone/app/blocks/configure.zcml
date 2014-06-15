@@ -13,7 +13,7 @@
     <include package="plone.tiles" />
     <include package="plone.subrequest" />
     <include package="plone.transformchain" />
-    
+
     <include package="plone.app.registry" />
     
     <permission
@@ -51,14 +51,17 @@
         permission="zope2.View"
         />
 
-    <browser:menuItems
-        for=".layoutbehavior.ILayoutAware"
-        menu="plone_displayviews">
-      <browser:menuItem
-          title="Custom layout"
-          action="view"
-          />
-    </browser:menuItems>
+    <configure zcml:condition="installed plone.app.contentmenu">
+      <include package="plone.app.contentmenu" />
+      <browser:menuItems
+          for=".layoutbehavior.ILayoutAware"
+          menu="plone_displayviews">
+        <browser:menuItem
+            title="Custom layout"
+            action="view"
+            />
+      </browser:menuItems>
+    </configure>
 
     <!-- Register the resource traverser -->
     <adapter
