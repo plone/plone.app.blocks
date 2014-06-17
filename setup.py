@@ -5,6 +5,9 @@ from setuptools import setup
 import os
 
 version = '1.2'
+widgets_require = [
+    'plone.app.widgets'
+]
 tests_require = [
     'plone.testing',
     'plone.app.testing',
@@ -60,14 +63,13 @@ setup(
         'plone.transformchain',
         'plone.registry',
         'plone.app.registry',
-        # XXX: temp disabled for testing
-        # 'plone.app.widgets',
         'Acquisition',
         'Products.CMFCore',
         'Zope2',
     ],
     tests_require=tests_require,
-    extras_require={'test': tests_require},
+    extras_require={'widgets': widgets_require,
+                    'test': tests_require},
     entry_points="""
         [z3c.autoinclude.plugin]
         target = plone
