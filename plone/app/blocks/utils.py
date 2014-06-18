@@ -206,6 +206,7 @@ def getLayoutAwareSiteLayout(context):
 
     return getDefaultSiteLayout(context)
 
+
 class PermissionChecker(object):
 
     def __init__(self, permissions, context):
@@ -247,8 +248,6 @@ def isVisible(name, omitted):
         return value == 'false'
     else:
         return not bool(value)
-
-
 
 
 def extractFieldInformation(schema, context, request, prefix):
