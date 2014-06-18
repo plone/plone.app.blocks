@@ -20,7 +20,10 @@ def step_setup_various(context):
         return
     portal = context.getSite()
     if HAS_PLONE_APP_WIDGETS:
-        import_profile(portal, 'profile-plone.app.widgets:default')
+        try:
+            import_profile(portal, 'profile-plone.app.widgets:default')
+        except KeyError:
+            pass
     initialize_default_layout_registry_values(portal)
 
 
