@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
+from urllib import urlencode
 from plone.app.blocks import utils
 from urlparse import urljoin
+from urlparse import urlparse
+from urlparse import parse_qs
+from urlparse import urlunparse
 
 
 def merge(request, pageTree, removePanelLinks=False, removeLayoutLink=True):
@@ -20,6 +24,12 @@ def merge(request, pageTree, removePanelLinks=False, removeLayoutLink=True):
         # plone.subrequest deals with VHM requests
         baseURL = ''
     layoutHref = urljoin(baseURL, layoutHref)  # turn the link absolute
+    if request.form.get('ajax_load'):
+        parts = list(urlparse(layoutHref))
+        query = parse_qs(parts[4])
+        query['ajax_load'] = request.form.get('ajax_load')
+        parts[4] = urlencode(query)
+        layoutHref = urlunparse(parts)
     layoutTree = utils.resolve(layoutHref)
     if layoutTree is None:
         return None
