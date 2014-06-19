@@ -24,6 +24,7 @@ from zope.site.hooks import getSite
 import Globals
 
 from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
+from plone.app.blocks.interfaces import DEFAULT_AJAX_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.interfaces import SITE_LAYOUT_FILE_NAME
 from plone.app.blocks.interfaces import SITE_LAYOUT_MANIFEST_FORMAT
 from plone.app.blocks.interfaces import SITE_LAYOUT_RESOURCE_NAME
@@ -124,7 +125,8 @@ def globalSiteLayoutModified(event):
     likely also affect things cached using plone.app.caching, which is what
     we want - the page has probably changed
     """
-    if event.record.__name__ == DEFAULT_SITE_LAYOUT_REGISTRY_KEY:
+    if event.record.__name__ in (DEFAULT_SITE_LAYOUT_REGISTRY_KEY,
+                                 DEFAULT_AJAX_LAYOUT_REGISTRY_KEY):
         if event.oldValue != event.newValue:
             catalog = getToolByName(getSite(), 'portal_catalog', None)
             if catalog is not None and hasattr(catalog, '_increment_counter'):
