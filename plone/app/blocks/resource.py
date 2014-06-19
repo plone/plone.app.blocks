@@ -6,7 +6,6 @@ from Products.CMFCore.utils import getToolByName
 from OFS.interfaces import ITraversable
 from plone.memoize import view
 from zope.annotation import IAnnotations
-from zope.annotation.attribute import AttributeAnnotations
 from zope.globalrequest import getRequest
 from plone.memoize.volatile import cache
 from plone.memoize.volatile import DontCache
@@ -29,6 +28,7 @@ from plone.app.blocks.interfaces import SITE_LAYOUT_FILE_NAME
 from plone.app.blocks.interfaces import SITE_LAYOUT_MANIFEST_FORMAT
 from plone.app.blocks.interfaces import SITE_LAYOUT_RESOURCE_NAME
 from plone.app.blocks.utils import resolveResource
+from plone.app.blocks.utils import getDefaultAjaxLayout
 from plone.app.blocks.utils import getDefaultSiteLayout
 from plone.app.blocks.utils import getLayoutAwareSiteLayout
 
@@ -113,6 +113,7 @@ def cacheKey(method, self):
 
     return (
         getattr(self.context, '_p_mtime', None),
+        self.request.form.get('ajax_load'),
         catalog.getCounter(),
     )
 
@@ -163,7 +164,10 @@ class DefaultSiteLayout(BrowserView):
         return resolveResource(path)
 
     def _getLayout(self):
-        return getDefaultSiteLayout(self.context)
+        if self.request.form.get('ajax_load'):
+            return getDefaultAjaxLayout(self.context)
+        else:
+            return getDefaultSiteLayout(self.context)
 
 
 class PageSiteLayout(DefaultSiteLayout):
@@ -181,4 +185,7 @@ class PageSiteLayout(DefaultSiteLayout):
     """
 
     def _getLayout(self):
-        return getLayoutAwareSiteLayout(self.context)
+        if self.request.form.get('ajax_load'):
+            return getDefaultAjaxLayout(self.context)
+        else:
+            return getLayoutAwareSiteLayout(self.context)

@@ -182,15 +182,15 @@ def getDefaultSiteLayout(context):
 
 
 def getDefaultAjaxLayout(context):
-    """Get the path to the site layout to use by default for the given content
-    object
+    """Get the path to the ajax site layout to use by default for the given
+    content object
     """
 
     registry = queryUtility(IRegistry)
-    if registry is None:
-        return None
-
-    return registry.get(DEFAULT_AJAX_LAYOUT_REGISTRY_KEY)
+    if registry is not None:
+        return registry.get(DEFAULT_AJAX_LAYOUT_REGISTRY_KEY)
+    else:
+        return getLayoutAwareSiteLayout(context)
 
 
 def getLayoutAwareSiteLayout(context):
