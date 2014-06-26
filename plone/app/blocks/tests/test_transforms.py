@@ -5,8 +5,8 @@ from Products.CMFPlone.utils import getToolByName
 from StringIO import StringIO
 from plone.transformchain.zpublisher import applyTransform
 from repoze.xmliter.utils import getHTMLSerializer
-from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY, \
-    IBlocksTransformEnabled
+from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
+from plone.app.blocks.interfaces import IBlocksTransformEnabled
 from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.app.blocks.testing import BLOCKS_INTEGRATION_TESTING
 from plone.app.testing import setRoles, TEST_USER_ID
