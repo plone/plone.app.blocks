@@ -11,7 +11,8 @@ from zope.interface import implements
 from zope.interface import alsoProvides
 from zope import schema
 
-from plone.app.blocks.interfaces import ILayoutField, IBlocksTransformEnabled
+from plone.app.blocks.interfaces import ILayoutField
+from plone.app.blocks.interfaces import IBlocksTransformEnabled
 
 from plone.app.blocks.interfaces import IOmittedField
 from plone.app.blocks.interfaces import _
