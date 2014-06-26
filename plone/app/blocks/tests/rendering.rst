@@ -80,6 +80,7 @@ content inside and outside panels. The tiles in this case are managed by
     ...         <title>Layout title</title>
     ...         <link rel="stylesheet" href="/layout/style.css" />
     ...         <script type="text/javascript">alert('layout');</script>
+    ...
     ...         <style type="text/css">
     ...         div {
     ...             margin: 5px;
@@ -87,6 +88,7 @@ content inside and outside panels. The tiles in this case are managed by
     ...             padding: 5px;
     ...         }
     ...         </style>
+    ...
     ...         <link rel="stylesheet" data-tile="./@@test.tile_nobody/tile_css" />
     ...     </head>
     ...     <body>
@@ -133,6 +135,7 @@ that.
             <title>Layout title</title>
             <link rel="stylesheet" href="/layout/style.css" />
             <script type="text/javascript">alert('layout');</script>
+    <BLANKLINE>
             <style type="text/css">
             div {
                 margin: 5px;
@@ -140,6 +143,7 @@ that.
                 padding: 5px;
             }
             </style>
+    <BLANKLINE>
             <link rel="stylesheet" data-tile="./@@test.tile_nobody/tile_css" />
         </head>
         <body>
