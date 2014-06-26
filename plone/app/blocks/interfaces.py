@@ -22,7 +22,14 @@ _ = MessageFactory('plone')
 
 class IBlocksLayer(Interface):
     """Browser layer used to ensure blocks functionality can be installed on
-    a site-by-site basis.
+    a site-by-site basis for published objects (usually views), which
+    provider IBlocksTransformEnabled marker interface.
+    """
+
+
+class IBlocksTransformEnabled(Interface):
+    """Marker interface for views (or other published objects), which require
+    blocks transform
     """
 
 

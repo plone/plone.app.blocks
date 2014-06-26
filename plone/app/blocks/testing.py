@@ -1,10 +1,21 @@
 # -*- coding: utf-8 -*-
 from plone.app.testing import FunctionalTesting
+
 from plone.app.testing import IntegrationTesting
 from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import PloneSandboxLayer
 from plone.testing import Layer
 from zope.configuration import xmlconfig
+
+from OFS.Image import File
+from zope.interface import implements
+from plone.app.blocks.interfaces import IBlocksTransformEnabled
+
+
+class TransformEnabledFile(File):
+    """A File object, which is always processed through blocks transform
+    """
+    implements(IBlocksTransformEnabled)
 
 
 class BlocksLayer(PloneSandboxLayer):
