@@ -11,7 +11,7 @@ from zope.interface import implements
 from zope.interface import alsoProvides
 from zope import schema
 
-from plone.app.blocks.interfaces import ILayoutField
+from plone.app.blocks.interfaces import ILayoutField, IBlocksTransformEnabled
 
 from plone.app.blocks.interfaces import IOmittedField
 from plone.app.blocks.interfaces import _
@@ -63,6 +63,8 @@ alsoProvides(ILayoutAware['sectionSiteLayout'], IOmittedField)
 class LayoutView(BrowserView):
     """Default view for a layout aware page
     """
+
+    implements(IBlocksTransformEnabled)
 
     def __init__(self, context, request):
         super(LayoutView, self).__init__(context, request)

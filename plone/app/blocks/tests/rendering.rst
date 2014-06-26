@@ -80,7 +80,6 @@ content inside and outside panels. The tiles in this case are managed by
     ...         <title>Layout title</title>
     ...         <link rel="stylesheet" href="/layout/style.css" />
     ...         <script type="text/javascript">alert('layout');</script>
-    ...
     ...         <style type="text/css">
     ...         div {
     ...             margin: 5px;
@@ -88,7 +87,6 @@ content inside and outside panels. The tiles in this case are managed by
     ...             padding: 5px;
     ...         }
     ...         </style>
-    ...
     ...         <link rel="stylesheet" data-tile="./@@test.tile_nobody/tile_css" />
     ...     </head>
     ...     <body>
@@ -128,27 +126,23 @@ This resource can now be accessed using the path
 that.
 
     >>> browser.open(portal.absolute_url() + '/++sitelayout++mylayout/site.html')
-
-Because of an annoying cross-platform inconsistency in lxml we need to sanitize the output a bit.
-
-    >>> print browser.contents.replace('<head><meta', '<head>\n\t<meta')
+    >>> print browser.contents
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-    <html xmlns="http://www.w3.org/1999/xhtml">
-      <head>
-          <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
-          <title>Layout title</title>
-          <link rel="stylesheet" href="/layout/style.css" />
-          <script type="text/javascript">alert('layout');</script>
-        <style type="text/css">
+    <html>
+        <head>
+            <title>Layout title</title>
+            <link rel="stylesheet" href="/layout/style.css" />
+            <script type="text/javascript">alert('layout');</script>
+            <style type="text/css">
             div {
                 margin: 5px;
                 border: dotted black 1px;
                 padding: 5px;
             }
             </style>
-        <link rel="stylesheet" data-tile="./@@test.tile_nobody/tile_css" />
-          </head>
-          <body>
+            <link rel="stylesheet" data-tile="./@@test.tile_nobody/tile_css" />
+        </head>
+        <body>
             <h1>Welcome!</h1>
             <div data-panel="panel1">Layout panel 1</div>
             <div data-panel="panel2">
@@ -213,8 +207,10 @@ life, these could be registered using the standard ``<browser:page />`` and
     >>> from zope.interface import Interface, implements
     >>> from zope import schema
     >>> from plone.tiles import Tile
+    >>> from plone.app.blocks.interfaces import IBlocksTransformEnabled
 
     >>> class Page(BrowserView):
+    ...     implements(IBlocksTransformEnabled)
     ...     __name__ = 'test-page'
     ...     def __call__(self):
     ...         return pageHTML

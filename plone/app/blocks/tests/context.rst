@@ -23,7 +23,10 @@ and page layouts, respectively::
     ... </html>
     ... """ % self.context.Title()
 
+    >>> from zope.interface import implements
+    >>> from plone.app.blocks.interfaces import IBlocksTransformEnabled
     >>> class PageLayout(BrowserView):
+    ...     implements(IBlocksTransformEnabled)
     ...     __name__ = 'page-layout'
     ...	    def __call__(self):
     ...         return u"""
