@@ -134,7 +134,10 @@ directly.
     ... </html>
     ... """
 
+    >>> from zope.interface import implements
+    >>> from plone.app.blocks.interfaces import IBlocksTransformEnabled
     >>> class Page(BrowserView):
+    ...     implements(IBlocksTransformEnabled)
     ...     __name__ = 'test-page'
     ...     def __call__(self):
     ...         return pageHTML
