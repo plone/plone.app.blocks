@@ -84,11 +84,13 @@ class LayoutWidget(BaseWidget, z3cform_TextWidget):
             self.get_options(),
             args['pattern_options'])
 
+        # Disable Mosaic editor when the selected layout for the current
+        # context is not custom layout
         current_browser_layout = (
             self._add_form_portal_type_default_view()
             or self._context_selected_layout()
         )
-        if current_browser_layout != 'view':  # 'view' means 'Custom layout'
+        if current_browser_layout not in ['view', '@@view']:
             args['pattern'] = self.pattern + '-disabled'
 
         return args
