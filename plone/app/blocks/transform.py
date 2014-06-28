@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+import re
 from lxml import etree
+from lxml import html
 from plone.app.blocks import panel, tiles, gridsystem
 from plone.tiles import esi
 from plone.tiles.interfaces import ESI_HEADER
@@ -78,11 +80,15 @@ class ParseXML(object):
             return None
 
         try:
-            # Fix issue with layouts with CR+LF line endings losing their heads
-            # (this has been seen with downloaded themes with CR+LF endings)
-            result = (item.replace('&#13;\n', '\n') for item in result if item)
-            result = getHTMLSerializer(result, pretty_print=self.pretty_print,
+            # Fix layouts with CR[+LF] line endings not to lose their heads
+            # (this has been seen with downloaded themes with CR[+LF] endings)
+            iterable = [re.sub('&#13;', '\n', re.sub('&#13;\n', '\n', item))
+                        for item in result if item]
+            result = getHTMLSerializer(iterable, pretty_print=self.pretty_print,
                                        encoding=encoding)
+            # Fix XHTML layouts with inline js (etree.tostring breaks <![CDATA[)
+            if any(['<![CDATA[' in item for item in iterable]):
+                result.serializer = html.tostring
             self.request['plone.app.blocks.enabled'] = True
             return result
         except (AttributeError, TypeError, etree.ParseError):
