@@ -10,7 +10,7 @@ from zope.component import queryUtility
 
 def renderTiles(request, tree):
     """Find all tiles in the given response, contained in the lxml element
-    tree `tree`, and insert them into the ouput.
+    tree `tree`, and insert them into the output.
 
     Assumes panel merging has already happened.
     """
