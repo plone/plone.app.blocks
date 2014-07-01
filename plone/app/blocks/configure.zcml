@@ -125,12 +125,24 @@
     
     <!-- 8000: Turn the response into an lxml tree for further manipulation -->
     <adapter
+        for="* .interfaces.IBlocksTransformEnabled"
+        name="plone.app.blocks.parsexml"
+        factory=".transform.ParseXML"
+        />
+
+    <adapter
         for=".interfaces.IBlocksTransformEnabled .interfaces.IBlocksLayer"
         name="plone.app.blocks.parsexml"
         factory=".transform.ParseXML"
         />
 
     <!-- 8100: Locate the site layout and merge panels -->
+    <adapter
+        for="* .interfaces.IBlocksTransformEnabled"
+        name="plone.app.blocks.mergepanels"
+        factory=".transform.MergePanels"
+        />
+
     <adapter
         for=".interfaces.IBlocksTransformEnabled .interfaces.IBlocksLayer"
         name="plone.app.blocks.mergepanels"
@@ -139,6 +151,12 @@
     
     <!-- 8500: Finds and includes tiles in the output -->
     <adapter
+        for="* .interfaces.IBlocksTransformEnabled"
+        name="plone.app.blocks.tiles"
+        factory=".transform.IncludeTiles"
+        />
+
+    <adapter
         for=".interfaces.IBlocksTransformEnabled .interfaces.IBlocksLayer"
         name="plone.app.blocks.tiles"
         factory=".transform.IncludeTiles"
@@ -146,12 +164,24 @@
     
     <!-- 8700: Replace css classes -->
     <adapter
+        for="* .interfaces.IBlocksTransformEnabled"
+        name="plone.app.blocks.gridsystem"
+        factory=".transform.ApplyResponsiveClass"
+        />
+
+    <adapter
         for=".interfaces.IBlocksTransformEnabled .interfaces.IBlocksLayer"
         name="plone.app.blocks.gridsystem"
         factory=".transform.ApplyResponsiveClass"
         />
 
     <!-- 8900: ESI post-processing if required -->
+    <adapter
+        for="* .interfaces.IBlocksTransformEnabled"
+        name="plone.app.blocks.esirender"
+        factory=".transform.ESIRender"
+        />
+
     <adapter
         for=".interfaces.IBlocksTransformEnabled .interfaces.IBlocksLayer"
         name="plone.app.blocks.esirender"
