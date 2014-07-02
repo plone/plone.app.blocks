@@ -40,7 +40,8 @@ def initialize_default_layout_registry_values(portal):
             registry.records[key] = Record(
                 field.BytesLine(
                     title=title,
-                    description=description
+                    description=description,
+                    required=False
                 ), value)
 
 
