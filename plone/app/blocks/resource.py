@@ -28,6 +28,7 @@ from plone.app.blocks.interfaces import DEFAULT_AJAX_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.interfaces import SITE_LAYOUT_FILE_NAME
 from plone.app.blocks.interfaces import SITE_LAYOUT_MANIFEST_FORMAT
 from plone.app.blocks.interfaces import SITE_LAYOUT_RESOURCE_NAME
+from plone.app.blocks.layoutbehavior import SiteLayoutView
 from plone.app.blocks.utils import resolveResource
 from plone.app.blocks.utils import getDefaultAjaxLayout
 from plone.app.blocks.utils import getDefaultSiteLayout
@@ -147,8 +148,14 @@ class DefaultSiteLayout(BrowserView):
     specific settings into account.
     """
 
-    @cache(cacheKey, store_on_context)
     def __call__(self):
+        try:
+            return self.index()
+        except NotFound:
+            return SiteLayoutView(self.context, self.request)()
+
+    @cache(cacheKey, store_on_context)
+    def index(self):
         layout = self._getLayout()
         if layout is None:
             raise NotFound("No default site layout set")
