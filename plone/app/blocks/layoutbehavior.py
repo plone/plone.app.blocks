@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
+import os
 import logging
 
 from Products.Five import BrowserView
-from plone.autoform.directives import mode
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from plone.app.layout.globals.interfaces import IViewView
 from plone.autoform.interfaces import IFormFieldProvider
 from plone.supermodel import model
 from plone.supermodel.directives import fieldset
-from z3c.form.interfaces import HIDDEN_MODE
 from zope.interface import implements
 from zope.interface import alsoProvides
 from zope import schema
 
 from plone.app.blocks.interfaces import ILayoutField
 from plone.app.blocks.interfaces import IBlocksTransformEnabled
-
 from plone.app.blocks.interfaces import IOmittedField
 from plone.app.blocks.interfaces import _
 
@@ -63,14 +63,25 @@ alsoProvides(ILayoutAware['pageSiteLayout'], IOmittedField)
 alsoProvides(ILayoutAware['sectionSiteLayout'], IOmittedField)
 
 
-class LayoutView(BrowserView):
+class SiteLayoutView(BrowserView):
+    """Default site layout view called from the site layout resolving view"""
+
+    implements(IViewView)
+
+    index = ViewPageTemplateFile(os.path.join('templates', 'dummy.pt'))
+
+    def __call__(self):
+        return self.index()
+
+
+class ContentLayoutView(BrowserView):
     """Default view for a layout aware page
     """
 
     implements(IBlocksTransformEnabled)
 
     def __init__(self, context, request):
-        super(LayoutView, self).__init__(context, request)
+        super(ContentLayoutView, self).__init__(context, request)
 
     def __call__(self):
         """Render the contents of the "content" field coming from

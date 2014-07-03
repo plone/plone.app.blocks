@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from urllib import urlencode
-from plone.app.blocks import utils
 from urlparse import urljoin
 from urlparse import urlparse
 from urlparse import parse_qs
 from urlparse import urlunparse
+
+from plone.app.blocks import utils
 
 
 def merge(request, pageTree, removePanelLinks=False, removeLayoutLink=True):
@@ -41,8 +42,20 @@ def merge(request, pageTree, removePanelLinks=False, removeLayoutLink=True):
         for node in utils.panelXPath(pageTree)
     )
 
-    for layoutPanelNode in utils.panelXPath(layoutTree):
-        panelId = layoutPanelNode.attrib['data-panel']
+    layoutPanels = dict(
+        (node.attrib['data-panel'], node)
+        for node in utils.panelXPath(layoutTree)
+    )
+
+    # Site layout should always have element with data-panel="content"
+    # Note: This could be more generic, but that would empower editors too much
+    if 'content' in pagePanels and 'content' not in layoutPanels:
+        for node in layoutTree.xpath('//*[@id="content"]'):
+            node.attrib['data-panel'] = 'content'
+            layoutPanels['content'] = node
+            break
+
+    for panelId, layoutPanelNode in layoutPanels.items():
         pagePanelNode = pagePanels.get(panelId, None)
         if pagePanelNode is not None:
             utils.replace_content(layoutPanelNode, pagePanelNode)

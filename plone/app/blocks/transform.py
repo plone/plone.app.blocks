@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 import re
+
 from lxml import etree
 from lxml import html
-from plone.app.blocks import panel, tiles, gridsystem
-from plone.tiles import esi
-from plone.tiles.interfaces import ESI_HEADER
 from plone.transformchain.interfaces import ITransform
 from repoze.xmliter.serializer import XMLSerializer
 from repoze.xmliter.utils import getHTMLSerializer
 from zope.interface import implements
+
+from plone.app.blocks import panel, tiles, gridsystem
+from plone.tiles import esi
+from plone.tiles.interfaces import ESI_HEADER
 
 
 class DisableParsing(object):
@@ -84,9 +86,9 @@ class ParseXML(object):
             # (this has been seen with downloaded themes with CR[+LF] endings)
             iterable = [re.sub('&#13;', '\n', re.sub('&#13;\n', '\n', item))
                         for item in result if item]
-            result = getHTMLSerializer(iterable, pretty_print=self.pretty_print,
-                                       encoding=encoding)
-            # Fix XHTML layouts with inline js (etree.tostring breaks <![CDATA[)
+            result = getHTMLSerializer(
+                iterable, pretty_print=self.pretty_print, encoding=encoding)
+            # Fix XHTML layouts with where etree.tostring breaks <![CDATA[
             if any(['<![CDATA[' in item for item in iterable]):
                 result.serializer = html.tostring
             self.request['plone.app.blocks.enabled'] = True
@@ -127,6 +129,12 @@ class MergePanels(object):
         self.request['plone.app.blocks.merged'] = True
 
         result.tree = tree
+
+        # Fix serializer when layout has changed doctype from XHTML to HTML
+        if (result.tree.docinfo.doctype
+                and 'XHTML' not in result.tree.docinfo.doctype):
+            result.serializer = html.tostring
+
         return result
 
 
