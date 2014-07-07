@@ -64,6 +64,7 @@ def renderTiles(request, tree):
                 rules_doc = etree.ElementTree(etree.fromstring(rules_doc))
             except NotFound:
                 rules_doc = None
+            del tileNode.attrib[utils.tileRulesAttrib]
         else:
             rules_doc = None
 
