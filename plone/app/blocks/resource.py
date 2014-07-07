@@ -78,6 +78,8 @@ class _AvailableLayoutsVocabulary(object):
             path = "/++%s++%s/%s" % (self.format.resourceType, name, filename)
             items.append(SimpleTerm(path, name, title))
 
+        items.sort(key=lambda term: term.title)
+
         return SimpleVocabulary(items)
 
 
