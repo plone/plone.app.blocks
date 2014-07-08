@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
+from copy import deepcopy
 import logging
 
 from AccessControl import getSecurityManager
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-from diazo import rules, cssrules, compiler
+from diazo import rules
+from diazo import cssrules
+from diazo import compiler
 from lxml import etree
 from lxml import html
 from diazo import utils
@@ -14,6 +17,8 @@ from plone.autoform.interfaces import MODES_KEY
 from plone.autoform.interfaces import READ_PERMISSIONS_KEY
 from plone.autoform.interfaces import WRITE_PERMISSIONS_KEY
 from plone.autoform.utils import mergedTaggedValuesForIRO
+from plone.memoize.volatile import cache
+from plone.memoize.volatile import DontCache
 from plone.registry.interfaces import IRegistry
 from plone.supermodel.utils import mergedTaggedValueDict
 from zExceptions import NotFound
@@ -27,6 +32,7 @@ from zope.interface import Interface
 from zope.security.interfaces import IPermission
 from zope.site.hooks import getSite
 from zope.schema.interfaces import IField
+import Globals
 
 from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.interfaces import DEFAULT_AJAX_LAYOUT_REGISTRY_KEY
@@ -395,3 +401,18 @@ def compile_theme(rules_doc, theme_doc=None, css=True,
         etree.tostring(compiled_doc), parser, compiler_parser)
 
     return compiled_doc
+
+
+def cacheKey(func, rules_url, theme_node):
+    if Globals.DevelopmentMode:
+        raise DontCache()
+    return ':'.join([rules_url, html.tostring(theme_node)])
+
+
+@cache(cacheKey)
+def resolve_transform(rules_url, theme_node):
+    rules_doc = resolveResource(rules_url)  # may raise NotFound
+    rules_doc = etree.ElementTree(etree.fromstring(rules_doc))
+    compiled = compile_theme(rules_doc, etree.ElementTree(deepcopy(theme_node)))
+    transform = etree.XSLT(compiled)
+    return transform

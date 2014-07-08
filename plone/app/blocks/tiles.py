@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
-from copy import deepcopy
 from urlparse import urljoin
 
-from lxml import etree
 from plone.registry.interfaces import IRegistry
 from zExceptions import NotFound
 from zope.component import queryUtility
 
 from plone.app.blocks.interfaces import IBlocksSettings
 from plone.app.blocks import utils
-from plone.app.blocks.utils import compile_theme
+from plone.app.blocks.utils import resolve_transform
 from plone.tiles.interfaces import ESI_HEADER, ESI_HEADER_KEY
 
 
@@ -60,25 +58,18 @@ def renderTiles(request, tree):
             if not tileRulesHref.startswith('/'):
                 tileRulesHref = urljoin(baseURL, tileRulesHref)
             try:
-                rules_doc = utils.resolveResource(tileRulesHref)
-                rules_doc = etree.ElementTree(etree.fromstring(rules_doc))
+                tileTransform = resolve_transform(tileRulesHref, tileNode)
             except NotFound:
-                rules_doc = None
+                tileTransform = None
             del tileNode.attrib[utils.tileRulesAttrib]
         else:
-            rules_doc = None
+            tileTransform = None
 
         if tileTree is not None:
             tileRoot = tileTree.getroot()
 
-            if rules_doc is not None:
-                compiled = compile_theme(
-                    rules_doc, etree.ElementTree(deepcopy(tileNode)))
-                transform = etree.XSLT(compiled)
-                from lxml import html
-                print html.tostring(tileNode)
-                print html.tostring(tileRoot.find('body'))
-                result = transform(tileRoot.find('body')).getroot()
+            if tileTransform is not None:
+                result = tileTransform(tileRoot.find('body')).getroot()
                 del tileRoot.find('body')[:]
                 tileRoot.find('body').append(result)
 

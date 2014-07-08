@@ -45,6 +45,7 @@ setup(
     zip_safe=False,
     install_requires=[
         'setuptools',
+        'diazo',
         'lxml',
         'zope.interface',
         'zope.component',
