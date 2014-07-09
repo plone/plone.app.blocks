@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import re
 import urlparse
 
 from Acquisition import aq_parent
@@ -64,7 +65,7 @@ class _AvailableLayoutsVocabulary(object):
 
     @view.memoize_contextless
     def __call__(self, context):
-        items = []
+        items = {}  # dictionary is used here to avoid duplicate tokens
 
         resources = getAllResources(self.format)
         for name, manifest in resources.items():
@@ -74,12 +75,20 @@ class _AvailableLayoutsVocabulary(object):
             if manifest is not None:
                 title = manifest['title'] or title
                 filename = manifest['file'] or filename
+                variants = manifest.get('variants') or []
 
             path = "/++%s++%s/%s" % (self.format.resourceType, name, filename)
-            items.append(SimpleTerm(path, name, title))
+            items[name] = SimpleTerm(path, name, title)
 
-        items.sort(key=lambda term: term.title)
+            for key, value in dict(variants).items():
+                key_ = title_ = key.capitalize().replace('_', ' ')
+                name_ = '{0:s}-{1:s}'.format(name, key)
+                if manifest is not None and manifest['title']:
+                    title_ = u'{0:s} ({1:s})'.format(title, key_)
+                path = "/++%s++%s/%s" % (self.format.resourceType, name, value)
+                items[name_] = SimpleTerm(path, name_, title_)
 
+        items = sorted(items.values(), key=lambda term: term.title)
         return SimpleVocabulary(items)
 
 
