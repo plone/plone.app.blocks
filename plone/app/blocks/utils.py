@@ -17,7 +17,7 @@ from plone.autoform.interfaces import MODES_KEY
 from plone.autoform.interfaces import READ_PERMISSIONS_KEY
 from plone.autoform.interfaces import WRITE_PERMISSIONS_KEY
 from plone.autoform.utils import mergedTaggedValuesForIRO
-from plone.memoize.volatile import cache
+from plone.memoize import ram
 from plone.memoize.volatile import DontCache
 from plone.registry.interfaces import IRegistry
 from plone.supermodel.utils import mergedTaggedValueDict
@@ -409,7 +409,7 @@ def cacheKey(func, rules_url, theme_node):
     return ':'.join([rules_url, html.tostring(theme_node)])
 
 
-@cache(cacheKey)
+@ram.cache(cacheKey)
 def resolve_transform(rules_url, theme_node):
     rules_doc = resolveResource(rules_url)  # may raise NotFound
     rules_doc = etree.ElementTree(etree.fromstring(rules_doc))
