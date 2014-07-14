@@ -4,7 +4,7 @@ Changelog
 1.2 (unreleased)
 ----------------
 
-- Solve issue with VHM and tile rendering. Fixes 
+- Solve issue with VHM and tile rendering. Fixes
   https://dev.plone.org/ticket/13581 [ericof]
 
 - Added z3c.autoinclude support
