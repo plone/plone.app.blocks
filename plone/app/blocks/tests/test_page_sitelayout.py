@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.layoutbehavior import ILayoutAware
+from plone.app.blocks.layoutbehavior import SiteLayoutView
 from plone.app.blocks.testing import BLOCKS_FUNCTIONAL_TESTING
 from plone.app.testing import TEST_USER_ID
 from plone.app.testing import setRoles
@@ -33,7 +34,10 @@ class TestPageSiteLayout(unittest.TestCase):
         self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = None
         view = getMultiAdapter((self.portal['f1']['d1'], self.request,),
                                name=u'page-site-layout')
-        self.assertRaises(NotFound, view)
+        self.assertRaises(NotFound, view.index)
+
+        default_view = SiteLayoutView(self.portal['f1']['d1'], self.request)
+        self.assertEqual(view().split(), default_view().split())
 
     def test_page_site_layout_default(self):
         self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\

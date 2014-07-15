@@ -5,6 +5,7 @@ from Products.CMFPlone.utils import getToolByName
 from StringIO import StringIO
 from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.layoutbehavior import ILayoutAware
+from plone.app.blocks.layoutbehavior import SiteLayoutView
 from plone.app.blocks.testing import BLOCKS_FUNCTIONAL_TESTING
 from plone.app.testing import setRoles, TEST_USER_ID
 from plone.registry.interfaces import IRegistry
@@ -42,7 +43,10 @@ class TestSiteLayout(unittest.TestCase):
 
         view = getMultiAdapter((self.portal, self.request,),
                                name=u'default-site-layout')
-        self.assertRaises(NotFound, view)
+        self.assertRaises(NotFound, view.index)
+
+        default_view = SiteLayoutView(self.portal, self.request)
+        self.assertEqual(view().split(), default_view().split())
 
     def test_default_site_layout(self):
         # Clear cache if there
