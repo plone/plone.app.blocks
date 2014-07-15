@@ -76,6 +76,8 @@ class _AvailableLayoutsVocabulary(object):
                 title = manifest['title'] or title
                 filename = manifest['file'] or filename
                 variants = manifest.get('variants') or []
+            else:
+                variants = []
 
             path = "/++%s++%s/%s" % (self.format.resourceType, name, filename)
             items[name] = SimpleTerm(path, name, title)
