@@ -6,6 +6,7 @@ from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.app.layout.globals.interfaces import IViewView
 from plone.autoform.interfaces import IFormFieldProvider
+from plone.dexterity.browser.view import DefaultView
 from plone.supermodel import model
 from plone.supermodel.directives import fieldset
 from zope.interface import implements
@@ -75,7 +76,7 @@ class SiteLayoutView(BrowserView):
         return self.index()
 
 
-class ContentLayoutView(BrowserView):
+class ContentLayoutView(DefaultView):
     """Default view for a layout aware page
     """
 

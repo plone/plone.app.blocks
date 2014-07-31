@@ -56,6 +56,7 @@ setup(
         'repoze.xmliter',
         'plone.tiles',
         'plone.autoform',
+        'plone.dexterity',
         'plone.supermodel',
         'plone.behavior',
         'plone.subrequest',
