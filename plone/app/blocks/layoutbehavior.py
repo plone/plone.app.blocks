@@ -69,7 +69,8 @@ class SiteLayoutView(BrowserView):
 
     implements(IViewView)
 
-    index = ViewPageTemplateFile(os.path.join('templates', 'main_template.pt'))
+    index = ViewPageTemplateFile(os.path.join('templates',
+                                              'main_template.pt'))
 
     def __call__(self):
         self.__name__ = 'main_template'
