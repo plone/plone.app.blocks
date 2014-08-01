@@ -95,6 +95,11 @@ def resolveResource(url):
         charset = extractCharset(response)
         resolved = resolved.decode(charset)
 
+    if response.status in (301, 302):
+        location = response.headers.get('location') or ''
+        if location.startswith(site.absolute_url()):
+            return resolveResource(location[len(site.absolute_url()):])
+
     if response.status != 200:
         raise RuntimeError(resolved)
 
