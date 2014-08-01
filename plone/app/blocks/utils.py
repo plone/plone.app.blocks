@@ -418,6 +418,7 @@ def cacheKey(func, rules_url, theme_node):
 def resolve_transform(rules_url, theme_node):
     rules_doc = resolveResource(rules_url)  # may raise NotFound
     rules_doc = etree.ElementTree(etree.fromstring(rules_doc))
-    compiled = compile_theme(rules_doc, etree.ElementTree(deepcopy(theme_node)))
+    compiled = compile_theme(rules_doc,
+                             etree.ElementTree(deepcopy(theme_node)))
     transform = etree.XSLT(compiled)
     return transform
