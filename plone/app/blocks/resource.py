@@ -34,6 +34,7 @@ from plone.app.blocks.utils import resolveResource
 from plone.app.blocks.utils import getDefaultAjaxLayout
 from plone.app.blocks.utils import getDefaultSiteLayout
 from plone.app.blocks.utils import getLayoutAwareSiteLayout
+from plone.subrequest import ISubRequest
 
 
 class SiteLayoutTraverser(ResourceTraverser):
@@ -165,7 +166,11 @@ class DefaultSiteLayout(BrowserView):
         try:
             return self.index()
         except NotFound:
-            return SiteLayoutView(self.context, self.request)()
+            if ISubRequest.providedBy(self.request):
+                return SiteLayoutView(
+                    self.context, self.request.PARENT_REQUEST)()
+            else:
+                return SiteLayoutView(self.context, self.request)()
 
     @cache(cacheKey, store_on_context)
     def index(self):
