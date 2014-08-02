@@ -96,6 +96,7 @@ def resolveResource(url):
         resolved = resolved.decode(charset)
 
     if response.status in (301, 302):
+        site = getSite()
         location = response.headers.get('location') or ''
         if location.startswith(site.absolute_url()):
             return resolveResource(location[len(site.absolute_url()):])
