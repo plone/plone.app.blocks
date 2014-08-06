@@ -68,15 +68,20 @@ def renderTiles(request, tree):
         if tileTree is not None:
             tileRoot = tileTree.getroot()
 
-            if tileTransform is not None:
-                result = tileTransform(tileRoot.find('body')).getroot()
-                del tileRoot.find('body')[:]
-                tileRoot.find('body').append(result)
-
             tileHead = tileRoot.find('head')
+            tileBody = tileRoot.find('body')
+
+            if tileHead is None and tileBody is None:
+                tileBody = tileRoot
+
+            if tileTransform is not None:
+                result = tileTransform(tileBody).getroot()
+                del tileBody[:]
+                tileBody.append(result)
+
             if tileHead is not None:
                 for tileHeadChild in tileHead:
                     headNode.append(tileHeadChild)
-            utils.replace_with_children(tileNode, tileRoot.find('body'))
+            utils.replace_with_children(tileNode, tileBody)
 
     return tree
