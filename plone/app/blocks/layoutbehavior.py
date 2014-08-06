@@ -9,12 +9,19 @@ from plone.autoform.interfaces import IFormFieldProvider
 from plone.dexterity.browser.view import DefaultView
 from plone.supermodel import model
 from plone.supermodel.directives import fieldset
-from zope.interface import implements
+from zope.component import adapter, getMultiAdapter
+from zope.component.hooks import getSite
+from zope.globalrequest import getRequest
+from zope.interface import implements, provider
+from zope.interface import implementer
+from zope.interface import Interface
 from zope.interface import alsoProvides
 from zope import schema
+from zope.schema._bootstrapinterfaces import IContextAwareDefaultFactory
 
-from plone.app.blocks.interfaces import ILayoutField
 from plone.app.blocks.interfaces import IBlocksTransformEnabled
+from plone.app.blocks.interfaces import ILayoutField
+from plone.app.blocks.interfaces import ILayoutFieldDefaultValue
 from plone.app.blocks.interfaces import IOmittedField
 from plone.app.blocks.interfaces import _
 
@@ -29,13 +36,36 @@ class LayoutField(schema.Text):
     implements(ILayoutField)
 
 
+@implementer(ILayoutFieldDefaultValue)
+@adapter(Interface, Interface)
+def layoutFieldDefaultValue(context, request):
+    import pdb; pdb.set_trace()
+    return u"""\
+<!DOCTYPE html>
+<html lang="en" data-layout="./@@page-site-layout">
+<body>
+<div data-panel="content">
+</div>
+</body>
+</html>"""
+
+
+@provider(IContextAwareDefaultFactory)
+def layoutFieldDefaultValueFactory(context):
+    if context is None:
+        context = getSite()
+    request = getRequest()
+    return getMultiAdapter((context, request), ILayoutFieldDefaultValue)
+
+
 class ILayoutAware(model.Schema):
     """Behavior interface to make a type support layout.
     """
     content = LayoutField(
         title=_(u"Custom layout"),
         description=_(u"Custom content and content layout of this page"),
-        required=False,
+        defaultFactory=layoutFieldDefaultValueFactory,
+        required=False
     )
 
     pageSiteLayout = schema.Choice(
@@ -43,7 +73,7 @@ class ILayoutAware(model.Schema):
         description=_(u"Site layout to apply to this page "
                       u"instead of the default site layout"),
         vocabulary="plone.availableSiteLayouts",
-        required=False,
+        required=False
     )
 
     sectionSiteLayout = schema.Choice(
@@ -51,7 +81,7 @@ class ILayoutAware(model.Schema):
         description=_(u"Site layout to apply to sub-pages of this page "
                       u"instead of the default site layout"),
         vocabulary="plone.availableSiteLayouts",
-        required=False,
+        required=False
     )
 
     fieldset('layout', label=_('Layout'),

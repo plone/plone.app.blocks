@@ -1,6 +1,6 @@
+<?xml version="1.0"?>
 <layers>
-    <layer
-        name="plone.app.blocks"
-        interface="plone.app.blocks.interfaces.IBlocksLayer"
-        />
+  <layer name="plone.app.blocks"
+         interface="plone.app.blocks.interfaces.IBlocksLayer"
+         />
 </layers>

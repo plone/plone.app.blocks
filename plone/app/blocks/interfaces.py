@@ -47,78 +47,24 @@ class IBlocksSettings(Interface):
     )
 
 
-class IOmittedField(Interface):
-    """Marker interface for schema fields not to be shown to users
-    """
-
-
 class ILayoutField(Interface):
     """Marker interface for the layout field
     """
 
 
-class IBlocksRegistryAdapter(Interface):
-    """Marker interface for the registry adapter"""
-
-
-class IWeightedDict(Interface):
-    name = schema.TextLine(title=_(u"Name"))
-    label = schema.TextLine(title=_(u"Label"))
-    weight = schema.Int(title=_(u"Weight"))
-
-
-class IFormat(Interface):
-    """Interface for the format configuration in the registry"""
-    name = schema.TextLine(title=_(u"Name"))
-    category = schema.TextLine(title=_(u"Category"))
-    label = schema.TextLine(title=_(u"Label"))
-    action = schema.TextLine(title=_(u"Action"))
-    icon = schema.Bool(title=_(u"Icon"))
-    favorite = schema.Bool(title=_(u"Favorite"))
-    weight = schema.Int(title=_(u"Weight"))
-
-
-class IAction(Interface):
-    name = schema.TextLine(title=_(u"Name"))
-    fieldset = schema.TextLine(title=_(u"Fieldset"))
-    label = schema.TextLine(title=_(u"Label"))
-    action = schema.TextLine(title=_(u"Action"))
-    icon = schema.Bool(title=_(u"Icon"))
-    menu = schema.Bool(title=_(u"Menu"))
-    weight = schema.Int(title=_(u"Weight"))
-
-
-class IFieldTile(Interface):
-    """Interface for the field tile configuration in the registry
+class IOmittedField(Interface):
+    """Marker interface to distinguish the layout behavior schema fields from
+    other fields to allow hiding them in the user interfaces
     """
-    id = schema.TextLine(title=_(u"The widget id"))
-    name = schema.TextLine(title=_(u"Name"))
-    label = schema.TextLine(title=_(u"Label"))
-    category = schema.TextLine(title=_(u"Category"))
-    tile_type = schema.TextLine(title=_(u"Type"))
-    read_only = schema.Bool(title=_(u"Read only"))
-    favorite = schema.Bool(title=_(u"Favorite"))
-    widget = schema.TextLine(title=_(u"Field widget"))
-    available_actions = schema.List(title=_(u"Actions"),
-                                    value_type=schema.TextLine())
 
 
-class ITile(Interface):
-    """Interface for the tile configuration in the registry"""
-    name = schema.TextLine(title=_(u"Name"))
-    label = schema.TextLine(title=_(u"Label"))
-    category = schema.TextLine(title=_(u"Category"))
-    tile_type = schema.TextLine(title=_(u"Type"))
-    default_value = schema.TextLine(title=_(u"Default value"), required=False)
-    read_only = schema.Bool(title=_(u"Read only"))
-    settings = schema.Bool(title=_(u"Settings"))
-    favorite = schema.Bool(title=_(u"Favorite"))
-    rich_text = schema.Bool(title=_(u"Rich Text"))
-    weight = schema.Int(title=_(u"Weight"))
+class ILayoutFieldDefaultValue(Interface):
+    """Multi adapter interface for looking up the default value for the
+    layout field content
+    """
 
+    def __unicode__():
+        """Return the layout as a unicode value"""
 
-class IWidgetAction(Interface):
-    name = schema.TextLine(title=_(u"Name"))
-    actions = schema.List(title=_(u"Actions"),
-                          value_type=schema.TextLine())
-
+    def __str__():
+        """Return the layout as a str value"""
