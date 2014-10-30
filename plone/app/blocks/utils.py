@@ -61,7 +61,12 @@ def resolve(url):
     """
 
     resolved = resolveResource(url)
-    return html.fromstring(resolved).getroottree()
+    if isinstance(resolved, unicode):
+        html_parser = html.HTMLParser(encoding='utf-8')
+        return html.fromstring(resolved.encode('utf-8'),
+                               parser=html_parser).getroottree()
+    else:
+        return html.fromstring(resolved).getroottree()
 
 
 def resolveResource(url):
