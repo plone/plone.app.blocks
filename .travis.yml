@@ -1,15 +1,18 @@
 language: python
 python: 2.7
+sudo: false
+cache:
+  directories:
+  - eggs
 env:
   matrix:
-    - PLONE_VERSION=4.3
-    - PLONE_VERSION=5.0
+    - PLONE_VERSION=4
+    - PLONE_VERSION=5
 matrix:
   allow_failures:
-    - env: PLONE_VERSION=5.0
+    - env: PLONE_VERSION=5
 install:
-  - sed -ie "s#travis-4.x.cfg#travis-$PLONE_VERSION.x.cfg#" travis.cfg
-  - mkdir -p buildout-cache/downloads
+  - sed -ie "s#plone-4.x.cfg#plone-$PLONE_VERSION.x.cfg#" buildout.cfg
   - pip install zc.buildout
-  - buildout -c travis.cfg -N -q -t 3
+  - buildout -N -q -t 3
 script: bin/test
