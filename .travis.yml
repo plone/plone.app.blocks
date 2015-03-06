@@ -6,13 +6,12 @@ cache:
   - eggs
 env:
   matrix:
-    - PLONE_VERSION=4
-    - PLONE_VERSION=5
-matrix:
-  allow_failures:
-    - env: PLONE_VERSION=5
+  - PLONE_VERSION=4
+  - PLONE_VERSION=5
 install:
-  - sed -ie "s#plone-4.x.cfg#plone-$PLONE_VERSION.x.cfg#" buildout.cfg
-  - pip install zc.buildout
-  - buildout -N -q -t 3
-script: bin/test
+- sed -ie "s#plone-4.x.cfg#plone-$PLONE_VERSION.x.cfg#" buildout.cfg
+- pip install zc.buildout
+- buildout -N -q -t 3
+script:
+- bin/test
+- bin/code-analysis

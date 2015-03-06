@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import re
 import urlparse
 
 from Acquisition import aq_parent

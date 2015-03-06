@@ -21,7 +21,7 @@ def initialize_default_layout_registry_values(portal):
          u'The default ajax layout for the site', None),
     )
     for key, title, description, value in records:
-        if not key in registry.records:
+        if key not in registry.records:
             registry.records[key] = Record(
                 field.BytesLine(
                     title=title,

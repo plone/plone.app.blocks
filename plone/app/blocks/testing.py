@@ -7,9 +7,6 @@ from plone.app.testing import PloneSandboxLayer
 from plone.testing import Layer
 from zope.configuration import xmlconfig
 
-from zope.interface import implements
-from plone.app.blocks.interfaces import IBlocksTransformEnabled
-
 
 class BlocksLayer(PloneSandboxLayer):
 

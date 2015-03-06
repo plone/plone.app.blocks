@@ -39,7 +39,6 @@ class LayoutField(schema.Text):
 @implementer(ILayoutFieldDefaultValue)
 @adapter(Interface, Interface)
 def layoutFieldDefaultValue(context, request):
-    import pdb; pdb.set_trace()
     return u"""\
 <!DOCTYPE html>
 <html lang="en" data-layout="./@@page-site-layout">

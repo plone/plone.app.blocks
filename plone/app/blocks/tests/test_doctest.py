@@ -21,7 +21,7 @@ def test_suite():
     suite.addTests([
         layered(doctest.DocFileSuite(test_file,
                                      optionflags=optionflags),
-            layer=BLOCKS_FUNCTIONAL_TESTING_PRETTY_PRINT)
+                layer=BLOCKS_FUNCTIONAL_TESTING_PRETTY_PRINT)
         for test_file in doc_tests]
     )
     return suite
