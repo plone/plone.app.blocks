@@ -9,7 +9,7 @@ env:
   - PLONE_VERSION=4
   - PLONE_VERSION=5
 install:
-- sed -ie "s#plone-4.x.cfg#plone-$PLONE_VERSION.x.cfg#" buildout.cfg
+- sed -ie "s#test-4.x.cfg#test-$PLONE_VERSION.x.cfg#" buildout.cfg
 - pip install zc.buildout
 - buildout -N -q -t 3
 script:
