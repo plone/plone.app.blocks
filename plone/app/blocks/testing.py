@@ -1,11 +1,18 @@
 # -*- coding: utf-8 -*-
 from plone.app.testing import FunctionalTesting
-
 from plone.app.testing import IntegrationTesting
 from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import PloneSandboxLayer
 from plone.testing import Layer
 from zope.configuration import xmlconfig
+import pkg_resources
+
+try:
+    pkg_resources.get_distribution('plone.app.contenttypes')
+except pkg_resources.DistributionNotFound:
+    HAS_PLONE_APP_CONTENTTYPES = False
+else:
+    HAS_PLONE_APP_CONTENTTYPES = True
 
 
 class BlocksLayer(PloneSandboxLayer):
@@ -14,6 +21,9 @@ class BlocksLayer(PloneSandboxLayer):
 
     def setUpZope(self, app, configurationContext):
         # load ZCML
+        if HAS_PLONE_APP_CONTENTTYPES:
+            import plone.app.contenttypes
+            self.loadZCML(package=plone.app.contenttypes)
         import plone.app.blocks
         self.loadZCML(package=plone.app.blocks)
 
@@ -48,6 +58,8 @@ class BlocksLayer(PloneSandboxLayer):
 
     def setUpPloneSite(self, portal):
         # install into the Plone site
+        if HAS_PLONE_APP_CONTENTTYPES:
+            self.applyProfile(portal, 'plone.app.contenttypes:default')
         self.applyProfile(portal, 'plone.app.blocks:default')
 
 
