@@ -14,6 +14,13 @@ except pkg_resources.DistributionNotFound:
 else:
     HAS_PLONE_APP_CONTENTTYPES = True
 
+try:
+    pkg_resources.get_distribution('plone.app.theming')
+except pkg_resources.DistributionNotFound:
+    HAS_PLONE_APP_THEMING = False
+else:
+    HAS_PLONE_APP_THEMING = True
+
 
 class BlocksLayer(PloneSandboxLayer):
 
@@ -57,9 +64,18 @@ class BlocksLayer(PloneSandboxLayer):
             manage_addVirtualHostMonster(app, 'virtual_hosting')
 
     def setUpPloneSite(self, portal):
-        # install into the Plone site
+        # ensure plone.app.theming disabled
+        if HAS_PLONE_APP_THEMING:
+            from plone.registry.interfaces import IRegistry
+            from zope.component import getUtility
+            registry = getUtility(IRegistry)
+            key = 'plone.app.theming.interfaces.IThemeSettings.enabled'
+            if key in registry:
+                registry[key] = False
+        # install plone.app.contenttypes on Plone 5
         if HAS_PLONE_APP_CONTENTTYPES:
             self.applyProfile(portal, 'plone.app.contenttypes:default')
+        # install into the Plone site
         self.applyProfile(portal, 'plone.app.blocks:default')
 
 
