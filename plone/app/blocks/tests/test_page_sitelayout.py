@@ -13,8 +13,16 @@ from zope.component import getMultiAdapter
 from zope.component import getGlobalSiteManager
 from zope.component import getUtility
 
+import pkg_resources
 import transaction
 import unittest2 as unittest
+
+try:
+    pkg_resources.get_distribution('plone.app.contenttypes')
+except pkg_resources.DistributionNotFound:
+    HAS_PLONE_APP_CONTENTTYPES = False
+else:
+    HAS_PLONE_APP_CONTENTTYPES = True
 
 
 class TestPageSiteLayout(unittest.TestCase):
@@ -51,9 +59,15 @@ class TestPageSiteLayout(unittest.TestCase):
         self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
             '/++sitelayout++testlayout1/site.html'
 
+        if HAS_PLONE_APP_CONTENTTYPES:
+            from plone.app.contenttypes.interfaces import IDocument
+            iface = IDocument
+        else:
+            iface = self.portal['f1']['d1'].__class__
+
         class DocumentLayoutAware(object):
             implements(ILayoutAware)
-            adapts(self.portal['f1']['d1'].__class__)
+            adapts(iface)
 
             def __init__(self, context):
                 self.context = context
@@ -64,6 +78,10 @@ class TestPageSiteLayout(unittest.TestCase):
 
         sm = getGlobalSiteManager()
         sm.registerAdapter(DocumentLayoutAware)
+
+        registrations = sm.getAdapters((self.portal['f1']['d1'],),
+                                       ILayoutAware)
+        self.assertEqual(len(list(registrations)), 1)
 
         view = getMultiAdapter((self.portal['f1']['d1'], self.request,),
                                name=u'page-site-layout')
@@ -91,6 +109,9 @@ class TestPageSiteLayout(unittest.TestCase):
 
         sm = getGlobalSiteManager()
         sm.registerAdapter(FolderLayoutAware)
+
+        registrations = sm.getAdapters((self.portal['f1'],), ILayoutAware)
+        self.assertEqual(len(list(registrations)), 1)
 
         view = getMultiAdapter((self.portal['f1']['d1'], self.request,),
                                name=u'page-site-layout')
