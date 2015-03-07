@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from plone.transformchain.zpublisher import applyTransform
+from plone.app.blocks.interfaces import IBlocksLayer
 from plone.app.blocks.interfaces import IBlocksTransformEnabled
 from plone.app.blocks.testing import BLOCKS_INTEGRATION_TESTING
+from zope.interface import alsoProvides
 from zope.interface import implements
 
 import unittest2 as unittest
@@ -34,6 +36,8 @@ class TestTransforms(unittest.TestCase):
         request.response.setBase(request.getURL())
         request.response.setHeader('content-type', 'text/html')
         request.response.setBody(body)
+
+        alsoProvides(request, IBlocksLayer)
         result = applyTransform(request)
         self.assertIn('<head>', ''.join(result))
 
@@ -59,5 +63,7 @@ class TestTransforms(unittest.TestCase):
         request.response.setBase(request.getURL())
         request.response.setHeader('content-type', 'text/html')
         request.response.setBody(body)
+
+        alsoProvides(request, IBlocksLayer)
         result = applyTransform(request)
         self.assertIn('<![CDATA[]]>', ''.join(result))
