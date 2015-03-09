@@ -31,6 +31,7 @@ setup(
     ),
     classifiers=[
         "Framework :: Plone",
+        'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
         "Programming Language :: Python",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
@@ -38,7 +39,6 @@ setup(
     author='Martin Aspeli, Laurence Rowe',
     author_email='optilude@gmail.com',
     url='https://github.com/plone/plone.app.blocks',
-    license='GPL',
     packages=find_packages(),
     namespace_packages=['plone', 'plone.app'],
     include_package_data=True,
