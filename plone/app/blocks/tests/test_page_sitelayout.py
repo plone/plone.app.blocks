@@ -15,7 +15,7 @@ from zope.component import getUtility
 
 import pkg_resources
 import transaction
-import unittest2 as unittest
+import unittest
 
 try:
     pkg_resources.get_distribution('plone.app.contenttypes')

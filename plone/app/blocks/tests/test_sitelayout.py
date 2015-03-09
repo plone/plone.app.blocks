@@ -18,7 +18,7 @@ from zope.component import getSiteManager
 from zope.interface import implements
 
 import transaction
-import unittest2 as unittest
+import unittest
 
 
 class TestSiteLayout(unittest.TestCase):

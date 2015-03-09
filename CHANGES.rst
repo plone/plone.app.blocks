@@ -4,6 +4,9 @@ Changelog
 2.0 (unreleased)
 ----------------
 
+- Remove dependency on unittest2.
+  [hvelarde]
+
 - Change blocks transforms to be opt-in for only published objects e.g. views
   or requests with IBlocksTransformEnabled (marker) interface [fixes #11]
   [datakurre]

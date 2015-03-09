@@ -3,7 +3,7 @@ from plone.app.blocks.testing import BLOCKS_FUNCTIONAL_TESTING_PRETTY_PRINT
 from plone.testing import layered
 
 import doctest
-import unittest2 as unittest
+import unittest
 
 
 optionflags = (doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE |

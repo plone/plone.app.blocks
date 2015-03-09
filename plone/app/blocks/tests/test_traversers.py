@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from plone.app.blocks.testing import BLOCKS_INTEGRATION_TESTING
 
-import unittest2 as unittest
+import unittest
 
 
 class TestTraversers(unittest.TestCase):

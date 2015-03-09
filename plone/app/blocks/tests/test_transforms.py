@@ -6,7 +6,7 @@ from plone.app.blocks.testing import BLOCKS_INTEGRATION_TESTING
 from zope.interface import alsoProvides
 from zope.interface import implements
 
-import unittest2 as unittest
+import unittest
 
 
 class TestTransforms(unittest.TestCase):
