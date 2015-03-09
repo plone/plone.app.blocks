@@ -205,7 +205,8 @@ control panel. In code, it is done like so:
     >>> from plone.app.blocks.interfaces import IBlocksSettings
     >>> registry = getUtility(IRegistry)
     >>> registry.forInterface(IBlocksSettings).esi = True
-    >>> import transaction; transaction.commit()
+    >>> import transaction
+    >>> transaction.commit()
 
 We can now perform the same rendering again. This time, the ESI-capable
 tiles should be rendered as ESI links. See `plone.tiles`_ for more details.
