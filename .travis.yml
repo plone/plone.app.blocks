@@ -11,10 +11,12 @@ env:
 matrix:
   allow_failures:
   - env: PLONE_VERSION=5
+  fast_finish: true
 install:
 - sed -ie "s#test-4.x.cfg#test-$PLONE_VERSION.x.cfg#" buildout.cfg
-- pip install zc.buildout
-- buildout -N -q -t 3
+- python bootstrap.py
+- bin/buildout annotate
+- bin/buildout -Nq
 script:
 - bin/test
 - bin/code-analysis
