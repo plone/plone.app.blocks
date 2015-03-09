@@ -27,7 +27,7 @@ setup(
                           "tests", "rendering.rst")).read(),
         open(os.path.join("plone", "app", "blocks",
                           "tests", "esi.rst")).read(),
-        open("CHANGELOG.rst").read(),
+        open("CHANGES.rst").read(),
     ),
     classifiers=[
         "Framework :: Plone",
