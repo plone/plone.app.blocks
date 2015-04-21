@@ -1,8 +1,8 @@
 Changelog
 =========
 
-2.0 (unreleased)
-----------------
+2.0.0 (2015-04-21)
+------------------
 
 - Fix package dependencies; remove dependency on unittest2.
   [hvelarde]
