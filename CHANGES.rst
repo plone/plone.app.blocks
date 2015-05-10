@@ -1,11 +1,14 @@
 Changelog
 =========
 
-2.0.1 (unreleased)
+2.1.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Add support for indexing layout field into SearchableText index when
+  collective.dexteritytextindexer is installed and its Dynamic SearchableText
+  indexer behavior is enabled for the indexed content type with Layout support
+  behavior
+  [datakurre]
 
 2.0.0 (2015-04-21)
 ------------------

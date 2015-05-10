@@ -25,6 +25,12 @@ from plone.app.blocks.interfaces import ILayoutFieldDefaultValue
 from plone.app.blocks.interfaces import IOmittedField
 from plone.app.blocks.interfaces import _
 
+try:
+    from collective.dexteritytextindexer import searchable
+    HAS_DXTEXTINDEXER = True
+except ImportError:
+    HAS_DXTEXTINDEXER = False
+
 
 logger = logging.getLogger('plone.app.blocks')
 
@@ -60,6 +66,8 @@ def layoutFieldDefaultValueFactory(context):
 class ILayoutAware(model.Schema):
     """Behavior interface to make a type support layout.
     """
+    if HAS_DXTEXTINDEXER:
+        searchable('content')
     content = LayoutField(
         title=_(u"Custom layout"),
         description=_(u"Custom content and content layout of this page"),
