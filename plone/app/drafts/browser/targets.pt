@@ -34,7 +34,7 @@
         <input type="hidden" name="userId" tal:attributes="value userId" />
         <div tal:repeat="targetKey targets">
             <input type="checkbox" name="targetKeys:list" tal:attributes="value targetKey" />
-            <tal:block define="targetInfo python:view.targetInfo(targetKey)">
+            <tal:block define="targetInfo python:view.targetInfo(targetKey); quotedKey python:view.quote(targetKey)">
                 <span tal:condition="targetInfo/child" i18n:translate="description_not_yet_created">
                     Object of type <span i18n:name="portal_type" tal:content="targetInfo/portal_type" />
                     being added to
@@ -44,7 +44,7 @@
                 
                 &mdash;
                 
-                <a tal:attributes="href string:${context/absolute_url}/@@drafts?userId=${userId}&amp;targetKey=${targetKey}">
+                <a tal:attributes="href string:${context/absolute_url}/@@drafts?userId=${userId}&amp;targetKey=${quotedKey}">
                     View drafts
                 </a>
                 

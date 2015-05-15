@@ -1,0 +1,14 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    i18n_domain="plone.app.drafts">
+
+  <adapter factory=".dexterity.DefaultAddFormFieldWidgets" />
+  <adapter factory=".dexterity.DefaultAddFormGroupFieldWidgets" />
+  <adapter factory=".dexterity.DefaultEditFormFieldWidgets" />
+
+  <subscriber handler=".dexterity.capture" />
+  <subscriber handler=".dexterity.autosave" />
+  <subscriber handler=".dexterity.cancel" />
+  <subscriber handler=".dexterity.save" />
+
+</configure>

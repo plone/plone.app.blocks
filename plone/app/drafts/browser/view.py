@@ -1,6 +1,7 @@
 from datetime import datetime
-from zope.component import queryUtility
-from zope.intid.interfaces import IIntIds
+from urllib import quote
+from plone.app.uuid.utils import uuidToObject
+
 
 class View(object):
     """A shared view class that is used for each of the three views. They
@@ -12,8 +13,6 @@ class View(object):
         self.request = request
     
     def __call__(self):
-        
-        self.intids = queryUtility(IIntIds)
         
         form = self.request.form
         
@@ -54,26 +53,24 @@ class View(object):
         url = None
         title = targetKey
         portal_type = None
+        uuid = None
         
         if ':' in targetKey:
             uid, portal_type = targetKey.split(':', 1)
             child = True
         else:
-            uid = targetKey
-        
-        try:
-            intid = int(uid)
-        except:
-            pass
-        else:
-            if self.intids is not None:
-                target = self.intids.queryObject(intid)
-                if target is not None:
-                    url = target.absolute_url()
-                    title = target.title
-                    portal_type = target.portal_type
+            uuid = targetKey
+
+        target = uuidToObject(uuid)
+        if target is not None:
+            url = target.absolute_url()
+            title = target.title
+            portal_type = target.portal_type
         
         return {'title': title, 'url': url, 'child': child, 'portal_type': portal_type}
+
+    def quote(self, key):
+        return quote(key)
     
     def draftInfo(self, draft):
         p_mtime = getattr(draft, '_p_mtime', None)
