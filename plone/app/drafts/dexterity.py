@@ -1,33 +1,40 @@
 # -*- coding: utf-8 -*-
 from Acquisition import aq_base
-from plone.dexterity.browser.add import DefaultAddForm
-from plone.dexterity.browser.edit import DefaultEditForm
-from plone.dexterity.interfaces import IDexterityFTI
-from plone.dexterity.interfaces import IDexterityContent
-from plone.dexterity.utils import createContent
-from plone.uuid.interfaces import IMutableUUID
-import transaction
-from z3c.form.field import FieldWidgets as FieldWidgetsBase
-from z3c.form.form import applyChanges
-from z3c.form.group import Group
-from z3c.form.interfaces import IWidgets, IAddForm
-from z3c.form.interfaces import IActionEvent
-from z3c.form.interfaces import IFormLayer
-from zope.component import queryUtility
-from zope.component import adapter
-from zope.globalrequest import getRequest
-from zope.interface import implementer
-from zope.interface import Interface
-from zope.interface import alsoProvides
-from zope.lifecycleevent import IObjectAddedEvent
+from plone.app.drafts.interfaces import ICurrentDraftManagement
 from plone.app.drafts.interfaces import IDraftable
 from plone.app.drafts.interfaces import IDrafting
-from plone.app.drafts.interfaces import ICurrentDraftManagement
 from plone.app.drafts.lifecycle import beginDrafting
 from plone.app.drafts.lifecycle import discardDraftsOnCancel
 from plone.app.drafts.lifecycle import syncDraftOnSave
 from plone.app.drafts.proxy import DraftProxy
 from plone.app.drafts.utils import getCurrentDraft
+from plone.dexterity.browser.add import DefaultAddForm
+from plone.dexterity.browser.edit import DefaultEditForm
+from plone.dexterity.interfaces import IDexterityContent
+from plone.dexterity.interfaces import IDexterityFTI
+from plone.dexterity.utils import createContent
+from plone.uuid.interfaces import IMutableUUID
+from z3c.form.field import FieldWidgets as FieldWidgetsBase
+from z3c.form.form import applyChanges
+from z3c.form.interfaces import IActionEvent
+from z3c.form.interfaces import IAddForm
+from z3c.form.interfaces import IFormLayer
+from z3c.form.interfaces import IGroup
+from z3c.form.interfaces import IWidgets
+from zope.component import adapter
+from zope.component import queryUtility
+from zope.globalrequest import getRequest
+from zope.interface import Interface
+from zope.interface import alsoProvides
+from zope.interface import implementer
+from zope.lifecycleevent import IObjectAddedEvent
+import transaction
+
+try:
+    from plone.protect.interfaces import IDisableCSRFProtection
+    HAS_PLONE_PROTECT = True
+except ImportError:
+    HAS_PLONE_PROTECT = False
 
 
 AUTOSAVE_BLACKLIST = [
@@ -58,6 +65,12 @@ class DefaultAddFormFieldWidgets(FieldWidgetsBase):
                 beginDrafting(target.__of__(context), None)
                 draft = getCurrentDraft(request, create=True)
                 draft._draftAddFormTarget = target
+
+                # Disable Plone 5 implicit CSRF when no form action
+                if HAS_PLONE_PROTECT:
+                    if not ([key for key in request.form
+                             if key.startswith('form.buttons.')]):
+                        alsoProvides(request, IDisableCSRFProtection)
             else:
                 current = ICurrentDraftManagement(request)
                 current.mark()
@@ -73,7 +86,7 @@ class DefaultAddFormFieldWidgets(FieldWidgetsBase):
         super(DefaultAddFormFieldWidgets, self).update()
 
 
-@adapter(Group, IAddFormDrafting, Interface)
+@adapter(IGroup, IAddFormDrafting, Interface)
 @implementer(IWidgets)
 class DefaultAddFormGroupFieldWidgets(FieldWidgetsBase):
     def __init__(self, form, request, context):
@@ -98,6 +111,12 @@ class DefaultEditFormFieldWidgets(FieldWidgetsBase):
             if draft is None:
                 beginDrafting(context, None)
                 draft = getCurrentDraft(request, create=True)
+
+                # Disable Plone 5 implicit CSRF when no form action
+                if HAS_PLONE_PROTECT:
+                    if not ([key for key in request.form
+                             if key.startswith('form.buttons.')]):
+                        alsoProvides(request, IDisableCSRFProtection)
             else:
                 current = ICurrentDraftManagement(request)
                 current.mark()
@@ -108,7 +127,7 @@ class DefaultEditFormFieldWidgets(FieldWidgetsBase):
         super(DefaultEditFormFieldWidgets, self).__init__(form, request, context)  # noqa
 
 
-@adapter(Group, IAddFormDrafting, Interface)
+@adapter(IGroup, IEditFormDrafting, Interface)
 @implementer(IWidgets)
 class DefaultEditFormGroupFieldWidgets(FieldWidgetsBase):
     def __init__(self, form, request, context):
@@ -170,6 +189,10 @@ def autosave(event):
 
         for key, value in values.items():
             setattr(draft, key, value)
+
+        # Disable Plone 5 implicit CSRF to update draft
+        if HAS_PLONE_PROTECT:
+            alsoProvides(request, IDisableCSRFProtection)
 
 
 @adapter(IDexterityContent, IObjectAddedEvent)
