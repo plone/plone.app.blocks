@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 from Acquisition import aq_base
-
 from plone.dexterity.browser.add import DefaultAddForm
 from plone.dexterity.browser.edit import DefaultEditForm
 from plone.dexterity.interfaces import IDexterityFTI
-from plone.dexterity.interfaces import IAddBegunEvent
 from plone.dexterity.interfaces import IDexterityContent
 from plone.dexterity.utils import createContent
 from plone.uuid.interfaces import IMutableUUID
+import transaction
 from z3c.form.field import FieldWidgets as FieldWidgetsBase
 from z3c.form.form import applyChanges
 from z3c.form.group import Group
@@ -21,7 +20,6 @@ from zope.interface import implementer
 from zope.interface import Interface
 from zope.interface import alsoProvides
 from zope.lifecycleevent import IObjectAddedEvent
-
 from plone.app.drafts.interfaces import IDraftable
 from plone.app.drafts.interfaces import IDrafting
 from plone.app.drafts.interfaces import ICurrentDraftManagement
@@ -30,6 +28,11 @@ from plone.app.drafts.lifecycle import discardDraftsOnCancel
 from plone.app.drafts.lifecycle import syncDraftOnSave
 from plone.app.drafts.proxy import DraftProxy
 from plone.app.drafts.utils import getCurrentDraft
+
+
+AUTOSAVE_BLACKLIST = [
+    'IShortName.id'
+]
 
 
 class IAddFormDrafting(IFormLayer):
@@ -114,7 +117,6 @@ class DefaultEditFormGroupFieldWidgets(FieldWidgetsBase):
         super(DefaultEditFormGroupFieldWidgets, self).__init__(form, request, context)  # noqa
 
 
-@adapter(IAddBegunEvent)
 def autosave(event):
     context = getattr(event, 'object', None)
     request = getattr(context, 'REQUEST', getRequest())
@@ -125,14 +127,18 @@ def autosave(event):
     if draft is None:
         return
 
-    target = getattr(draft, '_draftAddFormTarget', None)
-    if not target:
-        return
-
     view = getattr(request, 'PUBLISHED', None)
     form = getattr(view, 'context', None)
     if hasattr(aq_base(form), 'form_instance'):
         form = form.form_instance
+
+    if IAddForm.providedBy(form):
+        target = getattr(draft, '_draftAddFormTarget', None)
+        if not target:
+            return
+        target = target.__of__(context)
+    else:
+        target = context
 
     fti = queryUtility(IDexterityFTI, name=target.portal_type)
     if IDraftable.__identifier__ not in fti.behaviors:
@@ -143,10 +149,27 @@ def autosave(event):
 
     data, errors = form.extractData()
     if not errors:
-        content = DraftProxy(draft, target.__of__(context))
-        applyChanges(form, content, data)
-        for group in getattr(form, 'groups', []):
-            applyChanges(group, content, data)
+        content = DraftProxy(draft, target)
+
+        # Drop known non-draftable values
+        map(data.pop, [key for key in AUTOSAVE_BLACKLIST if key in data])
+
+        # Values are applied within savepoint to allow revert of any
+        # unexpected side-effects from setting field values
+        sp = transaction.savepoint(optimistic=True)
+        try:
+            applyChanges(form, content, data)
+            for group in getattr(form, 'groups', []):
+                applyChanges(group, content, data)
+        except Exception:
+            # If shortname was not blacklisted, it could fail because the
+            # behavior trying to rename object on add form.
+            pass
+        values = dict(draft.__dict__)
+        sp.rollback()
+
+        for key, value in values.items():
+            setattr(draft, key, value)
 
 
 @adapter(IDexterityContent, IObjectAddedEvent)

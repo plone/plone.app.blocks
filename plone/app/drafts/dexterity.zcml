@@ -7,8 +7,16 @@
   <adapter factory=".dexterity.DefaultEditFormFieldWidgets" />
 
   <subscriber handler=".dexterity.capture" />
-  <subscriber handler=".dexterity.autosave" />
   <subscriber handler=".dexterity.cancel" />
   <subscriber handler=".dexterity.save" />
+
+  <subscriber
+      for="plone.dexterity.interfaces.IAddBegunEvent"
+      handler=".dexterity.autosave"
+      />
+  <subscriber
+      for="plone.dexterity.interfaces.IEditBegunEvent"
+      handler=".dexterity.autosave"
+      />
 
 </configure>
