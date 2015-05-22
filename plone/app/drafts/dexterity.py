@@ -226,6 +226,10 @@ def save(event):
     if event.action.name != 'form.buttons.save':
         return
 
+    data, errors = event.action.form.extractData()
+    if errors:
+        return
+
     if IAddForm.providedBy(event.action.form):
         draft = getCurrentDraft(event.action.form.request)
         target = getattr(draft, '_draftAddFormTarget')
