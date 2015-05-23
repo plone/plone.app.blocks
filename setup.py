@@ -6,7 +6,7 @@ version = '1.0b1'
 setup(name='plone.app.drafts',
       version=version,
       description="Low-level container for draft content",
-      long_description=open("README.txt").read() + "\n" +
+      long_description=open("README.rst").read() + "\n" +
                        open(os.path.join("docs", "HISTORY.txt")).read(),
       # Get more strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[

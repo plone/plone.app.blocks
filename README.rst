@@ -14,6 +14,10 @@ The former problem pertains to any content add or edit form. The latter
 applies in particular to the "tiles" model as implemented by
 `plone.app.tiles`_ and its dependencies.
 
+..  image:: https://secure.travis-ci.org/plone/plone.app.drafts.png
+    :target: http://travis-ci.org/plone/plone.app.drafts
+
+
 Installation
 ============
 
