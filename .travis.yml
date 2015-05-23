@@ -5,7 +5,7 @@ cache:
   directories:
   - eggs
 install:
-- python bootstrap.py -c test-$PLONE_VERSION.cfg
+- python bootstrap.py -v 1.7.1 -c test-$PLONE_VERSION.cfg
 - bin/buildout -N -t 3 -c test-$PLONE_VERSION.cfg annotate
 - bin/buildout -N -t 3 -c test-$PLONE_VERSION.cfg
 script:
