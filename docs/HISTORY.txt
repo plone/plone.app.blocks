@@ -1,6 +1,28 @@
 Changelog
 =========
 
+1.0b1 (unreleased)
+------------------
+
+- Add support for drafting on Dexterity add and edit forms
+  when the drafting behavior is enabled for the content type
+  [datakurre]
+
+- Add autosave (using AJAX validation calls) support for
+  Dexterity add and edit forms when drafting behavior is
+  enabld for the content type
+
+- Change to use UUIDs instead of intids
+  [datakurre]
+
+- Change Archetypes-support to be disabled by default
+  [datakurre]
+
+  Archetypes-support can included in zcml with::
+
+      <inclue package="plone.app.drafts" file="archetypes.zcml" />
+
+
 1.0a2 (2011-10-11)
 ------------------
 

@@ -1,12 +1,12 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.0a2'
+version = '1.0b1'
 
 setup(name='plone.app.drafts',
       version=version,
       description="Low-level container for draft content",
-      long_description=open("README.txt").read() + "\n" +
+      long_description=open("README.rst").read() + "\n" +
                        open(os.path.join("docs", "HISTORY.txt")).read(),
       # Get more strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[
@@ -30,11 +30,12 @@ setup(name='plone.app.drafts',
           'zope.component',
           'zope.schema',
           'zope.annotation',
-          'plone.app.intid',
+          'plone.app.uuid',
           'Zope2',
       ],
       extras_require={
-        'test': ['collective.testcaselayer', 'Products.PloneTestCase'],
+           'test': ['plone.app.testing',
+                    'Products.ATContentTypes'],
       },
       entry_points="""
       [z3c.autoinclude.plugin]

@@ -2,6 +2,8 @@ from zope.interface import Interface
 from zope import schema
 
 # Keys used for request annotations and cookies
+import zope.interface
+
 USERID_KEY = 'plone.app.drafts.userId'
 TARGET_KEY = 'plone.app.drafts.targetKey'
 PATH_KEY = 'plone.app.drafts.path'
@@ -45,7 +47,7 @@ class IDraftStorage(Interface):
     
     def createDraft(userId, targetKey, factory=None):
         """Create a new draft for the given user id and target, indicated by
-        a string key (normally a string representation fo an intid, but may be
+        a string key (normally a string representation for an uuid, but may be
         more complex). Returns the new draft.
         
         The ``factory`` parameter can be used to pass a custom factory to

@@ -1,0 +1,15 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    i18n_domain="plone.app.drafts">
+
+    <include package="plone.behavior" file="meta.zcml" />
+
+    <plone:behavior
+        title="Draftability"
+        description="Enables autosaved drafting on add an edit forms"
+        provides="plone.app.drafts.interfaces.IDraftable"
+        marker="plone.app.drafts.interfaces.IDraftable"
+    />
+
+</configure>
