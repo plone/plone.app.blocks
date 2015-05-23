@@ -68,7 +68,7 @@ def getCurrentUserId():
 def getDefaultKey(context):
     """Get the default (string) key for the given context, based on uuids
     """
-    return IUUID(context)
+    return IUUID(context, None)
 
 
 def getObjectKey(context):

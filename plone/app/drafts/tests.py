@@ -1,68 +1,70 @@
-import unittest
-import zope.component.testing
-import collective.testcaselayer.ptc
-import plone.app.drafts
-
-from Products.PloneTestCase import ptc
-from Products.Five import zcml
-
-from zope.interface import implements
-
-from zope.component import getUtility
-from zope.component import queryUtility
-from zope.component import adapts
-from zope.component import provideAdapter
-
-from zope.annotation.interfaces import IAnnotations
-from zope.intid.interfaces import IIntIds
-
+from plone.app.drafts.draft import Draft
+from plone.app.drafts.interfaces import ICurrentDraftManagement
 from plone.app.drafts.interfaces import IDraft
+from plone.app.drafts.interfaces import IDraftProxy
 from plone.app.drafts.interfaces import IDraftStorage
 from plone.app.drafts.interfaces import IDraftSyncer
-from plone.app.drafts.interfaces import ICurrentDraftManagement
 from plone.app.drafts.interfaces import IDrafting
-from plone.app.drafts.interfaces import IDraftProxy
-
-from plone.app.drafts.draft import Draft
 from plone.app.drafts.proxy import DraftProxy
-
-from plone.app.drafts.utils import syncDraft
+from plone.app.drafts.testing import DRAFTS_AT_FUNCTIONAL_TESTING
+from plone.app.drafts.testing import DRAFTS_INTEGRATION_TESTING
 from plone.app.drafts.utils import getCurrentDraft
 from plone.app.drafts.utils import getCurrentUserId
 from plone.app.drafts.utils import getDefaultKey
+from plone.app.drafts.utils import syncDraft
+from plone.app.testing import TEST_USER_ID
+from plone.app.testing import TEST_USER_NAME
+from plone.app.testing import TEST_USER_PASSWORD
+from plone.app.testing import login
+from plone.app.testing import logout
+from plone.app.testing import setRoles
+from plone.testing.z2 import Browser
+from plone.uuid.interfaces import IUUID
+import transaction
+from zope.annotation.interfaces import IAnnotations
+from zope.component import adapts
+from zope.component import getUtility
+from zope.component import provideAdapter
+from zope.component import queryUtility
+from zope.interface import implements
+import pkg_resources
+import unittest
 
-from Products.Five.testbrowser import Browser
-from Products.ATContentTypes.interfaces.document import IATDocument
+try:
+    pkg_resources.get_distribution('plone.app.contenttypes')
+except pkg_resources.DistributionNotFound:
+    HAS_PLONE_APP_CONTENTTYPES = False
+else:
+    HAS_PLONE_APP_CONTENTTYPES = True
 
-class IntegrationTestLayer(collective.testcaselayer.ptc.BasePTCLayer):
+try:
+    pkg_resources.get_distribution('Products.ATContentTypes')
+except pkg_resources.DistributionNotFound:
+    HAS_ATCONTENTTYPES = False
+else:
+    HAS_ATCONTENTTYPES = True
+
+
+class TestSetup(unittest.TestCase):
     
-    def afterSetUp(self):
-        zcml.load_config('configure.zcml', plone.app.drafts)
-        self.addProfile('plone.app.drafts:default')
+    layer = DRAFTS_INTEGRATION_TESTING
 
-Layer = IntegrationTestLayer([collective.testcaselayer.ptc.ptc_layer])
-
-class TestSetup(ptc.PloneTestCase):
-    
-    layer = Layer
+    def setUp(self):
+        self.portal = self.layer['portal']
     
     def test_tool_installed(self):
         self.failUnless('portal_drafts' in self.portal.objectIds())
         util = queryUtility(IDraftStorage)
         self.failUnless(IDraftStorage.providedBy(util))
-    
-    def test_intids_installed(self):
-        intids = queryUtility(IIntIds)
-        self.failIf(intids is None)
-        self.failUnless(IIntIds.providedBy(intids))
 
-class TestStorage(ptc.PloneTestCase):
-    
-    layer = Layer
-    
-    def afterSetUp(self):
+
+class TestStorage(unittest.TestCase):
+
+    layer = DRAFTS_INTEGRATION_TESTING
+
+    def setUp(self):
         self.storage = getUtility(IDraftStorage)
-    
+
     def test_createDraft(self):
         draft = self.storage.createDraft('user1', '123')
         self.failUnless(IDraft.providedBy(draft))
@@ -199,10 +201,20 @@ class TestStorage(ptc.PloneTestCase):
         draft = self.storage.createDraft('user1', '123')
         self.assertEquals(None, self.storage.getDraft('user2', '123', draft.__name__))
 
-class TestDraftProxy(ptc.PloneTestCase):
+
+class TestDraftProxy(unittest.TestCase):
     
-    layer = Layer
-    
+    layer = DRAFTS_INTEGRATION_TESTING
+
+    def setUp(self):
+        self.portal = self.layer['portal']
+
+        setRoles(self.portal,TEST_USER_ID, ['Contributor'])
+        login(self.portal, TEST_USER_NAME)
+
+        self.portal.invokeFactory('Folder', 'folder')
+        self.folder = self.portal['folder']
+
     def test_attributes(self):
         
         self.folder.invokeFactory('Document', 'd1')
@@ -221,8 +233,7 @@ class TestDraftProxy(ptc.PloneTestCase):
         proxy.title = u"New title"
         
         self.assertEquals(u"New title", proxy.title)
-        self.assertEquals(u"Old title", target.title)
-    
+
     def test_attribute_deletion(self):
         
         self.folder.invokeFactory('Document', 'd1')
@@ -265,8 +276,14 @@ class TestDraftProxy(ptc.PloneTestCase):
         
         self.failIf(IDraft.providedBy(proxy))
         self.failUnless(IDraftProxy.providedBy(proxy))
-        self.failUnless(IATDocument.providedBy(proxy))
-    
+
+        if HAS_PLONE_APP_CONTENTTYPES:
+            from plone.app.contenttypes.interfaces import IDocument
+            self.failUnless(IDocument.providedBy(proxy))
+        elif HAS_ATCONTENTTYPES:
+            from Products.ATContentTypes.interfaces import IATDocument
+            self.failUnless(IATDocument.providedBy(proxy))
+
     def test_annotations(self):
         
         self.folder.invokeFactory('Document', 'd1')
@@ -325,10 +342,11 @@ class TestDraftProxy(ptc.PloneTestCase):
         self.failUnless(u"other.key" in targetAnnotations)
         self.failUnless(u"other.key" in draft._proxyAnnotationsDeleted)
 
+
 class TestDraftSyncer(unittest.TestCase):
     
-    tearDown = zope.component.testing.tearDown
-    
+    layer = DRAFTS_INTEGRATION_TESTING
+
     def test_syncDraft(self):
         
         class Target(object):
@@ -371,21 +389,25 @@ class TestDraftSyncer(unittest.TestCase):
         self.assertEquals(1, target.a1)
         self.assertEquals(2, target.a2)
 
-class TestCurrentDraft(ptc.PloneTestCase):
+
+class TestCurrentDraft(unittest.TestCase):
     
-    layer = Layer
+    layer = DRAFTS_INTEGRATION_TESTING
+
+    def setUp(self):
+        self.request = self.layer['request']
     
     def test_userId(self):
-        request = self.app.REQUEST
+        request = self.request
         
         current = ICurrentDraftManagement(request)
-        self.assertEquals(ptc.default_user, current.userId)
+        self.assertEquals(TEST_USER_ID, current.userId)
         
         current.userId = u"third-user"
         self.assertEquals(u"third-user", current.userId)
         
     def test_targetKey(self):
-        request = self.app.REQUEST
+        request = self.request
         
         current = ICurrentDraftManagement(request)
         self.assertEquals(None, current.targetKey)
@@ -399,7 +421,7 @@ class TestCurrentDraft(ptc.PloneTestCase):
         self.assertEquals(u"123", request.get('plone.app.drafts.targetKey'))
     
     def test_draftName(self):
-        request = self.app.REQUEST
+        request = self.request
         
         current = ICurrentDraftManagement(request)
         self.assertEquals(None, current.draftName)
@@ -413,7 +435,7 @@ class TestCurrentDraft(ptc.PloneTestCase):
         self.assertEquals(u"draft-1", request.get('plone.app.drafts.draftName'))
     
     def test_path(self):
-        request = self.app.REQUEST
+        request = self.request
         
         current = ICurrentDraftManagement(request)
         self.assertEquals(None, current.path)
@@ -427,7 +449,7 @@ class TestCurrentDraft(ptc.PloneTestCase):
         self.assertEquals(u"/test", request.get('plone.app.drafts.path'))
     
     def test_draft(self):
-        request = self.app.REQUEST
+        request = self.request
         
         current = ICurrentDraftManagement(request)
         self.assertEquals(None, current.draft)
@@ -450,7 +472,7 @@ class TestCurrentDraft(ptc.PloneTestCase):
         self.assertEquals(newDraft, current.draft)
     
     def test_defaultPath(self):
-        request = self.app.REQUEST
+        request = self.request
         
         request['URL'] = 'http://nohost'
         
@@ -467,7 +489,7 @@ class TestCurrentDraft(ptc.PloneTestCase):
         self.assertEquals("/test/edit", current.defaultPath)
     
     def test_mark(self):
-        request = self.app.REQUEST
+        request = self.request
         
         current = ICurrentDraftManagement(request)
         current.mark()
@@ -478,7 +500,7 @@ class TestCurrentDraft(ptc.PloneTestCase):
         self.failUnless(IDrafting.providedBy(request))
     
     def test_save(self):
-        request = self.app.REQUEST
+        request = self.request
         response = request.response
         
         current = ICurrentDraftManagement(request)
@@ -486,6 +508,7 @@ class TestCurrentDraft(ptc.PloneTestCase):
         
         self.failIf('plone.app.drafts.targetKey' in response.cookies)
         self.failIf('plone.app.drafts.draftName' in response.cookies)
+        self.failIf('plone.app.drafts.userId' in response.cookies)
         self.failIf('plone.app.drafts.path' in response.cookies)
         
         current.targetKey = u"123"
@@ -507,13 +530,13 @@ class TestCurrentDraft(ptc.PloneTestCase):
         current.draftName = u"draft-1"
         current.path = '/test'
         self.assertEquals(True, current.save())
-        
+
         self.assertEquals({'value': '123', 'quoted': True, 'path': '/test'}, response.cookies['plone.app.drafts.targetKey'])
         self.assertEquals({'value': 'draft-1', 'quoted': True, 'path': '/test'}, response.cookies['plone.app.drafts.draftName'])
         self.assertEquals({'value': '/test', 'quoted': True, 'path': '/test'}, response.cookies['plone.app.drafts.path'])
-    
+
     def test_discard(self):
-        request = self.app.REQUEST
+        request = self.request
         response = request.response
         
         current = ICurrentDraftManagement(request)
@@ -535,24 +558,34 @@ class TestCurrentDraft(ptc.PloneTestCase):
         self.assertEquals(deletedToken, response.cookies['plone.app.drafts.draftName'])
         self.assertEquals(deletedToken, response.cookies['plone.app.drafts.path'])
 
-class TestUtils(ptc.PloneTestCase):
+
+class TestUtils(unittest.TestCase):
     
-    layer = Layer
-    
+    layer = DRAFTS_INTEGRATION_TESTING
+
+    def setUp(self):
+        self.portal = self.layer['portal']
+
+        setRoles(self.portal,TEST_USER_ID, ['Contributor'])
+        login(self.portal, TEST_USER_NAME)
+
+        self.portal.invokeFactory('Folder', 'folder')
+        self.folder = self.portal['folder']
+        self.request = self.layer['request']
+
     def test_getUserId(self):
-        self.assertEquals(ptc.default_user, getCurrentUserId())
+        self.assertEquals(TEST_USER_ID, getCurrentUserId())
     
     def test_getUserId_anonymous(self):
-        self.logout()
+        logout()
         self.assertEquals(None, getCurrentUserId())
     
     def test_getDefaultKey(self):
-        intids = getUtility(IIntIds)
-        intid = intids.getId(self.folder)
-        self.assertEquals(str(intid), getDefaultKey(self.folder))
+        uuid = IUUID(self.folder)
+        self.assertEquals(str(uuid), getDefaultKey(self.folder))
     
     def test_getCurrentDraft_not_set_no_create(self):
-        request = self.app.REQUEST
+        request = self.request
         draft = getCurrentDraft(request)
         self.assertEquals(None, draft)
         
@@ -561,7 +594,7 @@ class TestUtils(ptc.PloneTestCase):
         self.failIf('plone.app.drafts.draftName' in response.cookies)
     
     def test_getCurrentDraft_not_set_no_details_create(self):
-        request = self.app.REQUEST
+        request = self.request
         draft = getCurrentDraft(request, create=True)
         self.assertEquals(None, draft)
         
@@ -570,7 +603,7 @@ class TestUtils(ptc.PloneTestCase):
         self.failIf('plone.app.drafts.draftName' in response.cookies)
     
     def test_getCurrentDraft_draft_set(self):
-        request = self.app.REQUEST
+        request = self.request
         
         management = ICurrentDraftManagement(request)
         management.draft = setDraft = Draft()
@@ -583,7 +616,7 @@ class TestUtils(ptc.PloneTestCase):
         self.failIf('plone.app.drafts.draftName' in response.cookies)
     
     def test_getCurrentDraft_draft_set_create(self):
-        request = self.app.REQUEST
+        request = self.request
         
         management = ICurrentDraftManagement(request)
         management.draft = setDraft = Draft()
@@ -596,7 +629,7 @@ class TestUtils(ptc.PloneTestCase):
         self.failIf('plone.app.drafts.draftName' in response.cookies)
     
     def test_getCurrentDraft_draft_details_set_not_in_storage(self):
-        request = self.app.REQUEST
+        request = self.request
         
         management = ICurrentDraftManagement(request)
         management.userId = u"user1"
@@ -611,7 +644,7 @@ class TestUtils(ptc.PloneTestCase):
         self.failIf('plone.app.drafts.draftName' in response.cookies)
     
     def test_getCurrentDraft_draft_details_set_not_in_storage_create(self):
-        request = self.app.REQUEST
+        request = self.request
         
         management = ICurrentDraftManagement(request)
         management.userId = u"user1"
@@ -631,7 +664,7 @@ class TestUtils(ptc.PloneTestCase):
         self.assertEquals(draft.__name__, response.cookies['plone.app.drafts.draftName']['value'])
     
     def test_getCurrentDraft_draft_details_set_in_storage(self):
-        request = self.app.REQUEST
+        request = self.request
         
         inStorage = getUtility(IDraftStorage).createDraft(u"user1", u"123")
         
@@ -648,7 +681,7 @@ class TestUtils(ptc.PloneTestCase):
         self.failIf('plone.app.drafts.draftName' in response.cookies)
     
     def test_getCurrentDraft_draft_details_set_in_storage_create(self):
-        request = self.app.REQUEST
+        request = self.request
         
         inStorage = getUtility(IDraftStorage).createDraft(u"user1", u"123")
         
@@ -664,25 +697,41 @@ class TestUtils(ptc.PloneTestCase):
         self.failIf('plone.app.drafts.targetKey' in response.cookies)
         self.failIf('plone.app.drafts.draftName' in response.cookies)
 
-class TestArchetypesIntegration(ptc.FunctionalTestCase):
+
+class TestArchetypesIntegration(unittest.TestCase):
     
-    layer = Layer
-    
+    layer = DRAFTS_AT_FUNCTIONAL_TESTING
+
+    def setUp(self):
+        self.portal = self.layer['portal']
+
+        setRoles(self.portal, TEST_USER_ID, ['Manager'])
+        login(self.portal, TEST_USER_NAME)
+
+        self.portal.invokeFactory('Folder', 'folder')
+        self.folder = self.portal['folder']
+
+        transaction.commit()
+
     def test_add_to_portal_root_cancel(self):
-        self.setRoles(('Manager',))
-        
-        browser = Browser()
+        browser = Browser(self.layer['app'])
         browser.handleErrors = False
         
         # Login
         browser.open(self.portal.absolute_url() + '/login')
-        browser.getControl(name='__ac_name').value = ptc.default_user
-        browser.getControl(name='__ac_password').value = ptc.default_password
+        browser.getControl(name='__ac_name').value = TEST_USER_NAME
+        browser.getControl(name='__ac_password').value = TEST_USER_PASSWORD
         browser.getControl('Log in').click()
         
         # Enter the add screen for a temporary portal_factory-managed object
         browser.open(self.portal.absolute_url() + '/portal_factory/Document/document.2010-02-04.2866363923/edit')
-        
+
+        # Confirm pass CSRF protection
+        try:
+            browser.getControl(name='form.button.confirm').click()
+        except LookupError:
+            pass
+
         # We should now have cookies with the drafts information
         cookies = browser.cookies.forURL(browser.url)
         self.assertEquals('"/plone/portal_factory/Document/document.2010-02-04.2866363923"', cookies['plone.app.drafts.path'])
@@ -696,20 +745,24 @@ class TestArchetypesIntegration(ptc.FunctionalTestCase):
         self.failIf('plone.app.drafts.draftName' in browser.cookies.forURL(browser.url))
         
     def test_add_to_portal_root_save(self):
-        self.setRoles(('Manager',))
-        
-        browser = Browser()
+        browser = Browser(self.layer['app'])
         browser.handleErrors = False
         
         # Login
         browser.open(self.portal.absolute_url() + '/login')
-        browser.getControl(name='__ac_name').value = ptc.default_user
-        browser.getControl(name='__ac_password').value = ptc.default_password
+        browser.getControl(name='__ac_name').value = TEST_USER_NAME
+        browser.getControl(name='__ac_password').value = TEST_USER_PASSWORD
         browser.getControl('Log in').click()
         
         # Enter the add screen for a temporary portal_factory-managed object
         browser.open(self.portal.absolute_url() + '/portal_factory/Document/document.2010-02-04.2866363923/edit')
-        
+
+        # Confirm pass CSRF protection
+        try:
+            browser.getControl(name='form.button.confirm').click()
+        except LookupError:
+            pass
+
         # We should now have cookies with the drafts information
         cookies = browser.cookies.forURL(browser.url)
         self.assertEquals('"/plone/portal_factory/Document/document.2010-02-04.2866363923"', cookies['plone.app.drafts.path'])
@@ -725,27 +778,33 @@ class TestArchetypesIntegration(ptc.FunctionalTestCase):
         self.failIf('plone.app.drafts.draftName' in browser.cookies.forURL(browser.url))
         
     def test_add_to_folder(self):
-        browser = Browser()
+        browser = Browser(self.layer['app'])
         browser.handleErrors = False
         
-        intid = getUtility(IIntIds).getId(self.folder)
+        uuid = IUUID(self.folder)
         
         # Login
         browser.open(self.portal.absolute_url() + '/login')
-        browser.getControl(name='__ac_name').value = ptc.default_user
-        browser.getControl(name='__ac_password').value = ptc.default_password
+        browser.getControl(name='__ac_name').value = TEST_USER_NAME
+        browser.getControl(name='__ac_password').value = TEST_USER_PASSWORD
         browser.getControl('Log in').click()
         
         # Enter the add screen for a temporary portal_factory-managed object
         browser.open(self.folder.absolute_url() + '/portal_factory/Document/document.2010-02-04.2866363923/edit')
-        
+
+        # Confirm pass CSRF protection
+        try:
+            browser.getControl(name='form.button.confirm').click()
+        except LookupError:
+            pass
+
         # We should now have cookies with the drafts information
         cookies = browser.cookies.forURL(browser.url)
         self.assertEquals(
                 '"%s/portal_factory/Document/document.2010-02-04.2866363923"' % self.folder.absolute_url_path(),
                 cookies['plone.app.drafts.path']
             )
-        self.assertEquals('"%d%%3ADocument"' % intid, cookies['plone.app.drafts.targetKey'])
+        self.assertEquals('"%s%%3ADocument"' % uuid, cookies['plone.app.drafts.targetKey'])
         self.failIf('plone.app.drafts.draftName' in browser.cookies.forURL(browser.url))
         
         # We can now cancel the edit. The cookies should expire.
@@ -754,27 +813,35 @@ class TestArchetypesIntegration(ptc.FunctionalTestCase):
         self.failIf('plone.app.drafts.path' in browser.cookies.forURL(browser.url))
     
     def test_edit(self):
-        browser = Browser()
+        browser = Browser(self.layer['app'])
         browser.handleErrors = False
         
         self.folder.invokeFactory('Document', 'd1')
         self.folder['d1'].setTitle(u"New title")
+
+        transaction.commit()
         
-        intid = getUtility(IIntIds).getId(self.folder['d1'])
+        uuid = IUUID(self.folder['d1'])
         
         # Login
         browser.open(self.portal.absolute_url() + '/login')
-        browser.getControl(name='__ac_name').value = ptc.default_user
-        browser.getControl(name='__ac_password').value = ptc.default_password
+        browser.getControl(name='__ac_name').value = TEST_USER_NAME
+        browser.getControl(name='__ac_password').value = TEST_USER_PASSWORD
         browser.getControl('Log in').click()
         
         # Enter the edit screen
         browser.open(self.folder['d1'].absolute_url() + '/edit')
-        
+
+        # Confirm pass CSRF protection
+        try:
+            browser.getControl(name='form.button.confirm').click()
+        except LookupError:
+            pass
+
         # We should now have cookies with the drafts information
         cookies = browser.cookies.forURL(browser.url)
         self.assertEquals('"%s"' % self.folder['d1'].absolute_url_path(), cookies['plone.app.drafts.path'])
-        self.assertEquals('"%d"' % intid, cookies['plone.app.drafts.targetKey'])
+        self.assertEquals('"%s"' % uuid, cookies['plone.app.drafts.targetKey'])
         self.failIf('plone.app.drafts.draftName' in browser.cookies.forURL(browser.url))
         
         # We can now save the page. The cookies should expire.
@@ -784,31 +851,40 @@ class TestArchetypesIntegration(ptc.FunctionalTestCase):
         self.failIf('plone.app.drafts.draftName' in browser.cookies.forURL(browser.url))
     
     def test_edit_existing_draft(self):
-        browser = Browser()
+        browser = Browser(self.layer['app'])
         browser.handleErrors = False
         
         self.folder.invokeFactory('Document', 'd1')
         self.folder['d1'].setTitle(u"New title")
-        
-        intid = getUtility(IIntIds).getId(self.folder['d1'])
+
+        uuid = IUUID(self.folder['d1'])
         
         # Create a single draft for this object - we expect this to be used now
         storage = getUtility(IDraftStorage)
-        draft = storage.createDraft(ptc.default_user, str(intid))
-        
+        draft = storage.createDraft(TEST_USER_ID, str(uuid))
+
+        transaction.commit()
+
         # Login
         browser.open(self.portal.absolute_url() + '/login')
-        browser.getControl(name='__ac_name').value = ptc.default_user
-        browser.getControl(name='__ac_password').value = ptc.default_password
+        browser.getControl(name='__ac_name').value = TEST_USER_NAME
+        browser.getControl(name='__ac_password').value = TEST_USER_PASSWORD
         browser.getControl('Log in').click()
         
         # Enter the edit screen
         browser.open(self.folder['d1'].absolute_url() + '/edit')
-        
+
+        # Confirm pass CSRF protection
+        try:
+            browser.getControl(name='form.button.confirm').click()
+        except LookupError:
+            pass
+
         # We should now have cookies with the drafts information
         cookies = browser.cookies.forURL(browser.url)
         self.assertEquals('"%s"' % self.folder['d1'].absolute_url_path(), cookies['plone.app.drafts.path'])
-        self.assertEquals('"%d"' % intid, cookies['plone.app.drafts.targetKey'])
+        self.assertEquals('"%s"' % uuid, cookies['plone.app.drafts.targetKey'])
+        self.assertEquals('"%s"' % TEST_USER_ID, cookies['plone.app.drafts.userId'])
         self.assertEquals('"%s"' % draft.__name__, cookies['plone.app.drafts.draftName'])
         
         # We can now save the page. The cookies should expire.
@@ -816,34 +892,43 @@ class TestArchetypesIntegration(ptc.FunctionalTestCase):
         self.failIf('plone.app.drafts.targetKey' in browser.cookies.forURL(browser.url))
         self.failIf('plone.app.drafts.path' in browser.cookies.forURL(browser.url))
         self.failIf('plone.app.drafts.draftName' in browser.cookies.forURL(browser.url))
-        
+        self.failIf('plone.app.drafts.userId' in browser.cookies.forURL(browser.url))
+
     def test_edit_multiple_existing_drafts(self):
-        browser = Browser()
+        browser = Browser(self.layer['app'])
         browser.handleErrors = False
         
         self.folder.invokeFactory('Document', 'd1')
         self.folder['d1'].setTitle(u"New title")
-        
-        intid = getUtility(IIntIds).getId(self.folder['d1'])
+
+        transaction.commit()
+
+        uuid = IUUID(self.folder['d1'])
         
         # Create two drafts for this object - we don't expect either to be used
         storage = getUtility(IDraftStorage)
-        storage.createDraft(ptc.default_user, str(intid))
-        storage.createDraft(ptc.default_user, str(intid))
+        storage.createDraft(TEST_USER_ID, str(uuid))
+        storage.createDraft(TEST_USER_ID, str(uuid))
         
         # Login
         browser.open(self.portal.absolute_url() + '/login')
-        browser.getControl(name='__ac_name').value = ptc.default_user
-        browser.getControl(name='__ac_password').value = ptc.default_password
+        browser.getControl(name='__ac_name').value = TEST_USER_NAME
+        browser.getControl(name='__ac_password').value = TEST_USER_PASSWORD
         browser.getControl('Log in').click()
         
         # Enter the edit screen
         browser.open(self.folder['d1'].absolute_url() + '/edit')
-        
+
+        # Confirm pass CSRF protection
+        try:
+            browser.getControl(name='form.button.confirm').click()
+        except LookupError:
+            pass
+
         # We should now have cookies with the drafts information
         cookies = browser.cookies.forURL(browser.url)
         self.assertEquals('"%s"' % self.folder['d1'].absolute_url_path(), cookies['plone.app.drafts.path'])
-        self.assertEquals('"%d"' % intid, cookies['plone.app.drafts.targetKey'])
+        self.assertEquals('"%s"' % uuid, cookies['plone.app.drafts.targetKey'])
         self.failIf('plone.app.drafts.draftName' in browser.cookies.forURL(browser.url))
         
         # We can now save the page. The cookies should expire.
@@ -851,6 +936,3 @@ class TestArchetypesIntegration(ptc.FunctionalTestCase):
         self.failIf('plone.app.drafts.targetKey' in browser.cookies.forURL(browser.url))
         self.failIf('plone.app.drafts.path' in browser.cookies.forURL(browser.url))
         self.failIf('plone.app.drafts.draftName' in browser.cookies.forURL(browser.url))
-
-def test_suite():
-    return unittest.defaultTestLoader.loadTestsFromName(__name__)

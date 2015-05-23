@@ -12,7 +12,10 @@ Changelog
   Dexterity add and edit forms when drafting behavior is
   enabld for the content type
 
-- Changed Archetypes-support to be disabled by default
+- Change to use UUIDs instead of intids
+  [datakurre]
+
+- Change Archetypes-support to be disabled by default
   [datakurre]
 
   Archetypes-support can included in zcml with::

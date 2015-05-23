@@ -34,7 +34,8 @@ setup(name='plone.app.drafts',
           'Zope2',
       ],
       extras_require={
-           'test': ['plone.app.testings'],
+           'test': ['plone.app.testing',
+                    'Products.ATContentTypes'],
       },
       entry_points="""
       [z3c.autoinclude.plugin]
