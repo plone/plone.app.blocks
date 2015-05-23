@@ -4,8 +4,8 @@
     i18n_domain="plone.app.drafts">
 
     <plone:behavior
-        title="IDraftable"
-        description="Marks object as IDraftable to allow drafting of objects"
+        title="Draftability"
+        description="Enables autosaved drafting on add an edit forms"
         provides="plone.app.drafts.interfaces.IDraftable"
         marker="plone.app.drafts.interfaces.IDraftable"
     />
