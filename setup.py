@@ -30,7 +30,7 @@ setup(
         open("CHANGES.rst").read(),
     ),
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
         "Framework :: Plone",
         'Framework :: Plone :: 4.3',
