@@ -57,26 +57,19 @@ class DefaultAddFormFieldWidgets(FieldWidgetsBase):
         fti = queryUtility(IDexterityFTI, name=form.portal_type)
         if IDraftable.__identifier__ in fti.behaviors:
             draft = getCurrentDraft(request, create=False)
-            target = getattr(draft, '_draftAddFormTarget',
-                             createContent(form.portal_type))
 
             if draft is None:
-                IMutableUUID(target).set('++add++%s' % form.portal_type)
-                beginDrafting(target.__of__(context), None)
-                draft = getCurrentDraft(request, create=True)
-                draft._draftAddFormTarget = target
-
-                # Disable Plone 5 implicit CSRF when no form action
-                if HAS_PLONE_PROTECT:
-                    if not ([key for key in request.form
-                             if key.startswith('form.buttons.')]):
-                        alsoProvides(request, IDisableCSRFProtection)
+                beginDrafting(context, None)
+                key = '++add++%s' % form.portal_type
+                ICurrentDraftManagement(request).targetKey = key
+                ICurrentDraftManagement(request).save()
             else:
-                current = ICurrentDraftManagement(request)
-                current.mark()
+                ICurrentDraftManagement(request).mark()
 
-            context = DraftProxy(draft, target.__of__(context))
-            alsoProvides(request, IAddFormDrafting)
+            target = getattr(draft, '_draftAddFormTarget', None)
+            if draft and target:
+                context = DraftProxy(draft, target.__of__(context))
+                alsoProvides(request, IAddFormDrafting)
 
         super(DefaultAddFormFieldWidgets, self).__init__(form, request, context)  # noqa
 
@@ -110,16 +103,8 @@ class DefaultEditFormFieldWidgets(FieldWidgetsBase):
 
             if draft is None:
                 beginDrafting(context, None)
-                draft = getCurrentDraft(request, create=True)
-
-                # Disable Plone 5 implicit CSRF when no form action
-                if HAS_PLONE_PROTECT:
-                    if not ([key for key in request.form
-                             if key.startswith('form.buttons.')]):
-                        alsoProvides(request, IDisableCSRFProtection)
             else:
-                current = ICurrentDraftManagement(request)
-                current.mark()
+                ICurrentDraftManagement(request).mark()
 
             context = DraftProxy(draft, context)
             alsoProvides(request, IEditFormDrafting)
@@ -142,21 +127,31 @@ def autosave(event):
     if not request.URL.endswith('/@@z3cform_validate_field'):
         return
 
-    draft = getCurrentDraft(request)
-    if draft is None:
-        return
-
     view = getattr(request, 'PUBLISHED', None)
     form = getattr(view, 'context', None)
     if hasattr(aq_base(form), 'form_instance'):
         form = form.form_instance
 
     if IAddForm.providedBy(form):
-        target = getattr(draft, '_draftAddFormTarget', None)
-        if not target:
+        fti = queryUtility(IDexterityFTI, name=form.portal_type)
+        if IDraftable.__identifier__ not in fti.behaviors:
             return
+
+        draft = getCurrentDraft(request, create=True)
+        target = getattr(draft, '_draftAddFormTarget', None)
+
+        if target is None:
+            target = createContent(form.portal_type)
+            IMutableUUID(target).set('++add++%s' % form.portal_type)
+            draft._draftAddFormTarget = target
         target = target.__of__(context)
+
     else:
+        fti = queryUtility(IDexterityFTI, name=context.portal_type)
+        if IDraftable.__identifier__ not in fti.behaviors:
+            return
+
+        draft = getCurrentDraft(request, create=True)
         target = context
 
     fti = queryUtility(IDexterityFTI, name=target.portal_type)
@@ -202,7 +197,7 @@ def capture(ob, event):
         return
 
     draft = getCurrentDraft(request)
-    target = getattr(draft, '_draftAddFormTarget')
+    target = getattr(draft, '_draftAddFormTarget', None)
     if draft and target and target.portal_type == target.portal_type:
         draft._draftAddFormTarget = ob
 
@@ -232,7 +227,7 @@ def save(event):
 
     if IAddForm.providedBy(event.action.form):
         draft = getCurrentDraft(event.action.form.request)
-        target = getattr(draft, '_draftAddFormTarget')
+        target = getattr(draft, '_draftAddFormTarget', None)
         if target:
             syncDraftOnSave(target, event)
     else:
