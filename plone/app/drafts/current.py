@@ -120,7 +120,7 @@ class DefaultCurrentDraftManagement(object):
             self.request.response.setCookie(DRAFT_NAME_KEY, self.draftName, path=path)
 
         # Save userId, because it may be needed to access draft during traverse
-        if self.userId is not None:
+        if self.draftName is not None and self.userId is not None:
             self.request.response.setCookie(USERID_KEY, self.userId, path=path)
 
         # Save the path only if we set it explicitly during this request.
