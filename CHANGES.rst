@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.1.0 (unreleased)
+2.1.0 (2015-05-25)
 ------------------
 
 - Add support for indexing layout field into SearchableText index when
