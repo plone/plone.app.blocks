@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0b1 (unreleased)
+1.0b1 (2015-05-26)
 ------------------
 
 - Add support for drafting on Dexterity add and edit forms
