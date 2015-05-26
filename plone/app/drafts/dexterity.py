@@ -14,6 +14,7 @@ from plone.dexterity.interfaces import IDexterityContent
 from plone.dexterity.interfaces import IDexterityFTI
 from plone.dexterity.utils import createContent
 from plone.uuid.interfaces import IMutableUUID
+from plone.uuid.interfaces import IUUID
 from z3c.form.field import FieldWidgets as FieldWidgetsBase
 from z3c.form.form import applyChanges
 from z3c.form.interfaces import IActionEvent
@@ -56,19 +57,19 @@ class DefaultAddFormFieldWidgets(FieldWidgetsBase):
     def __init__(self, form, request, context):
         fti = queryUtility(IDexterityFTI, name=form.portal_type)
         if IDraftable.__identifier__ in fti.behaviors:
-            draft = getCurrentDraft(request, create=False)
+            current = ICurrentDraftManagement(request)
 
-            if draft is None:
+            if current.targetKey is None:
                 beginDrafting(context, None)
-                key = '++add++%s' % form.portal_type
-                ICurrentDraftManagement(request).targetKey = key
-                ICurrentDraftManagement(request).save()
+                current.path = '/'.join(context.getPhysicalPath())
+                current.targetKey = '++add++%s' % form.portal_type
+                current.save()
             else:
-                ICurrentDraftManagement(request).mark()
+                current.mark()
 
-            target = getattr(draft, '_draftAddFormTarget', None)
-            if draft and target:
-                context = DraftProxy(draft, target.__of__(context))
+            target = getattr(current.draft, '_draftAddFormTarget', None)
+            if current.draft and target:
+                context = DraftProxy(current.draft, target.__of__(context))
                 alsoProvides(request, IAddFormDrafting)
 
         super(DefaultAddFormFieldWidgets, self).__init__(form, request, context)  # noqa
@@ -99,14 +100,17 @@ class DefaultEditFormFieldWidgets(FieldWidgetsBase):
     def __init__(self, form, request, context):
         fti = queryUtility(IDexterityFTI, name=form.portal_type)
         if IDraftable.__identifier__ in fti.behaviors:
-            draft = getCurrentDraft(request, create=False)
+            current = ICurrentDraftManagement(request)
 
-            if draft is None:
+            if current.targetKey is None:
                 beginDrafting(context, None)
+                current.path = '/'.join(context.getPhysicalPath())
+                current.targetKey = IUUID(context)
+                current.save()
             else:
-                ICurrentDraftManagement(request).mark()
+                current.mark()
 
-            context = DraftProxy(draft, context)
+            context = DraftProxy(current.draft, context)
             alsoProvides(request, IEditFormDrafting)
 
         super(DefaultEditFormFieldWidgets, self).__init__(form, request, context)  # noqa
