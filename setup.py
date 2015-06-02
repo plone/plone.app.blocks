@@ -44,6 +44,7 @@ setup(name='plone.app.drafts',
       ],
       extras_require={
            'test': ['plone.app.testing',
+                    'plone.app.dexterity',
                     'Products.ATContentTypes'],
       },
       entry_points="""

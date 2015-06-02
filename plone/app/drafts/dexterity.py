@@ -246,5 +246,7 @@ def save(event):
         target = getattr(draft, '_draftAddFormTarget', None)
         if target:
             syncDraftOnSave(target, event)
+        else:
+            discardDraftsOnCancel(event.action.form.context, event)
     else:
         syncDraftOnSave(event.action.form.context, event)
