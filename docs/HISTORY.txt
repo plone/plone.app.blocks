@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0b2 (unreleased)
+1.0b2 (2015-06-02)
 ------------------
 
 - Fix rare issue where Dexterity draft had wrong portal_type
