@@ -61,12 +61,18 @@ def resolve(url):
     """
 
     resolved = resolveResource(url)
-    if isinstance(resolved, unicode):
-        html_parser = html.HTMLParser(encoding='utf-8')
-        return html.fromstring(resolved.encode('utf-8'),
-                               parser=html_parser).getroottree()
-    else:
-        return html.fromstring(resolved).getroottree()
+    if not resolved.strip():
+        return None
+    try:
+        if isinstance(resolved, unicode):
+            html_parser = html.HTMLParser(encoding='utf-8')
+            return html.fromstring(resolved.encode('utf-8'),
+                                   parser=html_parser).getroottree()
+        else:
+            return html.fromstring(resolved).getroottree()
+    except etree.XMLSyntaxError as e:
+        logger.error('%s: %s' % (repr(e), url))
+        return None
 
 
 def resolveResource(url):
@@ -93,7 +99,7 @@ def resolveResource(url):
         if location.startswith(site.absolute_url()):
             return resolveResource(location[len(site.absolute_url()):])
 
-    if response.status != 200:
+    elif response.status != 200:
         raise RuntimeError(resolved)
 
     return resolved
