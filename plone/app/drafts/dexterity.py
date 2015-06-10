@@ -59,7 +59,7 @@ class DefaultAddFormFieldWidgets(FieldWidgetsBase):
         if IDraftable.__identifier__ in fti.behaviors:
             current = ICurrentDraftManagement(request)
 
-            if current.targetKey is None:
+            if current.targetKey != '++add++%s' % form.portal_type:
                 beginDrafting(context, None)
                 current.path = '/'.join(context.getPhysicalPath())
                 current.targetKey = '++add++%s' % form.portal_type
@@ -69,18 +69,6 @@ class DefaultAddFormFieldWidgets(FieldWidgetsBase):
 
             target = getattr(current.draft, '_draftAddFormTarget', None)
             if current.draft and target:
-
-                if getattr(target, 'portal_type', None) != form.portal_type:
-                    # TODO: Figure out, how this did happend...
-
-                    target = createContent(form.portal_type)
-                    IMutableUUID(target).set('++add++%s' % form.portal_type)
-                    current.draft._draftAddFormTarget = target
-
-                    # Disable Plone 5 implicit CSRF to update draft
-                    if HAS_PLONE_PROTECT:
-                        alsoProvides(request, IDisableCSRFProtection)
-
                 context = DraftProxy(current.draft, target.__of__(context))
                 alsoProvides(request, IAddFormDrafting)
 
