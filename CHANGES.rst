@@ -4,6 +4,10 @@ Changelog
 2.1.1 (unreleased)
 ------------------
 
+- Fix BS3 grid transform to only introduce offset when the tile position is
+  greater than the current position in the current row
+  [datakurre]
+
 - Fix issue where tiles with empty response or syntax error broke tiles
   transform (add to log syntax errors instead)
   [datakurre]
