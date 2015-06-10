@@ -4,8 +4,10 @@ Changelog
 1.0b3 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fix issue where drafting caused 'AttributeError: This object has no id'
+  [datakurre]
+- Fix issue where add forms with different content type but the context had conflicting draft
+  [datakurre]
 
 1.0b2 (2015-06-02)
 ------------------
