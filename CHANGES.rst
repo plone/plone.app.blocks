@@ -4,6 +4,11 @@ Changelog
 2.1.1 (unreleased)
 ------------------
 
+- Change site layout resolver to only cache site layout path instead of the
+  complete layout to avoid caching identical layout separaterly for each
+  content instance
+  [datakurre]
+
 - Fix issue where tiles with empty response or syntax error broke tiles
   transform (add to log syntax errors instead)
   [datakurre]
