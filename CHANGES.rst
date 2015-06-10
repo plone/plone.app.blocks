@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.1.1 (unreleased)
+2.1.1 (2015-06-10)
 ------------------
 
 - Fix BS3 grid transform to only introduce offset when the tile position is
