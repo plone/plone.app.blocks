@@ -15,6 +15,9 @@ class IGridSystem(Interface):
 class BS3GridSystem(object):
     implements(IGridSystem)
 
+    def __init__(self):
+        self.offset = 1
+
     def transform(self, key):
         """ its possible:
             {type: row} -> row
@@ -23,6 +26,7 @@ class BS3GridSystem(object):
         """
         element = json.loads(key)
         if 'type' in element and element['type'] == 'row':
+            self.offset = 1
             return 'row'
         elif 'type' in element and element['type'] == 'cell':
             result = ''
@@ -36,9 +40,10 @@ class BS3GridSystem(object):
                 if 'lg' in element['info'] and element['info']['lg'].lower() == "false":
                     result += 'hidden-lg '
                 if 'pos' in element['info']:
-                    if element['info']['pos']['x'] > 1:
-                        result += 'col-md-offset-%d ' % element['info']['pos']['x']
+                    if element['info']['pos']['x'] > self.offset:
+                        result += 'col-md-offset-%d ' % (element['info']['pos']['x'] - (self.offset - 1))
                     if 'width' in element['info']['pos']:
+                        self.offset += element['info']['pos']['width']
                         result += 'col-md-%d' % element['info']['pos']['width']
             return result
 
