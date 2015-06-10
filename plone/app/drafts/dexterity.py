@@ -146,6 +146,7 @@ def autosave(event):
 
         if target is None:
             target = createContent(form.portal_type)
+            target.id = ''
             IMutableUUID(target).set('++add++%s' % form.portal_type)
             draft._draftAddFormTarget = target
         target = target.__of__(context)
