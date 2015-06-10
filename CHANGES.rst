@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.1.2 (unreleased)
+2.1.2 (2015-06-10)
 ------------------
 
 - Fix issue where grid transform did replaced class names instead of appending
