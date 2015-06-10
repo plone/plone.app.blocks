@@ -4,8 +4,9 @@ Changelog
 2.1.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fix issue where grid transform did replaced class names instead of appending
+  to them
+  [datakurre]
 
 2.1.1 (2015-06-10)
 ------------------
