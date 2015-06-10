@@ -1,39 +1,35 @@
 # -*- coding: utf-8 -*-
-import urlparse
-
 from Acquisition import aq_parent
-from Products.CMFCore.utils import getToolByName
 from OFS.interfaces import ITraversable
+from Products.CMFCore.utils import getToolByName
+from plone.app.blocks.interfaces import DEFAULT_AJAX_LAYOUT_REGISTRY_KEY
+from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
+from plone.app.blocks.interfaces import SITE_LAYOUT_FILE_NAME
+from plone.app.blocks.interfaces import SITE_LAYOUT_MANIFEST_FORMAT
+from plone.app.blocks.interfaces import SITE_LAYOUT_RESOURCE_NAME
+from plone.app.blocks.layoutbehavior import SiteLayoutView
+from plone.app.blocks.utils import getDefaultAjaxLayout
+from plone.app.blocks.utils import getDefaultSiteLayout
+from plone.app.blocks.utils import getLayoutAwareSiteLayout
+from plone.app.blocks.utils import resolveResource
 from plone.memoize import view
-from zope.annotation import IAnnotations
-from zope.globalrequest import getRequest
-from plone.memoize.volatile import cache
-from plone.memoize.volatile import DontCache
-from plone.memoize.volatile import store_on_context
+from plone.memoize import volatile
 from plone.registry.interfaces import IRecordModifiedEvent
 from plone.resource.manifest import getAllResources
 from plone.resource.traversal import ResourceTraverser
+from plone.subrequest import ISubRequest
 from zExceptions import NotFound
-from zope.interface import implements
+from zope.annotation import IAnnotations
 from zope.component import adapter
+from zope.globalrequest import getRequest
+from zope.interface import implements
 from zope.publisher.browser import BrowserView
 from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleTerm
 from zope.schema.vocabulary import SimpleVocabulary
 from zope.site.hooks import getSite
 import Globals
-
-from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
-from plone.app.blocks.interfaces import DEFAULT_AJAX_LAYOUT_REGISTRY_KEY
-from plone.app.blocks.interfaces import SITE_LAYOUT_FILE_NAME
-from plone.app.blocks.interfaces import SITE_LAYOUT_MANIFEST_FORMAT
-from plone.app.blocks.interfaces import SITE_LAYOUT_RESOURCE_NAME
-from plone.app.blocks.layoutbehavior import SiteLayoutView
-from plone.app.blocks.utils import resolveResource
-from plone.app.blocks.utils import getDefaultAjaxLayout
-from plone.app.blocks.utils import getDefaultSiteLayout
-from plone.app.blocks.utils import getLayoutAwareSiteLayout
-from plone.subrequest import ISubRequest
+import urlparse
 
 
 class SiteLayoutTraverser(ResourceTraverser):
@@ -122,7 +118,7 @@ def cacheKey(method, self):
     """
 
     if Globals.DevelopmentMode:
-        raise DontCache()
+        raise volatile.DontCache()
 
     catalog = getToolByName(self.context, 'portal_catalog')
 
@@ -171,8 +167,9 @@ class DefaultSiteLayout(BrowserView):
             else:
                 return SiteLayoutView(self.context, self.request)()
 
-    @cache(cacheKey, store_on_context)
-    def index(self):
+    @property
+    @volatile.cache(cacheKey, volatile.store_on_context)
+    def layout(self):
         layout = self._getLayout()
         if layout is None:
             raise NotFound("No default site layout set")
@@ -187,7 +184,10 @@ class DefaultSiteLayout(BrowserView):
         if pathContext is not None:
             path = urlparse.urljoin(pathContext.absolute_url_path(), layout)
 
-        return resolveResource(path)
+        return path
+
+    def index(self):
+        return resolveResource(self.layout)
 
     def _getLayout(self):
         if self.request.form.get('ajax_load'):
