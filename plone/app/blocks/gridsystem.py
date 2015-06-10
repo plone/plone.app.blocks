@@ -88,8 +88,8 @@ def merge(request, layoutTree):
         gridinfo = layoutGridNode.attrib['data-grid']
         cssGridClass = gridUtil.transform(gridinfo)
         if cssGridClass is not None:
-            if 'class' in layoutGridNode:
-                layoutGridNode.attrib['class'] = layoutGridNode['class'] + ' ' + cssGridClass
+            if 'class' in layoutGridNode.attrib:
+                layoutGridNode.attrib['class'] = layoutGridNode.attrib['class'] + ' ' + cssGridClass  # noqa
             else:
                 layoutGridNode.attrib['class'] = cssGridClass
         del layoutGridNode.attrib['data-grid']
