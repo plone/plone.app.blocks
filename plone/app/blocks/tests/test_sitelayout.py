@@ -135,6 +135,17 @@ class TestSiteLayout(unittest.TestCase):
         self.assertFalse(u"Cache test" in rendered)  # hidden by cache
         self.assertTrue(u"ZODB test" in rendered)
 
+        self.assertEqual('/++sitelayout++testlayout3/site.html', view.layout)
+
+        # Test cache is set
+        self.assertTrue(hasattr(self.portal, ATTR))
+
+        # Update cache
+        for key in getattr(self.portal, ATTR):
+            getattr(self.portal, ATTR)[key] = None
+
+        self.assertIsNone(view.layout)  # because of cache
+
     def test_default_site_layout_invalidate_mtime(self):
         # Clear cache if there
         if hasattr(self.portal, ATTR):

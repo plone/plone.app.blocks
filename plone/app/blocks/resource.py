@@ -186,6 +186,7 @@ class DefaultSiteLayout(BrowserView):
 
         return path
 
+    @volatile.cache(cacheKey, volatile.store_on_context)
     def index(self):
         return resolveResource(self.layout)
 
