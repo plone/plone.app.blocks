@@ -46,6 +46,12 @@ class IBlocksSettings(Interface):
         default=False,
     )
 
+    default_grid_system = schema.ASCIILine(
+        title=_(u'Default grid system'),
+        description=_(u'Grid system to use when one is not specified '
+                      u'the result DOM.'),
+        default='deco')
+
 
 class ILayoutField(Interface):
     """Marker interface for the layout field

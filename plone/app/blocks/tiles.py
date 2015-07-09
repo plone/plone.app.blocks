@@ -22,7 +22,7 @@ def renderTiles(request, tree):
     if not request.getHeader(ESI_HEADER):
         registry = queryUtility(IRegistry)
         if registry is not None:
-            if registry.forInterface(IBlocksSettings).esi:
+            if registry.forInterface(IBlocksSettings, check=False).esi:
                 request.environ[ESI_HEADER_KEY] = 'true'
 
     root = tree.getroot()

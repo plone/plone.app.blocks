@@ -1,10 +1,16 @@
 # -*- coding: utf-8 -*-
+import json
+import logging
+
 from plone.app.blocks import utils
-from zope.component import getUtility
+from plone.app.blocks.interfaces import IBlocksSettings
+from plone.registry.interfaces import IRegistry
+from zope.component import queryUtility
 from zope.interface import Interface
 from zope.interface import implements
 
-import json
+
+logger = logging.getLogger('plone.app.blocks')
 
 
 class IGridSystem(Interface):
@@ -41,7 +47,7 @@ class BS3GridSystem(object):
                     result += 'hidden-lg '
                 if 'pos' in element['info']:
                     if element['info']['pos']['x'] > self.offset:
-                        result += 'col-md-offset-%d ' % (element['info']['pos']['x'] - (self.offset - 1))
+                        result += 'col-md-offset-%d ' % (element['info']['pos']['x'] - (self.offset - 1))  # noqa
                     if 'width' in element['info']['pos']:
                         self.offset += element['info']['pos']['width']
                         result += 'col-md-%d' % element['info']['pos']['width']
@@ -77,13 +83,20 @@ def merge(request, layoutTree):
 
     Returns None if the page has no layout.
     """
-
     # Find layout node
     gridSystem = utils.xpath1(utils.gridXPath, layoutTree)
     if gridSystem is None:
         gridSystem = 'deco'
+        registry = queryUtility(IRegistry)
+        if registry:
+            settings = registry.forInterface(IBlocksSettings, check=False)
+            gridSystem = settings.default_grid_system or 'deco'
 
-    gridUtil = getUtility(IGridSystem, gridSystem)()
+    gridUtil = queryUtility(IGridSystem, gridSystem)
+    if gridUtil is None:
+        logger.warn('Could not apply grid system "%s"' % gridSystem)
+        return layoutTree
+    gridUtil = gridUtil()
     for layoutGridNode in utils.gridDataXPath(layoutTree):
         gridinfo = layoutGridNode.attrib['data-grid']
         cssGridClass = gridUtil.transform(gridinfo)
