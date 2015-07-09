@@ -4,7 +4,8 @@ Changelog
 2.1.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- be able to set default grid system in registry settings
+  [vangheem]
 
 
 2.1.2 (2015-06-10)

@@ -16,6 +16,8 @@
     <include package="plone.transformchain" />
 
     <include package="plone.app.registry" />
+
+    <include file="upgrades.zcml" />
     
     <permission
         id="plone.ManageSiteLayouts"
