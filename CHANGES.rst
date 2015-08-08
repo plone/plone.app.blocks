@@ -4,9 +4,12 @@ Changelog
 2.1.3 (unreleased)
 ------------------
 
-- be able to set default grid system in registry settings
+- Add to apply outputfilters for content layout view
+  [datakurre]
+- Add to be able to set default grid system in registry settings
   [vangheem]
-
+- Restore support for Plone 4.2.x
+  [datakurre]
 
 2.1.2 (2015-06-10)
 ------------------
