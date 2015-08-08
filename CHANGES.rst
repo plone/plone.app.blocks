@@ -1,11 +1,13 @@
 Changelog
 =========
 
-2.1.3 (unreleased)
+2.2.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Add to apply outputfilters for content layout view
+  [datakurre]
+- Restore support for Plone 4.2.x
+  [datakurre]
 
 2.1.2 (2015-06-10)
 ------------------
