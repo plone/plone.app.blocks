@@ -1,29 +1,36 @@
 # -*- coding: utf-8 -*-
-import os
-import logging
-
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from plone.app.layout.globals.interfaces import IViewView
-from plone.autoform.interfaces import IFormFieldProvider
-from plone.dexterity.browser.view import DefaultView
-from plone.supermodel import model
-from plone.supermodel.directives import fieldset
-from zope.component import adapter, getMultiAdapter
-from zope.component.hooks import getSite
-from zope.globalrequest import getRequest
-from zope.interface import implements, provider
-from zope.interface import implementer
-from zope.interface import Interface
-from zope.interface import alsoProvides
-from zope import schema
-from zope.schema._bootstrapinterfaces import IContextAwareDefaultFactory
-
 from plone.app.blocks.interfaces import IBlocksTransformEnabled
 from plone.app.blocks.interfaces import ILayoutField
 from plone.app.blocks.interfaces import ILayoutFieldDefaultValue
 from plone.app.blocks.interfaces import IOmittedField
 from plone.app.blocks.interfaces import _
+from plone.app.layout.globals.interfaces import IViewView
+from plone.autoform.interfaces import IFormFieldProvider
+from plone.dexterity.browser.view import DefaultView
+from plone.outputfilters import apply_filters
+from plone.outputfilters.interfaces import IFilter
+from zope import schema
+from zope.component import adapter, getMultiAdapter
+from zope.component import getAdapters
+from zope.component.hooks import getSite
+from zope.globalrequest import getRequest
+from zope.interface import Interface
+from zope.interface import alsoProvides
+from zope.interface import implementer
+from zope.interface import implements, provider
+from zope.schema.interfaces import IContextAwareDefaultFactory
+import logging
+import os
+
+try:
+    from plone.supermodel import model
+    from plone.supermodel.directives import fieldset
+except ImportError:
+    # BBB: Plone 4.2 with Dexterity 1.x
+    from plone.directives import form as model
+    from plone.directives.form import fieldset
 
 try:
     from collective.dexteritytextindexer import searchable
@@ -129,4 +136,9 @@ class ContentLayoutView(DefaultView):
 
         This result is supposed to be transformed by plone.app.blocks.
         """
-        return ILayoutAware(self.context).content
+        layout = ILayoutAware(self.context).content
+        # Here we skip legacy portal_transforms and call plone.outputfilters
+        # directly by purpose
+        filters = [f for _, f
+                   in getAdapters((self.context, self.request), IFilter)]
+        return apply_filters(filters, layout)
