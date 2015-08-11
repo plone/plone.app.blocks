@@ -15,7 +15,6 @@ from plone.app.blocks.utils import resolveResource
 from plone.memoize import view
 from plone.memoize import volatile
 from plone.registry.interfaces import IRecordModifiedEvent
-from plone.resource.manifest import getAllResources
 from plone.resource.traversal import ResourceTraverser
 from plone.subrequest import ISubRequest
 from zExceptions import NotFound
@@ -30,6 +29,13 @@ from zope.schema.vocabulary import SimpleVocabulary
 from zope.site.hooks import getSite
 import Globals
 import urlparse
+from ConfigParser import SafeConfigParser
+from plone.resource.manifest import MANIFEST_FILENAME
+from plone.resource.utils import iterDirectoriesOfType
+import logging
+
+
+logger = logging.getLogger('plone.app.blocks')
 
 
 class SiteLayoutTraverser(ResourceTraverser):
@@ -48,6 +54,81 @@ class AnnotationsDict(dict):
     implements(IAnnotations)
 
 
+class multidict(dict):
+    """
+    Taken from: http://stackoverflow.com/questions/9876059/parsing-configure-file-with-same-section-name-in-python  # noqa
+    """
+    _unique = 0
+
+    def __setitem__(self, key, val):
+        if isinstance(val, dict):
+            self._unique += 1
+            key += str(self._unique)
+        dict.__setitem__(self, key, val)
+
+
+def getLayoutsFromManifest(fp, format, directory_name):
+    parser = SafeConfigParser(None, multidict)
+    parser.readfp(fp)
+
+    layouts = {}
+    for section in parser.sections():
+        if not section.startswith(format.resourceType):
+            continue
+        # id is a combination of directory name + filename
+        if parser.has_option(section, 'file'):
+            filename = parser.get(section, 'file')
+        else:
+            filename = ''  # this should not happen...
+        _id = directory_name + '/' + filename
+        if _id in layouts:
+            # because TTW resources are created first, we consider layouts
+            # with same id in a TTW to be taken before other resources
+            continue
+        data = {
+            'directory': directory_name
+        }
+        for key in format.keys:
+            if parser.has_option(section, key):
+                data[key] = parser.get(section, key)
+            else:
+                data[key] = format.defaults.get(key, None)
+        layouts[_id] = data
+
+    return layouts
+
+
+def getLayoutsFromResources(format):
+    layouts = {}
+
+    for directory in iterDirectoriesOfType(format.resourceType):
+
+        name = directory.__name__
+        if directory.isFile(MANIFEST_FILENAME):
+            manifest = directory.openFile(MANIFEST_FILENAME)
+            try:
+                layouts.update(getLayoutsFromManifest(manifest, format, name))
+            except:
+                logger.exception("Unable to read manifest for theme directory %s", name)
+            finally:
+                manifest.close()
+        else:
+            # can provide default file for it with no manifest
+            filename = format.defaults.get('file', '')
+            if filename and directory.isFile(filename):
+                _id = name + '/' + filename
+                if _id not in layouts:
+                    # not overridden
+                    layouts[_id] = {
+                        'title': name.capitalize().replace('-', ' ').replace('.', ' '),
+                        'description': '',
+                        'directory': name,
+                        'file': format.defaults.get('file', '')
+                    }
+
+    return layouts
+
+
 class _AvailableLayoutsVocabulary(object):
     """Vocabulary to return request cached available layouts of a given type
     """
@@ -61,28 +142,13 @@ class _AvailableLayoutsVocabulary(object):
     def __call__(self, context, format, defaultFilename):
         items = {}  # dictionary is used here to avoid duplicate tokens
 
-        resources = getAllResources(format)
-        for name, manifest in resources.items():
-            title = name.capitalize().replace('-', ' ').replace('.', ' ')
-            filename = defaultFilename
+        resources = getLayoutsFromResources(format)
+        for _id, config in resources.items():
+            title = config.get('title', _id)
+            filename = config.get('file', defaultFilename)
 
-            if manifest is not None:
-                title = manifest['title'] or title
-                filename = manifest['file'] or filename
-                variants = manifest.get('variants') or []
-            else:
-                variants = []
-
-            path = "/++%s++%s/%s" % (format.resourceType, name, filename)
-            items[name] = SimpleTerm(path, name, title)
-
-            for key, value in dict(variants).items():
-                key_ = title_ = key.capitalize().replace('_', ' ')
-                name_ = '{0:s}-{1:s}'.format(name, key)
-                if manifest is not None and manifest['title']:
-                    title_ = u'{0:s} ({1:s})'.format(title, key_)
-                path = "/++%s++%s/%s" % (format.resourceType, name, value)
-                items[name_] = SimpleTerm(path, name_, title_)
+            path = "/++%s++%s/%s" % (format.resourceType, config['directory'], filename)
+            items[_id] = SimpleTerm(path, _id, title)
 
         items = sorted(items.values(), key=lambda term: term.title)
         return SimpleVocabulary(items)
