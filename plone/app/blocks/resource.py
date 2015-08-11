@@ -149,7 +149,7 @@ class _AvailableLayoutsVocabulary(object):
             filename = config.get('file', defaultFilename)
 
             path = "/++%s++%s/%s" % (format.resourceType, config['directory'], filename)
-            items[_id] = SimpleTerm(path, _id, title)
+            items[_id] = SimpleTerm(_id, path, title)
 
         items = sorted(items.values(), key=lambda term: term.title)
         return SimpleVocabulary(items)
