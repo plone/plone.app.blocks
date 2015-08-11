@@ -198,5 +198,5 @@
         name="plone.app.blocks.parsexml"
         factory=".transform.DisableParsing"
         />
-    
+
 </configure>
