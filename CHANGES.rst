@@ -4,6 +4,10 @@ Changelog
 2.1.3 (unreleased)
 ------------------
 
+- Add ability to provide more than one layout with a layout directory
+  and manifest
+  [vangheem]
+
 - Add to be able to set default grid system in registry settings
   [vangheem]
 

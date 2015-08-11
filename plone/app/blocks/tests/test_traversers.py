@@ -25,14 +25,24 @@ class TestTraversers(unittest.TestCase):
         vocab = list(vocab)
         vocab.sort(key=lambda t: t.token)
 
-        self.assertEqual(len(vocab), 2)
+        self.assertEqual(len(vocab), 3)
 
-        self.assertEqual(vocab[0].token, 'testlayout1')
-        self.assertEqual(vocab[0].title, 'Testlayout1')
-        self.assertEqual(vocab[0].value,
+        def _get_layout_vocab(token):
+            for term in vocab:
+                if term.token == token:
+                    return term
+
+        term = _get_layout_vocab('testlayout1/site.html')
+        self.assertEqual(term.title, 'Testlayout1')
+        self.assertEqual(term.value,
                          u'/++sitelayout++testlayout1/site.html')
 
-        self.assertEqual(vocab[1].token, 'testlayout2')
-        self.assertEqual(vocab[1].title, 'My site layout')
-        self.assertEqual(vocab[1].value,
+        term = _get_layout_vocab('testlayout2/mylayout.html')
+        self.assertEqual(term.title, 'My site layout')
+        self.assertEqual(term.value,
                          u'/++sitelayout++testlayout2/mylayout.html')
+
+        term = _get_layout_vocab('testlayout2/mylayout2.html')
+        self.assertEqual(term.title, 'My site layout 2')
+        self.assertEqual(term.value,
+                         u'/++sitelayout++testlayout2/mylayout2.html')

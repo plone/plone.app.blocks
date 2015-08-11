@@ -11,8 +11,7 @@ SITE_LAYOUT_FILE_NAME = "site.html"
 SITE_LAYOUT_MANIFEST_FORMAT = ManifestFormat(
     SITE_LAYOUT_RESOURCE_NAME,
     keys=('title', 'description', 'file'),
-    defaults={'file': SITE_LAYOUT_FILE_NAME},
-    parameterSections=['variants']
+    defaults={'file': SITE_LAYOUT_FILE_NAME}
 )
 
 DEFAULT_SITE_LAYOUT_REGISTRY_KEY = 'plone.defaultSiteLayout'
