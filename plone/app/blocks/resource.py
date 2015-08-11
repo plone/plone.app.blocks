@@ -144,12 +144,19 @@ class _AvailableLayoutsVocabulary(object):
         items = {}  # dictionary is used here to avoid duplicate tokens
 
         resources = getLayoutsFromResources(format)
+        used = []
         for _id, config in resources.items():
             title = config.get('title', _id)
             filename = config.get('file', defaultFilename)
 
             path = "/++%s++%s/%s" % (format.resourceType, config['directory'], filename)
-            items[_id] = SimpleTerm(_id, path, title)
+            if path in used:
+                # term values also need to be unique
+                # this should not happen but it's possible for users to screw up
+                # their layout definitions and it's better to not error here
+                continue
+            used.append(path)
+            items[_id] = SimpleTerm(path, _id, title)
 
         items = sorted(items.values(), key=lambda term: term.title)
         return SimpleVocabulary(items)
