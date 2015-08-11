@@ -54,19 +54,17 @@ class _AvailableLayoutsVocabulary(object):
 
     implements(IVocabularyFactory)
 
-    def __init__(self, format, defaultFilename):
-        self.format = format
-        self.defaultFilename = defaultFilename
+    def __init__(self):
         self.request = getRequest() or AnnotationsDict()
 
     @view.memoize_contextless
-    def __call__(self, context):
+    def __call__(self, context, format, defaultFilename):
         items = {}  # dictionary is used here to avoid duplicate tokens
 
-        resources = getAllResources(self.format)
+        resources = getAllResources(format)
         for name, manifest in resources.items():
             title = name.capitalize().replace('-', ' ').replace('.', ' ')
-            filename = self.defaultFilename
+            filename = defaultFilename
 
             if manifest is not None:
                 title = manifest['title'] or title
@@ -75,7 +73,7 @@ class _AvailableLayoutsVocabulary(object):
             else:
                 variants = []
 
-            path = "/++%s++%s/%s" % (self.format.resourceType, name, filename)
+            path = "/++%s++%s/%s" % (format.resourceType, name, filename)
             items[name] = SimpleTerm(path, name, title)
 
             for key, value in dict(variants).items():
@@ -83,7 +81,7 @@ class _AvailableLayoutsVocabulary(object):
                 name_ = '{0:s}-{1:s}'.format(name, key)
                 if manifest is not None and manifest['title']:
                     title_ = u'{0:s} ({1:s})'.format(title, key_)
-                path = "/++%s++%s/%s" % (self.format.resourceType, name, value)
+                path = "/++%s++%s/%s" % (format.resourceType, name, value)
                 items[name_] = SimpleTerm(path, name_, title_)
 
         items = sorted(items.values(), key=lambda term: term.title)
@@ -102,8 +100,8 @@ class AvailableLayoutsVocabulary(object):
 
     def __call__(self, context):
         # Instantiate the factory impl per call to support caching by request
-        fab = _AvailableLayoutsVocabulary(self.format, self.defaultFilename)
-        return fab(context)
+        fab = _AvailableLayoutsVocabulary()
+        return fab(context, self.format, self.defaultFilename)
 
 
 AvailableSiteLayoutsVocabularyFactory = AvailableLayoutsVocabulary(

@@ -17,7 +17,6 @@ def renderTiles(request, tree):
 
     Assumes panel merging has already happened.
     """
-
     # Optionally enable ESI rendering in tiles that support this
     if not request.getHeader(ESI_HEADER):
         registry = queryUtility(IRegistry)
