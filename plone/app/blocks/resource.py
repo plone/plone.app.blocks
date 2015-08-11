@@ -74,7 +74,7 @@ def getLayoutsFromManifest(fp, format, directory_name):
 
     layouts = {}
     for section in parser.sections():
-        if not section.startswith(format.resourceType):
+        if not section.startswith(format.resourceType) or ':variants' in section:
             continue
         # id is a combination of directory name + filename
         if parser.has_option(section, 'file'):
