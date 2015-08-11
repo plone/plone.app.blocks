@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.1.3 (unreleased)
+2.2.0 (unreleased)
 ------------------
 
 - Add ability to provide more than one layout with a layout directory
@@ -19,6 +19,11 @@ Changelog
 
 - Restore support for Plone 4.2.x
   [datakurre]
+
+- Remove layout variants introduced in 2.0.0, in favor of ability to
+  provide more than one layout with a layout directory and manifest by
+  using multiple ``[...layout]`` directive in the same manifest
+  [vangheem]
 
 2.1.2 (2015-06-10)
 ------------------
