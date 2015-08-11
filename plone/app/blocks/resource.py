@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
+from ConfigParser import SafeConfigParser
+import logging
+import urlparse
+
 from Acquisition import aq_parent
+import Globals
 from OFS.interfaces import ITraversable
 from Products.CMFCore.utils import getToolByName
 from plone.app.blocks.interfaces import DEFAULT_AJAX_LAYOUT_REGISTRY_KEY
@@ -15,7 +20,9 @@ from plone.app.blocks.utils import resolveResource
 from plone.memoize import view
 from plone.memoize import volatile
 from plone.registry.interfaces import IRecordModifiedEvent
+from plone.resource.manifest import MANIFEST_FILENAME
 from plone.resource.traversal import ResourceTraverser
+from plone.resource.utils import iterDirectoriesOfType
 from plone.subrequest import ISubRequest
 from zExceptions import NotFound
 from zope.annotation import IAnnotations
@@ -27,12 +34,6 @@ from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleTerm
 from zope.schema.vocabulary import SimpleVocabulary
 from zope.site.hooks import getSite
-import Globals
-import urlparse
-from ConfigParser import SafeConfigParser
-from plone.resource.manifest import MANIFEST_FILENAME
-from plone.resource.utils import iterDirectoriesOfType
-import logging
 
 
 logger = logging.getLogger('plone.app.blocks')
