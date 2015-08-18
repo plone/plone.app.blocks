@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
+import logging
+import os
+
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from persistent.interfaces import IPersistent
 from plone.app.blocks.interfaces import IBlocksTransformEnabled
 from plone.app.blocks.interfaces import ILayoutField
 from plone.app.blocks.interfaces import ILayoutFieldDefaultValue
@@ -21,8 +25,6 @@ from zope.interface import alsoProvides
 from zope.interface import implementer
 from zope.interface import implements, provider
 from zope.schema.interfaces import IContextAwareDefaultFactory
-import logging
-import os
 
 try:
     from plone.supermodel import model
@@ -156,8 +158,11 @@ class ContentLayoutView(DefaultView):
         if behavior_data.staticLayout:
             result = self.context.restrictedTraverse(behavior_data.staticLayout, None)
             if result:
-                result.request = self.request
-                layout = str(result())
+                if IPersistent.providedBy(result):
+                    layout = result.data
+                else:
+                    result.request = self.request
+                    layout = str(result())
             else:
                 layout = ERROR_LAYOUT
         else:
