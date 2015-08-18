@@ -42,6 +42,17 @@ except ImportError:
 logger = logging.getLogger('plone.app.blocks')
 
 
+ERROR_LAYOUT = u"""
+<!DOCTYPE html>
+<html lang="en" data-layout="./@@page-site-layout">
+<body>
+<div data-panel="content">
+Could not render selected layout
+</div>
+</body>
+</html>"""
+
+
 class LayoutField(schema.Text):
     """A field used to store layout information
     """
@@ -82,6 +93,11 @@ class ILayoutAware(model.Schema):
         required=False
     )
 
+    staticLayout = schema.ASCIILine(
+        title=_(u'Static Layout'),
+        description=_(u'Selected static layout. If selected, content is ignored.'),
+        required=False)
+
     pageSiteLayout = schema.Choice(
         title=_(u"Site layout"),
         description=_(u"Site layout to apply to this page "
@@ -99,7 +115,7 @@ class ILayoutAware(model.Schema):
     )
 
     fieldset('layout', label=_('Layout'),
-             fields=('content', 'pageSiteLayout', 'sectionSiteLayout'))
+             fields=('content', 'pageSiteLayout', 'sectionSiteLayout', 'staticLayout'))
 
 alsoProvides(ILayoutAware, IFormFieldProvider)
 
@@ -136,7 +152,16 @@ class ContentLayoutView(DefaultView):
 
         This result is supposed to be transformed by plone.app.blocks.
         """
-        layout = ILayoutAware(self.context).content
+        behavior_data = ILayoutAware(self.context)
+        if behavior_data.staticLayout:
+            result = self.context.restrictedTraverse(behavior_data.staticLayout, None)
+            if result:
+                result.request = self.request
+                layout = str(result())
+            else:
+                layout = ERROR_LAYOUT
+        else:
+            layout = ILayoutAware(self.context).content
         # Here we skip legacy portal_transforms and call plone.outputfilters
         # directly by purpose
         filters = [f for _, f
