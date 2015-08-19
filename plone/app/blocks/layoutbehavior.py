@@ -1,20 +1,21 @@
 # -*- coding: utf-8 -*-
-import logging
-import os
-
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from persistent.interfaces import IPersistent
+from lxml import html
 from plone.app.blocks.interfaces import IBlocksTransformEnabled
 from plone.app.blocks.interfaces import ILayoutField
 from plone.app.blocks.interfaces import ILayoutFieldDefaultValue
 from plone.app.blocks.interfaces import IOmittedField
 from plone.app.blocks.interfaces import _
+from plone.app.blocks.utils import bodyTileXPath
+from plone.app.blocks.utils import resolveResource
 from plone.app.layout.globals.interfaces import IViewView
 from plone.autoform.interfaces import IFormFieldProvider
 from plone.dexterity.browser.view import DefaultView
 from plone.outputfilters import apply_filters
 from plone.outputfilters.interfaces import IFilter
+from repoze.xmliter.utils import getHTMLSerializer
+from zExceptions import NotFound
 from zope import schema
 from zope.component import adapter, getMultiAdapter
 from zope.component import getAdapters
@@ -25,6 +26,8 @@ from zope.interface import alsoProvides
 from zope.interface import implementer
 from zope.interface import implements, provider
 from zope.schema.interfaces import IContextAwareDefaultFactory
+import logging
+import os
 
 try:
     from plone.supermodel import model
@@ -126,6 +129,75 @@ alsoProvides(ILayoutAware['pageSiteLayout'], IOmittedField)
 alsoProvides(ILayoutAware['sectionSiteLayout'], IOmittedField)
 
 
+def getter(name):
+    def _getter(self):
+        return getattr(self.context, name)
+    return _getter
+
+
+def setter(name):
+    def _setter(self, value):
+        setattr(self.context, name, value)
+    return _setter
+
+
+def getSafeHTMLSerializer(data):
+    """Return HTML serializer for given html"""
+    # Parse layout
+    if isinstance(data, unicode):
+        serializer = getHTMLSerializer([data.encode('utf-8')], encoding='utf-8')
+    else:
+        serializer = getHTMLSerializer([data], encoding='utf-8')
+
+    # Fix XHTML layouts with inline js (etree.tostring breaks all <![CDATA[)
+    if '<![CDATA[' in data:
+        serializer.serializer = html.tostring
+
+    return serializer
+
+
+def mergeContentIntoStaticLayout(content, static):
+    content = getSafeHTMLSerializer(content)
+    static = getSafeHTMLSerializer(static)
+
+    contentTiles = dict(
+        (node.attrib['data-tile'], node)
+        for node in bodyTileXPath(content.tree)
+    )
+
+    staticTiles = dict(
+        (node.attrib['data-tile'], node)
+        for node in bodyTileXPath(static.tree)
+    )
+
+    # TODO: replace static tiles with matching ID content
+    # TODO: search all text-tiles and replace them in order from content to static
+
+    return ''.join(static)
+
+
+@implementer(ILayoutAware)
+@adapter(Interface)
+class LayoutAwareAdapter(object):
+    def __init__(self, context):
+        self.context = context
+
+    def get_content(self):
+        # Is allowed to raise AttributeError for non-initialized value
+        try:
+            static = resolveResource(self.context.staticLayout)
+            return mergeContentIntoStaticLayout(self.context.content, static)
+        except NotFound:
+            return self.context.content
+        except AttributeError:
+            return self.context.content
+
+    content = property(get_content, setter('content'))
+    staticLayout = property(getter('staticLayout'), setter('staticLayout'))
+    pageSiteLayout = property(getter('pageSiteLayout'), setter('pageSiteLayout'))  # noqa
+    contentSiteLayout = property(getter('contentSiteLayout'), setter('contentSiteLayout'))  # noqa
+
+
 class SiteLayoutView(BrowserView):
     """Default site layout view called from the site layout resolving view"""
 
@@ -154,19 +226,7 @@ class ContentLayoutView(DefaultView):
 
         This result is supposed to be transformed by plone.app.blocks.
         """
-        behavior_data = ILayoutAware(self.context)
-        if behavior_data.staticLayout:
-            result = self.context.restrictedTraverse(behavior_data.staticLayout, None)
-            if result:
-                if IPersistent.providedBy(result):
-                    layout = result.data
-                else:
-                    result.request = self.request
-                    layout = str(result())
-            else:
-                layout = ERROR_LAYOUT
-        else:
-            layout = ILayoutAware(self.context).content
+        layout = ILayoutAware(self.context).content
         # Here we skip legacy portal_transforms and call plone.outputfilters
         # directly by purpose
         filters = [f for _, f

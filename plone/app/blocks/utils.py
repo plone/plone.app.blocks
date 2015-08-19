@@ -24,7 +24,6 @@ import Globals
 
 from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.interfaces import DEFAULT_AJAX_LAYOUT_REGISTRY_KEY
-from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.subrequest import subrequest
 
 
@@ -176,6 +175,7 @@ def getDefaultSiteLayout(context):
     """Get the path to the site layout to use by default for the given content
     object
     """
+    from plone.app.blocks.layoutbehavior import ILayoutAware
 
     # Note: the sectionSiteLayout on context is for pages *under* context, not
     # necessarily context itself
@@ -212,6 +212,7 @@ def getLayoutAwareSiteLayout(context):
     appropriate for the view of this page. For a generic template or view, use
     getDefaultSiteLayout(context) instead.
     """
+    from plone.app.blocks.layoutbehavior import ILayoutAware
 
     layoutAware = ILayoutAware(context, None)
     if layoutAware is not None:
