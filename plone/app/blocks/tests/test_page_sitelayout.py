@@ -73,6 +73,7 @@ class TestPageSiteLayout(unittest.TestCase):
                 self.context = context
 
             content = u"<html><body>N/A</body></html>"
+            staticLayout = None
             sectionSiteLayout = None
             pageSiteLayout = '/++sitelayout++testlayout2/mylayout.html'
 
