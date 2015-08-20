@@ -4,7 +4,6 @@ import os
 
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from persistent.interfaces import IPersistent
 from plone.app.blocks.interfaces import IBlocksTransformEnabled
 from plone.app.blocks.interfaces import ILayoutField
 from plone.app.blocks.interfaces import ILayoutFieldDefaultValue
@@ -15,6 +14,7 @@ from plone.autoform.interfaces import IFormFieldProvider
 from plone.dexterity.browser.view import DefaultView
 from plone.outputfilters import apply_filters
 from plone.outputfilters.interfaces import IFilter
+from zExceptions import NotFound
 from zope import schema
 from zope.component import adapter, getMultiAdapter
 from zope.component import getAdapters
@@ -95,7 +95,7 @@ class ILayoutAware(model.Schema):
         required=False
     )
 
-    staticLayout = schema.ASCIILine(
+    contentLayout = schema.ASCIILine(
         title=_(u'Static Layout'),
         description=_(u'Selected static layout. If selected, content is ignored.'),
         required=False)
@@ -117,7 +117,7 @@ class ILayoutAware(model.Schema):
     )
 
     fieldset('layout', label=_('Layout'),
-             fields=('content', 'pageSiteLayout', 'sectionSiteLayout', 'staticLayout'))
+             fields=('content', 'pageSiteLayout', 'sectionSiteLayout', 'contentLayout'))
 
 alsoProvides(ILayoutAware, IFormFieldProvider)
 
@@ -155,18 +155,15 @@ class ContentLayoutView(DefaultView):
         This result is supposed to be transformed by plone.app.blocks.
         """
         behavior_data = ILayoutAware(self.context)
-        if behavior_data.staticLayout:
-            result = self.context.restrictedTraverse(behavior_data.staticLayout, None)
-            if result:
-                if IPersistent.providedBy(result):
-                    layout = result.data
-                else:
-                    result.request = self.request
-                    layout = str(result())
-            else:
+        if behavior_data.contentLayout:
+            from plone.app.blocks.utils import resolveResource
+            try:
+                layout = resolveResource(behavior_data.contentLayout)
+            except (NotFound, RuntimeError):
+                # XXX should log this...
                 layout = ERROR_LAYOUT
         else:
-            layout = ILayoutAware(self.context).content
+            layout = behavior_data.content
         # Here we skip legacy portal_transforms and call plone.outputfilters
         # directly by purpose
         filters = [f for _, f
