@@ -96,8 +96,8 @@ class ILayoutAware(model.Schema):
     )
 
     contentLayout = schema.ASCIILine(
-        title=_(u'Static Layout'),
-        description=_(u'Selected static layout. If selected, content is ignored.'),
+        title=_(u'Content Layout'),
+        description=_(u'Selected content layout. If selected, custom layout is ignored.'),
         required=False)
 
     pageSiteLayout = schema.Choice(
@@ -159,6 +159,8 @@ class ContentLayoutView(DefaultView):
             from plone.app.blocks.utils import resolveResource
             try:
                 layout = resolveResource(behavior_data.contentLayout)
+                # to make sure to pull from persistent storage when rendering
+                self.request.environ['X-Tile-Persistent'] = 'true'
             except (NotFound, RuntimeError):
                 # XXX should log this...
                 layout = ERROR_LAYOUT
