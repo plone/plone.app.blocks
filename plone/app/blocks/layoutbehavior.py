@@ -6,7 +6,6 @@ from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.app.blocks.interfaces import IBlocksTransformEnabled
 from plone.app.blocks.interfaces import ILayoutField
-from plone.app.blocks.interfaces import ILayoutFieldDefaultValue
 from plone.app.blocks.interfaces import IOmittedField
 from plone.app.blocks.interfaces import _
 from plone.app.layout.globals.interfaces import IViewView
@@ -14,17 +13,14 @@ from plone.autoform.interfaces import IFormFieldProvider
 from plone.dexterity.browser.view import DefaultView
 from plone.outputfilters import apply_filters
 from plone.outputfilters.interfaces import IFilter
+from plone.registry.interfaces import IRegistry
 from zExceptions import NotFound
 from zope import schema
-from zope.component import adapter, getMultiAdapter
 from zope.component import getAdapters
-from zope.component.hooks import getSite
-from zope.globalrequest import getRequest
-from zope.interface import Interface
+from zope.component import getUtility
 from zope.interface import alsoProvides
-from zope.interface import implementer
-from zope.interface import implements, provider
-from zope.schema.interfaces import IContextAwareDefaultFactory
+from zope.interface import implements
+
 
 try:
     from plone.supermodel import model
@@ -49,7 +45,7 @@ ERROR_LAYOUT = u"""
 <html lang="en" data-layout="./@@page-site-layout">
 <body>
 <div data-panel="content">
-Could not render selected layout
+Could not find layout for content
 </div>
 </body>
 </html>"""
@@ -62,27 +58,6 @@ class LayoutField(schema.Text):
     implements(ILayoutField)
 
 
-@implementer(ILayoutFieldDefaultValue)
-@adapter(Interface, Interface)
-def layoutFieldDefaultValue(context, request):
-    return u"""\
-<!DOCTYPE html>
-<html lang="en" data-layout="./@@page-site-layout">
-<body>
-<div data-panel="content">
-</div>
-</body>
-</html>"""
-
-
-@provider(IContextAwareDefaultFactory)
-def layoutFieldDefaultValueFactory(context):
-    if context is None:
-        context = getSite()
-    request = getRequest()
-    return getMultiAdapter((context, request), ILayoutFieldDefaultValue)
-
-
 class ILayoutAware(model.Schema):
     """Behavior interface to make a type support layout.
     """
@@ -91,7 +66,7 @@ class ILayoutAware(model.Schema):
     content = LayoutField(
         title=_(u"Custom layout"),
         description=_(u"Custom content and content layout of this page"),
-        defaultFactory=layoutFieldDefaultValueFactory,
+        default=None,
         required=False
     )
 
@@ -145,27 +120,35 @@ class ContentLayoutView(DefaultView):
 
     implements(IBlocksTransformEnabled)
 
-    def __init__(self, context, request):
-        super(ContentLayoutView, self).__init__(context, request)
-
     def __call__(self):
         """Render the contents of the "content" field coming from
         the ILayoutAware behavior.
 
         This result is supposed to be transformed by plone.app.blocks.
         """
+        from plone.app.blocks.utils import resolveResource
         behavior_data = ILayoutAware(self.context)
         if behavior_data.contentLayout:
-            from plone.app.blocks.utils import resolveResource
             try:
                 layout = resolveResource(behavior_data.contentLayout)
                 # to make sure to pull from persistent storage when rendering
                 self.request.environ['X-Tile-Persistent'] = 'true'
             except (NotFound, RuntimeError):
-                # XXX should log this...
-                layout = ERROR_LAYOUT
+                pass
         else:
             layout = behavior_data.content
+
+        if not layout:
+            registry = getUtility(IRegistry)
+            try:
+                layout_name = registry['plone.app.blocks.default_layout.%s' % self.context.portal_type]  # noqa
+                layout = resolveResource(layout_name)
+            except (KeyError, AttributeError, NotFound, RuntimeError):
+                pass
+
+        if not layout:
+            layout = ERROR_LAYOUT
+
         # Here we skip legacy portal_transforms and call plone.outputfilters
         # directly by purpose
         filters = [f for _, f

@@ -47,9 +47,6 @@
         provides=".layoutbehavior.ILayoutAware"
         />
 
-    <!-- Adaptable default value factory for the layout field -->
-    <adapter factory=".layoutbehavior.layoutFieldDefaultValue" />
-
     <!-- Register the default views for the layout behavior -->
     <browser:page
         for=".layoutbehavior.ILayoutAware"
