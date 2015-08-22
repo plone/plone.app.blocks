@@ -71,7 +71,7 @@ class TestLayoutBehavior(unittest.TestCase):
     def test_outputfilters(self):
         self.behavior.content = \
             u'<html><body><a href="{0:s}"></a></body></html>'.format(
-            'resolveuid/{0:s}'.format(IUUID(self.portal['f1'])))
+                'resolveuid/{0:s}'.format(IUUID(self.portal['f1'])))
         rendered = ContentLayoutView(self.portal['f1']['d1'], self.request)()
         self.assertNotIn(IUUID(self.portal['f1']), rendered)
         self.assertIn(self.portal['f1'].absolute_url(), rendered)
@@ -87,4 +87,3 @@ class TestLayoutBehavior(unittest.TestCase):
             '/++sitelayout++missing/missing.html'
         rendered = ContentLayoutView(self.portal['f1']['d1'], self.request)()
         self.assertIn('Could not find layout for content', rendered)
-
