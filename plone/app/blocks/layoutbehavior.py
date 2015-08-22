@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from lxml import html
 from plone.app.blocks.interfaces import IBlocksTransformEnabled
 from plone.app.blocks.interfaces import ILayoutField
 from plone.app.blocks.interfaces import IOmittedField
@@ -11,7 +12,6 @@ from plone.dexterity.browser.view import DefaultView
 from plone.outputfilters import apply_filters
 from plone.outputfilters.interfaces import IFilter
 from plone.registry.interfaces import IRegistry
-from plone.tiles.interfaces import IPersistentTileOverrides
 from zExceptions import NotFound
 from zope import schema
 from zope.component import getAdapters
@@ -113,6 +113,27 @@ class SiteLayoutView(BrowserView):
         return self.index()
 
 
+def resolveContentLayout(path):
+    """Resolve given path as content layout and return the layout.
+
+    Append X-Tile-Persistent for layout's tile URLs to allow context specific
+    tile configuration overrides.
+    """
+    from plone.app.blocks.utils import resolve
+    from plone.app.blocks.utils import tileAttrib
+    from plone.app.blocks.utils import bodyTileXPath
+    layout = resolve(path)
+    for node in bodyTileXPath(layout):
+        url = node.attrib[tileAttrib]
+        if 'X-Tile-Persistent' not in url:
+            if '?' in url:
+                url += '&X-Tile-Persistent=yes'
+            else:
+                url += '?X-Tile-Persistent=yes'
+        node.attrib[tileAttrib] = url
+    return html.tostring(layout)
+
+
 class ContentLayoutView(DefaultView):
     """Default view for a layout aware page
     """
@@ -125,15 +146,12 @@ class ContentLayoutView(DefaultView):
 
         This result is supposed to be transformed by plone.app.blocks.
         """
-        from plone.app.blocks.utils import resolveResource
         behavior_data = ILayoutAware(self.context)
         if behavior_data.contentLayout:
             try:
-                layout = resolveResource(behavior_data.contentLayout)
-                # to make sure to pull from persistent storage when rendering
-                alsoProvides(self.request, IPersistentTileOverrides)
+                layout = resolveContentLayout(behavior_data.contentLayout)
             except (NotFound, RuntimeError):
-                pass
+                layout = ''
         else:
             layout = behavior_data.content
 
@@ -141,7 +159,7 @@ class ContentLayoutView(DefaultView):
             registry = getUtility(IRegistry)
             try:
                 layout_name = registry['plone.app.blocks.default_layout.%s' % self.context.portal_type]  # noqa
-                layout = resolveResource(layout_name)
+                layout = resolveContentLayout(layout_name)
             except (KeyError, AttributeError, NotFound, RuntimeError):
                 pass
 

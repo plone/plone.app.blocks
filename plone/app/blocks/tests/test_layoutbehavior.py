@@ -29,12 +29,12 @@ class TestLayoutBehavior(unittest.TestCase):
         self.portal = self.layer['portal']
         self.request = self.layer['request']
         self.registry = getUtility(IRegistry)
+
         setRoles(self.portal, TEST_USER_ID, ('Manager',))
         self.portal.invokeFactory('Folder', 'f1', title=u"Folder 1")
         self.portal['f1'].invokeFactory('Document', 'd1', title=u"Document 1")
         setRoles(self.portal, TEST_USER_ID, ('Member',))
 
-    def test_content_layout_view_outputfilters(self):
         if HAS_PLONE_APP_CONTENTTYPES:
             from plone.app.contenttypes.interfaces import IDocument
             iface = IDocument
@@ -48,23 +48,43 @@ class TestLayoutBehavior(unittest.TestCase):
             def __init__(self, context):
                 self.context = context
 
-            content = u'<html><body><a href="{0:s}"></a></body></html>'.format(
-                'resolveuid/{0:s}'.format(IUUID(self.portal['f1'])))
+            content = None
             contentLayout = None
             sectionSiteLayout = None
             pageSiteLayout = None
 
-        sm = getGlobalSiteManager()
-        sm.registerAdapter(DocumentLayoutAware)
+        self.behavior = DocumentLayoutAware
 
+        sm = getGlobalSiteManager()
+        sm.registerAdapter(self.behavior)
         registrations = sm.getAdapters((self.portal['f1']['d1'],),
                                        ILayoutAware)
         self.assertEqual(len(list(registrations)), 1)
 
-        view = ContentLayoutView(self.portal['f1']['d1'], self.request)
-        rendered = view()
+    def tearDown(self):
+        sm = getGlobalSiteManager()
+        sm.unregisterAdapter(self.behavior)
+        registrations = sm.getAdapters((self.portal['f1']['d1'],),
+                                       ILayoutAware)
+        self.assertEqual(len(list(registrations)), 0)
 
-        sm.unregisterAdapter(DocumentLayoutAware)
-
+    def test_outputfilters(self):
+        self.behavior.content = \
+            u'<html><body><a href="{0:s}"></a></body></html>'.format(
+            'resolveuid/{0:s}'.format(IUUID(self.portal['f1'])))
+        rendered = ContentLayoutView(self.portal['f1']['d1'], self.request)()
         self.assertNotIn(IUUID(self.portal['f1']), rendered)
         self.assertIn(self.portal['f1'].absolute_url(), rendered)
+
+    def test_content_layout(self):
+        self.behavior.contentLayout = \
+            '/++sitelayout++testlayout1/content.html'
+        rendered = ContentLayoutView(self.portal['f1']['d1'], self.request)()
+        self.assertIn('X-Tile-Persistent', rendered)
+
+    def test_content_layout_error(self):
+        self.behavior.contentLayout = \
+            '/++sitelayout++missing/missing.html'
+        rendered = ContentLayoutView(self.portal['f1']['d1'], self.request)()
+        self.assertIn('Could not find layout for content', rendered)
+
