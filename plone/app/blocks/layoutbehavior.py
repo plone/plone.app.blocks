@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-import logging
-import os
-
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.app.blocks.interfaces import IBlocksTransformEnabled
@@ -14,13 +11,18 @@ from plone.dexterity.browser.view import DefaultView
 from plone.outputfilters import apply_filters
 from plone.outputfilters.interfaces import IFilter
 from plone.registry.interfaces import IRegistry
+from plone.tiles.interfaces import IPersistentTileOverrides
 from zExceptions import NotFound
 from zope import schema
 from zope.component import getAdapters
 from zope.component import getUtility
 from zope.interface import alsoProvides
+from zope.interface import implementer
 from zope.interface import implements
-
+from zope.interface import provider
+from zope.schema.interfaces import IContextAwareDefaultFactory
+import logging
+import os
 
 try:
     from plone.supermodel import model
@@ -132,7 +134,7 @@ class ContentLayoutView(DefaultView):
             try:
                 layout = resolveResource(behavior_data.contentLayout)
                 # to make sure to pull from persistent storage when rendering
-                self.request.environ['X-Tile-Persistent'] = 'true'
+                alsoProvides(self.request, IPersistentTileOverrides)
             except (NotFound, RuntimeError):
                 pass
         else:

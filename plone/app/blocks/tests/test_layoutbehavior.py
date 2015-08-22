@@ -50,6 +50,7 @@ class TestLayoutBehavior(unittest.TestCase):
 
             content = u'<html><body><a href="{0:s}"></a></body></html>'.format(
                 'resolveuid/{0:s}'.format(IUUID(self.portal['f1'])))
+            contentLayout = None
             sectionSiteLayout = None
             pageSiteLayout = None
 
