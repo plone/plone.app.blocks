@@ -17,10 +17,7 @@ from zope import schema
 from zope.component import getAdapters
 from zope.component import getUtility
 from zope.interface import alsoProvides
-from zope.interface import implementer
 from zope.interface import implements
-from zope.interface import provider
-from zope.schema.interfaces import IContextAwareDefaultFactory
 import logging
 import os
 
