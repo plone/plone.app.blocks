@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
+from lxml import html
 from plone.app.blocks.layoutbehavior import ContentLayoutView
 from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.app.blocks.testing import BLOCKS_FUNCTIONAL_TESTING
+from plone.app.blocks.utils import bodyTileXPath
+from plone.app.blocks.utils import tileAttrib
 from plone.app.testing import TEST_USER_ID
 from plone.app.testing import setRoles
 from plone.registry.interfaces import IRegistry
@@ -68,11 +71,13 @@ class TestLayoutBehavior(unittest.TestCase):
                                        ILayoutAware)
         self.assertEqual(len(list(registrations)), 0)
 
-    def test_outputfilters(self):
+    def test_content(self):
         self.behavior.content = \
             u'<html><body><a href="{0:s}"></a></body></html>'.format(
                 'resolveuid/{0:s}'.format(IUUID(self.portal['f1'])))
         rendered = ContentLayoutView(self.portal['f1']['d1'], self.request)()
+
+        # Test that UUID is resolved by outputfilters
         self.assertNotIn(IUUID(self.portal['f1']), rendered)
         self.assertIn(self.portal['f1'].absolute_url(), rendered)
 
@@ -80,9 +85,16 @@ class TestLayoutBehavior(unittest.TestCase):
         self.behavior.contentLayout = \
             '/++sitelayout++testlayout1/content.html'
         rendered = ContentLayoutView(self.portal['f1']['d1'], self.request)()
-        self.assertIn('X-Tile-Persistent', rendered)
+        tree = html.fromstring(rendered)
+        tiles = [node.attrib[tileAttrib] for node in bodyTileXPath(tree)]
+        self.assertIn(
+            './@@test.tile1/tile2?magicNumber:int=2&X-Tile-Persistent=yes',
+            tiles)
+        self.assertIn(
+            './@@test.tile1/tile3?X-Tile-Persistent=yes',
+            tiles)
 
-    def test_content_layout_error(self):
+    def test_error_layout(self):
         self.behavior.contentLayout = \
             '/++sitelayout++missing/missing.html'
         rendered = ContentLayoutView(self.portal['f1']['d1'], self.request)()
