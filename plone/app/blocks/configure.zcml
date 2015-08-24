@@ -76,10 +76,24 @@
         factory=".resource.SiteLayoutTraverser"
         />
 
+    <!-- Register resource traverser for content layouts -->
+    <adapter
+        name="contentlayout"
+        for="* zope.publisher.interfaces.IRequest"
+        provides="zope.traversing.interfaces.ITraversable"
+        factory=".resource.ContentLayoutTraverser"
+        />
+
     <!-- Register vocabulary -->
     <utility
         component=".resource.AvailableSiteLayoutsVocabularyFactory"
         name="plone.availableSiteLayouts"
+        />
+
+    <!-- Register vocabulary all available content layouts-->
+    <utility
+        component=".resource.AvailableContentLayoutsVocabularyFactory"
+        name="plone.availableContentLayouts"
         />
 
     <!-- BS3 Grid System -->
