@@ -22,8 +22,6 @@ CONTENT_LAYOUT_MANIFEST_FORMAT = ManifestFormat(
     defaults={'file': CONTENT_LAYOUT_FILE_NAME}
 )
 
-CONTENT_LAYOUT_DEFAULT_LAYOUT = '++contentlayout++default/basic.html'
-
 DEFAULT_SITE_LAYOUT_REGISTRY_KEY = 'plone.defaultSiteLayout'
 DEFAULT_AJAX_LAYOUT_REGISTRY_KEY = 'plone.defaultAjaxLayout'
 

@@ -7,5 +7,15 @@
        <role name="Owner" />
        <role name="Editor" />
     </permission>
+    <permission name="Plone: Manage Content Layouts" acquire="False">
+       <role name="Manager" />
+       <role name="Site Administrator" />
+    </permission>
+    <permission name="Plone: Customize Content Layouts" acquire="False">
+       <role name="Manager" />
+       <role name="Site Administrator" />
+       <role name="Owner" />
+       <role name="Editor" />
+    </permission>
   </permissions>
 </rolemap>

@@ -23,7 +23,15 @@
         id="plone.ManageSiteLayouts"
         title="Plone: Manage Site Layouts"
         />
-    
+    <permission
+        id="plone.ManageContentLayouts"
+        title="Plone: Manage Content Layouts"
+        />
+    <permission
+        id="plone.CustomizeContentLayouts"
+        title="Plone: Customize Content Layouts"
+        />
+
     <genericsetup:registerProfile
         name="default"
         title="Blocks rendering engine"

@@ -7,6 +7,7 @@ from plone.app.blocks.interfaces import ILayoutField
 from plone.app.blocks.interfaces import IOmittedField
 from plone.app.blocks.interfaces import _
 from plone.app.layout.globals.interfaces import IViewView
+from plone.autoform.directives import write_permission
 from plone.autoform.interfaces import IFormFieldProvider
 from plone.dexterity.browser.view import DefaultView
 from plone.outputfilters import apply_filters
@@ -81,6 +82,7 @@ class ILayoutAware(model.Schema):
         vocabulary="plone.availableSiteLayouts",
         required=False
     )
+    write_permission(pageSiteLayout="plone.ManageSiteLayouts")
 
     sectionSiteLayout = schema.Choice(
         title=_(u"Section site layout"),
@@ -89,6 +91,7 @@ class ILayoutAware(model.Schema):
         vocabulary="plone.availableSiteLayouts",
         required=False
     )
+    write_permission(sectionSiteLayout="plone.ManageSiteLayouts")
 
     fieldset('layout', label=_('Layout'),
              fields=('content', 'pageSiteLayout', 'sectionSiteLayout', 'contentLayout'))
