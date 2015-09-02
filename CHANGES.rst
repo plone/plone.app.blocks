@@ -1,8 +1,18 @@
 Changelog
 =========
 
-2.2.0 (unreleased)
+3.0.0 (unreleased)
 ------------------
+
+- move content layouts from plone.app.mosaic into this package
+  [vangheem]
+
+- add contentLayout field to layoutbehavior to select static
+  layout to render for content
+  [vangheem]
+
+- Be able to provide default layout settings for types
+  [vangheem]
 
 - Add ability to provide more than one layout with a layout directory
   and manifest
