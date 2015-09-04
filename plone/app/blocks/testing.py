@@ -54,6 +54,18 @@ class BlocksLayer(PloneSandboxLayer):
         directory="resources/sitelayout/testlayout2"
         />
 
+    <plone:static
+        type="contentlayout"
+        name="testlayout1"
+        directory="resources/contentlayout/testlayout1"
+        />
+
+    <plone:static
+        type="contentlayout"
+        name="testlayout2"
+        directory="resources/contentlayout/testlayout2"
+        />
+
 </configure>
 """, context=configurationContext)
         if 'virtual_hosting' not in app.objectIds():

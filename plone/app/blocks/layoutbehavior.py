@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from hashlib import md5
 from lxml import html
 from plone.app.blocks.interfaces import IBlocksTransformEnabled
+from plone.app.blocks.interfaces import DEFAULT_CONTENT_LAYOUT_REGISTRY_PREFIX
 from plone.app.blocks.interfaces import ILayoutField
 from plone.app.blocks.interfaces import IOmittedField
 from plone.app.blocks.interfaces import _
@@ -10,6 +12,7 @@ from plone.app.layout.globals.interfaces import IViewView
 from plone.autoform.directives import write_permission
 from plone.autoform.interfaces import IFormFieldProvider
 from plone.dexterity.browser.view import DefaultView
+from plone.memoize.ram import cache
 from plone.outputfilters import apply_filters
 from plone.outputfilters.interfaces import IFilter
 from plone.registry.interfaces import IRegistry
@@ -116,17 +119,18 @@ class SiteLayoutView(BrowserView):
         return self.index()
 
 
-def resolveContentLayout(path):
-    """Resolve given path as content layout and return the layout.
+@cache(lambda fun, path, resolved: md5(resolved).hexdigest())
+def applyTilePersistent(path, resolved):
+    """Append X-Tile-Persistent into resolved layout's tile URLs to allow
+    context specific tile configuration overrides.
 
-    Append X-Tile-Persistent for layout's tile URLs to allow context specific
-    tile configuration overrides.
+    (Path is required for proper error message when lxml parser fails.)
     """
-    from plone.app.blocks.utils import resolve
     from plone.app.blocks.utils import tileAttrib
     from plone.app.blocks.utils import bodyTileXPath
-    layout = resolve(path)
-    for node in bodyTileXPath(layout):
+    from plone.app.blocks.utils import resolve
+    tree = resolve(path, resolved=resolved)
+    for node in bodyTileXPath(tree):
         url = node.attrib[tileAttrib]
         if 'X-Tile-Persistent' not in url:
             if '?' in url:
@@ -134,7 +138,7 @@ def resolveContentLayout(path):
             else:
                 url += '?X-Tile-Persistent=yes'
         node.attrib[tileAttrib] = url
-    return html.tostring(layout)
+    return html.tostring(tree)
 
 
 class ContentLayoutView(DefaultView):
@@ -151,18 +155,25 @@ class ContentLayoutView(DefaultView):
         """
         behavior_data = ILayoutAware(self.context)
         if behavior_data.contentLayout:
+            from plone.app.blocks.utils import resolveResource
             try:
-                layout = resolveContentLayout(behavior_data.contentLayout)
+                path = behavior_data.contentLayout
+                resolved = resolveResource(path)
+                layout = applyTilePersistent(path, resolved)
             except (NotFound, RuntimeError):
                 layout = ''
         else:
             layout = behavior_data.content
 
         if not layout:
+            from plone.app.blocks.utils import resolveResource
             registry = getUtility(IRegistry)
             try:
-                layout_name = registry['plone.app.blocks.default_layout.%s' % self.context.portal_type]  # noqa
-                layout = resolveContentLayout(layout_name)
+                path = registry['%s.%s' % (
+                    DEFAULT_CONTENT_LAYOUT_REGISTRY_PREFIX,
+                    self.context.portal_type)]
+                resolved = resolveResource(path)
+                layout = applyTilePersistent(path, resolved)
             except (KeyError, AttributeError, NotFound, RuntimeError):
                 pass
 
