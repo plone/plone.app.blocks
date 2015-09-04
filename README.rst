@@ -49,6 +49,10 @@ plone.app.blocks.gridsystem (order 8700)
     the response down to a string and perform some substitution to make ESI
     rendering work.
 
+
+sitelayout
+----------
+
 The package also registers the ``sitelayout`` ``plone.resource`` resource
 type, allowing site layouts to be created easily as static HTML files served
 from resource directories. The URL to a site layout is typically something
@@ -86,6 +90,10 @@ always use the current site default, use::
 
 The ``@@default-site-layout`` view will render the current default site
 layout.
+
+
+ILayoutAware behavior
+---------------------
 
 It is possible for the default site layout to be overridden per section,
 by having parent objects provide or be adaptable to

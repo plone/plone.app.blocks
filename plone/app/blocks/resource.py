@@ -7,6 +7,9 @@ from Acquisition import aq_parent
 import Globals
 from OFS.interfaces import ITraversable
 from Products.CMFCore.utils import getToolByName
+from plone.app.blocks.interfaces import CONTENT_LAYOUT_FILE_NAME
+from plone.app.blocks.interfaces import CONTENT_LAYOUT_MANIFEST_FORMAT
+from plone.app.blocks.interfaces import CONTENT_LAYOUT_RESOURCE_NAME
 from plone.app.blocks.interfaces import DEFAULT_AJAX_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.interfaces import SITE_LAYOUT_FILE_NAME
@@ -47,6 +50,16 @@ class SiteLayoutTraverser(ResourceTraverser):
     """
 
     name = SITE_LAYOUT_RESOURCE_NAME
+
+
+class ContentLayoutTraverser(ResourceTraverser):
+    """The content layout traverser.
+
+    Allows traversal to /++contentlayout++<name> using ``plone.resource`` to
+    fetch things stored either on the filesystem or in the ZODB.
+    """
+
+    name = CONTENT_LAYOUT_RESOURCE_NAME
 
 
 class AnnotationsDict(dict):
@@ -181,6 +194,11 @@ class AvailableLayoutsVocabulary(object):
 AvailableSiteLayoutsVocabularyFactory = AvailableLayoutsVocabulary(
     SITE_LAYOUT_MANIFEST_FORMAT,
     SITE_LAYOUT_FILE_NAME,
+)
+
+AvailableContentLayoutsVocabularyFactory = AvailableLayoutsVocabulary(
+    CONTENT_LAYOUT_MANIFEST_FORMAT,
+    CONTENT_LAYOUT_FILE_NAME,
 )
 
 

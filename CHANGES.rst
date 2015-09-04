@@ -1,20 +1,32 @@
 Changelog
 =========
 
-2.2.0 (unreleased)
+3.0.0 (unreleased)
 ------------------
-
-- Add ability to provide more than one layout with a layout directory
-  and manifest
-  [vangheem]
 
 - Add to be able to set default grid system in registry settings
   [vangheem]
 
-- Add to apply outputfilters for content layout view
+- Add support for provide more than one layout with a layout directory
+  and manifest (replaces removed layout variants)
+  [vangheem]
+
+- Add ``contentlayout`` resource type with ``plone.availableContentLayouts``
+  vocabulary and ``++contentlayout++`` traverser
+  [vangheem]
+
+- Add ``contentLayout`` field to layoutbehavior to select the rendered layout
+  from centrally managed content layouts
+  [vangheem]
+
+- Add content type specific registry configuration for used default content
+  layout when custom layout is not defined
+  [vangheem]
+
+- Fixed layout behavior to apply Plone outputfilters for rendered content
   [datakurre]
 
-- be able to set default grid system in registry settings
+- Add default grid system registry setting
   [vangheem]
 
 - Restore support for Plone 4.2.x

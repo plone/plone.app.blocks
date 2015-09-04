@@ -10,4 +10,12 @@
       handler=".upgrades.upgrade_settings"
       />
 
+  <genericsetup:upgradeStep
+      profile="plone.app.blocks:default"
+      source="2000"
+      destination="3000"
+      title="Upgrade blocks rolemap"
+      handler=".upgrades.upgrade_rolemap"
+      />
+
 </configure>

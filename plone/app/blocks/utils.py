@@ -56,11 +56,12 @@ def extractCharset(response, default='utf-8'):
     return charset
 
 
-def resolve(url):
+def resolve(url, resolved=None):
     """Resolve the given URL to an lxml tree.
     """
 
-    resolved = resolveResource(url)
+    if resolved is None:
+        resolved = resolveResource(url)
     if not resolved.strip():
         return None
     try:

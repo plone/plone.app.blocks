@@ -6,16 +6,27 @@ from zope.interface import Interface
 
 
 SITE_LAYOUT_RESOURCE_NAME = "sitelayout"
+CONTENT_LAYOUT_RESOURCE_NAME = 'contentlayout'
+
 SITE_LAYOUT_FILE_NAME = "site.html"
+CONTENT_LAYOUT_FILE_NAME = "content.html"
 
 SITE_LAYOUT_MANIFEST_FORMAT = ManifestFormat(
     SITE_LAYOUT_RESOURCE_NAME,
     keys=('title', 'description', 'file'),
     defaults={'file': SITE_LAYOUT_FILE_NAME}
 )
+CONTENT_LAYOUT_MANIFEST_FORMAT = ManifestFormat(
+    CONTENT_LAYOUT_RESOURCE_NAME,
+    keys=('title', 'description', 'file', 'screenshot', 'for'),
+    defaults={'file': CONTENT_LAYOUT_FILE_NAME}
+)
 
 DEFAULT_SITE_LAYOUT_REGISTRY_KEY = 'plone.defaultSiteLayout'
 DEFAULT_AJAX_LAYOUT_REGISTRY_KEY = 'plone.defaultAjaxLayout'
+
+DEFAULT_CONTENT_LAYOUT_REGISTRY_PREFIX = 'plone.app.blocks.default_layout'
+
 
 _ = MessageFactory('plone')
 
