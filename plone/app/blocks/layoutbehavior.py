@@ -171,7 +171,7 @@ class ContentLayoutView(DefaultView):
             try:
                 path = registry['%s.%s' % (
                     DEFAULT_CONTENT_LAYOUT_REGISTRY_PREFIX,
-                    self.context.portal_type)]
+                    self.context.portal_type.replace(' ', '-'))]
                 resolved = resolveResource(path)
                 layout = applyTilePersistent(path, resolved)
             except (KeyError, AttributeError, NotFound, RuntimeError):

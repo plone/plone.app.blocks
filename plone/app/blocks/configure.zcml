@@ -9,7 +9,7 @@
 
     <include package="plone.behavior" file="meta.zcml" />
     <include package="plone.resource" file="meta.zcml" />
-    
+
     <include package="plone.resource" />
     <include package="plone.tiles" />
     <include package="plone.subrequest" />
@@ -18,7 +18,7 @@
     <include package="plone.app.registry" />
 
     <include file="upgrades.zcml" />
-    
+
     <permission
         id="plone.ManageSiteLayouts"
         title="Plone: Manage Site Layouts"
@@ -110,7 +110,7 @@
         component=".gridsystem.BS3GridSystem"
         name="bs3"
         />
-    
+
     <!-- Deco Grid System -->
     <utility
         provides=".gridsystem.IGridSystem"
@@ -122,7 +122,7 @@
     <subscriber
         handler=".resource.globalSiteLayoutModified"
         />
-    
+
     <!-- Register indirection views for looking up the layout -->
     <browser:view
         name="default-site-layout"
@@ -130,7 +130,7 @@
         permission="zope.Public"
         class=".resource.DefaultSiteLayout"
         />
-    
+
     <browser:view
         name="page-site-layout"
         for="*"
@@ -139,7 +139,7 @@
         />
 
     <!-- The transform pipeline -->
-    
+
     <!-- 8000: Turn the response into an lxml tree for further manipulation -->
     <adapter
         for="* .interfaces.IBlocksTransformEnabled"
@@ -165,7 +165,7 @@
         name="plone.app.blocks.mergepanels"
         factory=".transform.MergePanels"
         />
-    
+
     <!-- 8500: Finds and includes tiles in the output -->
     <adapter
         for="* .interfaces.IBlocksTransformEnabled"
@@ -178,7 +178,7 @@
         name="plone.app.blocks.tiles"
         factory=".transform.IncludeTiles"
         />
-    
+
     <!-- 8700: Replace css classes -->
     <adapter
         for="* .interfaces.IBlocksTransformEnabled"
@@ -204,7 +204,7 @@
         name="plone.app.blocks.esirender"
         factory=".transform.ESIRender"
         />
-    
+
     <!-- 8000: Off switch for ESI tiles -->
     <adapter
         for="plone.tiles.esi.ESIHead .interfaces.IBlocksLayer"
