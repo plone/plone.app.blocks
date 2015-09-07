@@ -4,6 +4,9 @@ Changelog
 3.0.0 (unreleased)
 ------------------
 
+- Change layout behavior default view name from ``view`` to ``layout_view``
+  [datakurre]
+
 - Add to be able to set default grid system in registry settings
   [vangheem]
 
@@ -19,9 +22,15 @@ Changelog
   from centrally managed content layouts
   [vangheem]
 
-- Add content type specific registry configuration for used default content
+- Add content type specific registry configuration with key
+  ``plone.app.blocks.default_layout.portal_type`` for used default content
   layout when custom layout is not defined
   [vangheem]
+
+- Add to check ``plone.app.blocks.default_layout`` registry key for a default
+  content layout path when content type specific default content layout path is
+  not set
+  [datakurre]
 
 - Fixed layout behavior to apply Plone outputfilters for rendered content
   [datakurre]
