@@ -58,7 +58,7 @@
     <!-- Register the default views for the layout behavior -->
     <browser:page
         for=".layoutbehavior.ILayoutAware"
-        name="view"
+        name="layout_view"
         class=".layoutbehavior.ContentLayoutView"
         permission="zope2.View"
         />
@@ -70,7 +70,7 @@
           menu="plone_displayviews">
         <browser:menuItem
             title="Custom layout"
-            action="view"
+            action="layout_view"
             i18n:translate="title"
             />
       </browser:menuItems>
