@@ -4,7 +4,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from hashlib import md5
 from lxml import html
 from plone.app.blocks.interfaces import IBlocksTransformEnabled
-from plone.app.blocks.interfaces import DEFAULT_CONTENT_LAYOUT_REGISTRY_PREFIX
+from plone.app.blocks.interfaces import DEFAULT_CONTENT_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.interfaces import ILayoutField
 from plone.app.blocks.interfaces import IOmittedField
 from plone.app.blocks.interfaces import _
@@ -170,11 +170,15 @@ class ContentLayoutView(DefaultView):
             registry = getUtility(IRegistry)
             try:
                 path = registry['%s.%s' % (
-                    DEFAULT_CONTENT_LAYOUT_REGISTRY_PREFIX,
+                    DEFAULT_CONTENT_LAYOUT_REGISTRY_KEY,
                     self.context.portal_type.replace(' ', '-'))]
+            except (KeyError, AttributeError):
+                path = None
+            try:
+                path = path or registry[DEFAULT_CONTENT_LAYOUT_REGISTRY_KEY]
                 resolved = resolveResource(path)
                 layout = applyTilePersistent(path, resolved)
-            except (KeyError, AttributeError, NotFound, RuntimeError):
+            except (KeyError, NotFound, RuntimeError):
                 pass
 
         if not layout:
