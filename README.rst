@@ -50,8 +50,8 @@ plone.app.blocks.gridsystem (order 8700)
     rendering work.
 
 
-sitelayout
-----------
+Site layouts
+============
 
 The package also registers the ``sitelayout`` ``plone.resource`` resource
 type, allowing site layouts to be created easily as static HTML files served
@@ -74,7 +74,8 @@ with the following structure::
     description = Some description
     file = some-html-file.html
 
-All keys are optional. The file defaults to ``site.html``.
+All keys are optional. The file defaults to ``site.html``. Single manifest
+may contain multiple ``[sitelayout]`` sections.
 
 A vocabulary factory called ``plone.availableSiteLayouts`` is registered to
 allow lookup of all registered site layouts.  The terms in this vocabulary
@@ -92,8 +93,50 @@ The ``@@default-site-layout`` view will render the current default site
 layout.
 
 
+Content layouts
+===============
+
+The package also registers the ``contentlayout`` ``plone.resource`` resource
+type, allowing shared content area layouts to be created easily as static HTML
+files served from resource directories. The URL to a site layout is typically
+something like::
+
+    /++contentlayout++my.layout/content.html
+
+See ``plone.resource`` for more information about how to register resource
+directories. For site layouts, the ``type`` of the resource directory is
+``contentlayout``.
+
+It is possible to provide a manifest file that gives a title, description and
+alternative default file for a site layout HTML file in a resource directory.
+To create such a manifest, put a ``manifest.cfg`` file in the layout directory
+with the following structure::
+
+    [contentlayout]
+    title = My layout title
+    description = Some description
+    file = some-html-file.html
+    screenshot = mylayout.png
+    for = Document,Folder
+
+All keys are optional. The file defaults to ``content.html``. Single manifest
+may contain multiple ``[contentlayout]`` sections.
+
+A vocabulary factory called ``plone.availableContentLayouts`` is registered to
+allow lookup of all registered content layouts.  The terms in this vocabulary
+use the URL as a value, the resource directory name as a token, and the 
+title from the manifest (falling back on a sanitised version of the resource
+directory name) as the title.
+
+The default content layout can be identified by the ``plone.registry``
+key ``plone.app.blocks.default_layout`` and default content layout for some
+specific content type with key ``plone.app.blocks.default_layout.my_type``.
+The default content layout is supported by the built-in ``layout_view`` browser
+view for content with ``ILayoutAware`` behavior.
+
+
 ILayoutAware behavior
----------------------
+=====================
 
 It is possible for the default site layout to be overridden per section,
 by having parent objects provide or be adaptable to
@@ -104,6 +147,8 @@ be implemented directly or used as a standard adapter.
 The ``ILayoutAware`` interface defines three properties:
 
 * ``content``, which contains the body of the page to be rendered
+* ``contentLayout``, which contains the path to the selected static
+  content layout, which is used instead of ``content`` when set.
 * ``pageSiteLayout``, which contains the path to the site layout to be used
   for the given page. It can be ``None`` if the default is to be used.
 * ``sectionSiteLayout``, which contains the path to the site layout to be
