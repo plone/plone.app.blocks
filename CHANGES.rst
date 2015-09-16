@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.0.0 (unreleased)
+3.0.0 (2015-09-16)
 ------------------
 
 - Change layout behavior default view name from ``view`` to ``layout_view``
