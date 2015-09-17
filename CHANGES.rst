@@ -4,8 +4,8 @@ Changelog
 3.0.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fix the default view to report template name as 'template-layout'
+  [datakurre]
 
 3.0.0 (2015-09-16)
 ------------------
