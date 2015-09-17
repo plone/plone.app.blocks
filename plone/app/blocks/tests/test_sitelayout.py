@@ -62,6 +62,18 @@ class TestSiteLayout(unittest.TestCase):
 
         self.assertTrue(u"Layout title" in rendered)
 
+    def test_no_default_site_layout(self):
+        # Clear cache if there
+        if hasattr(self.portal, ATTR):
+            delattr(self.portal, ATTR)
+
+        view = getMultiAdapter((self.portal, self.request,),
+                               name=u'default-site-layout')
+        rendered = view()
+
+        # Should render main_template with template-layout in body class
+        self.assertTrue(u'<body class="template-layout' in rendered)
+
     def test_default_site_layout_section_override(self):
         self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = \
             '/++sitelayout++testlayout1/site.html'
