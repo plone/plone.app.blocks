@@ -4,6 +4,10 @@ Changelog
 3.0.1 (unreleased)
 ------------------
 
+- Remove the default 'Custom layout' display menu registration for
+  'layout_view', because it was not possible to customize it with more exact
+  registration
+  [datakurre]
 - Fix the default view to report template name as 'template-layout'
   [datakurre]
 
