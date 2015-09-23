@@ -63,19 +63,6 @@
         permission="zope2.View"
         />
 
-    <configure zcml:condition="installed plone.app.contentmenu">
-      <include package="plone.app.contentmenu" />
-      <browser:menuItems
-          for=".layoutbehavior.ILayoutAware"
-          menu="plone_displayviews">
-        <browser:menuItem
-            title="Custom layout"
-            action="layout_view"
-            i18n:translate="title"
-            />
-      </browser:menuItems>
-    </configure>
-
     <!-- Register the resource traverser -->
     <adapter
         name="sitelayout"
