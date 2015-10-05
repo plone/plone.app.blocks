@@ -110,8 +110,9 @@ class DefaultEditFormFieldWidgets(FieldWidgetsBase):
             else:
                 current.mark()
 
-            context = DraftProxy(current.draft, context)
-            alsoProvides(request, IEditFormDrafting)
+            if current.draft:
+                context = DraftProxy(current.draft, context)
+                alsoProvides(request, IEditFormDrafting)
 
         super(DefaultEditFormFieldWidgets, self).__init__(form, request, context)  # noqa
 
