@@ -1,20 +1,26 @@
 # -*- coding: utf-8 -*-
+import unittest
+
 from lxml import html
+import pkg_resources
+from plone.app.blocks.indexing import LayoutSearchableText
 from plone.app.blocks.layoutbehavior import ContentLayoutView
 from plone.app.blocks.layoutbehavior import ILayoutAware
+from plone.app.blocks.subscribers import onLayoutEdited
 from plone.app.blocks.testing import BLOCKS_FUNCTIONAL_TESTING
 from plone.app.blocks.utils import bodyTileXPath
+from plone.app.blocks.utils import getLayout
 from plone.app.blocks.utils import tileAttrib
 from plone.app.testing import TEST_USER_ID
 from plone.app.testing import setRoles
 from plone.registry.interfaces import IRegistry
+from plone.tiles.data import ANNOTATIONS_KEY_PREFIX
+from zope.annotation.interfaces import IAnnotations
 from zope.component import adapts
 from zope.component import getGlobalSiteManager
 from zope.component import getUtility
 from zope.interface import implements
 from zope.schema.interfaces import IVocabularyFactory
-import pkg_resources
-import unittest
 
 try:
     pkg_resources.get_distribution('plone.app.contenttypes')
@@ -119,3 +125,106 @@ class TestContentLayout(unittest.TestCase):
             '/++sitelayout++missing/missing.html'
         rendered = ContentLayoutView(self.portal['f1']['d1'], self.request)()
         self.assertIn('Could not find layout for content', rendered)
+
+    def test_getLayout(self):
+        self.behavior.contentLayout = '/++contentlayout++testlayout1/content.html'
+        layout = getLayout(self.portal['f1']['d1'])
+        self.assertIn(
+            './@@test.tile1/tile2?magicNumber:int=2',
+            layout)
+
+    def test_getLayout_custom(self):
+        self.behavior.content = """
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html data-layout="./@@default-site-layout">
+  <body>
+    <h1>Foobar!</h1>
+    <div data-panel="panel1">
+      Page panel 1
+       <div id="page-tile2" data-tile="./@@test.tile1/tile99?magicNumber:int=3">
+       Page tile 2 placeholder</div>
+    </div>
+  </body>
+</html>"""
+        layout = getLayout()
+        self.assertIn(
+            './@@test.tile1/tile99?magicNumber:int=3',
+            layout)
+
+    def test_getting_indexed_data(self):
+        self.behavior.content = """
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html data-layout="./@@default-site-layout">
+<body>
+  <div class="mosaic-tile rawhtml-tile
+              mosaic-plone.app.standardtiles.rawhtml-tile">
+    <div class="mosaic-tile-content">
+      <div data-tile="./@@plone.app.standardtiles.rawhtml/rawhtml-1"></div>
+    </div>
+  </div>
+  <div class="mosaic-tile mosaic-text-tile">
+    <div class="mosaic-tile-content">
+        <p>Foobar inserted text tile</p>
+    </div>
+  </div>
+</body>
+</html>"""
+        content = self.portal['f1']['d1']
+        annotations = IAnnotations(content)
+        annotations[ANNOTATIONS_KEY_PREFIX + '.rawhtml-1'] = {
+            'content': '<p>Foobar inserted raw tile</p>'
+        }
+        indexed_data = LayoutSearchableText(content)()
+        self.assertTrue('Foobar inserted text tile' in indexed_data)
+        self.assertTrue('Foobar inserted raw tile' in indexed_data)
+
+    def test_on_save_tile_data_is_cleaned(self):
+        self.behavior.content = """
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html data-layout="./@@default-site-layout">
+<body>
+  <div data-tile="./@@faketile/foobar-1"></div>
+  <div data-tile="./@@faketile/foobar-2"></div>
+  <div data-tile="./@@faketile/foobar-3"></div>
+  <div data-tile="./@@faketile/foobar-4"></div>
+</body>
+</html>"""
+
+        content = self.portal['f1']['d1']
+        annotations = IAnnotations(content)
+        annotations.update({
+            ANNOTATIONS_KEY_PREFIX + '.foobar-1': {
+                'foo': 'bar'
+            },
+            ANNOTATIONS_KEY_PREFIX + '.foobar-2': {
+                'foo': 'bar'
+            },
+            ANNOTATIONS_KEY_PREFIX + '.foobar-3': {
+                'foo': 'bar'
+            },
+            ANNOTATIONS_KEY_PREFIX + '.foobar-4': {
+                'foo': 'bar'
+            },
+            ANNOTATIONS_KEY_PREFIX + '.bad-1': {
+                'foo': 'bar'
+            },
+            ANNOTATIONS_KEY_PREFIX + '.bad-2': {
+                'foo': 'bar'
+            },
+            ANNOTATIONS_KEY_PREFIX + '.bad-3': {
+                'foo': 'bar'
+            },
+        })
+
+        onLayoutEdited(content, None)
+        annotations = IAnnotations(content)
+        self.assertTrue(ANNOTATIONS_KEY_PREFIX + '.foobar-1' in annotations)
+        self.assertTrue(ANNOTATIONS_KEY_PREFIX + '.foobar-2' in annotations)
+        self.assertTrue(ANNOTATIONS_KEY_PREFIX + '.foobar-3' in annotations)
+        self.assertTrue(ANNOTATIONS_KEY_PREFIX + '.foobar-4' in annotations)
+        self.assertFalse(ANNOTATIONS_KEY_PREFIX + '.bad-1' in annotations)
+        self.assertFalse(ANNOTATIONS_KEY_PREFIX + '.bad-2' in annotations)
+        self.assertFalse(ANNOTATIONS_KEY_PREFIX + '.bad-3' in annotations)

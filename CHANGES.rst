@@ -1,13 +1,18 @@
 Changelog
 =========
 
-3.0.2 (unreleased)
+3.1.0 (unreleased)
 ------------------
 
 New:
 
-- Provide new getLayoutsFromDirectory utility to get layouts from any plone.resource
-  directory, not just the base resource directory
+- Provide new getLayoutsFromDirectory utility to get layouts from any
+  plone.resource directory, not just the base resource directory
+
+- index layout data
+  [vangheem]
+
+- cleanup tile data on save/edit
   [vangheem]
 
 
