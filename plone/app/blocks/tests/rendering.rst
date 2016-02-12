@@ -41,6 +41,8 @@ Rendering step-by-step
 Let us now illustrate the rendering process. We'll need a few variables
 defined first:
 
+.. code-block:: python
+
     >>> from plone.testing.z2 import Browser
     >>> import transaction
 
@@ -63,6 +65,8 @@ This includes some resources and other elements in the ``<head />``,
 ``<link />`` tags which identify tile placeholders and panels,
 as well as content inside and outside panels.
 The tiles in this case are managed by ``plone.tiles``, and are both of the same type.
+
+.. code-block:: python
 
     >>> layoutHTML = """\
     ... <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -101,6 +105,8 @@ We can create an in-ZODB resource directory of type ``sitelayout`` that contains
 Another way would be to register a resource directory in a package using ZCML, or use a global resource directory.
 See ``plone.resource`` for more details.
 
+.. code-block:: python
+
     >>> from Products.CMFCore.utils import getToolByName
     >>> from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2
     >>> from StringIO import StringIO
@@ -115,6 +121,8 @@ See ``plone.resource`` for more details.
 
 This resource can now be accessed using the path ``/++sitelayout++mylayout/site.html``.
 Let's render it on its own to verify that.
+
+.. code-block:: python
 
     >>> browser.open(portal.absolute_url() + '/++sitelayout++mylayout/site.html')
     >>> print browser.contents
@@ -153,6 +161,8 @@ We can now set this as the site-wide default layout by setting the registry key 
 There are two indirection views, ``@@default-site-layout`` and ``@@page-site-layout``, that respect this registry setting.
 By using one of these views to reference the layout of a given page, we can manage the default site layout centrally.
 
+.. code-block:: python
+
     >>> from zope.component import getUtility
     >>> from plone.registry.interfaces import IRegistry
     >>> registry = getUtility(IRegistry)
@@ -163,6 +173,8 @@ Creating a page layout and tiles
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Next, we will define the markup of a content page that uses this layout via the ``@@default-site-layout`` indirection view:
+
+.. code-block:: python
 
    >>> pageHTML = """\
     ... <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -191,6 +203,8 @@ and a tile type which we can use to test tile rendering.
 We do this in code for the purposes of the test,
 and we have to apply security because we will shortly render those pages using the test publisher.
 In real life, these could be registered using the standard ``<browser:page />`` and ``<plone:tile />`` directives.
+
+.. code-block:: python
 
     >>> from zope.publisher.browser import BrowserView
     >>> from zope.interface import Interface, implements
@@ -231,6 +245,8 @@ In real life, these could be registered using the standard ``<browser:page />`` 
 Let's add another tile, this time only a head part.
 This could for example be a tile that only needs to insert some CSS.
 
+.. code-block:: python
+
     >>> class TestTileNoBody(Tile):
     ...     __name__ = 'test.tile_nobody'
     ...
@@ -243,6 +259,8 @@ This could for example be a tile that only needs to insert some CSS.
     ... </html>"""
 
 We register these views and tiles in the same way the ZCML handlers for ``<browser:page />`` and ``<plone:tile />`` would:
+
+.. code-block:: python
 
     >>> from plone.tiles.type import TileType
     >>> from Products.Five.security import protectClass
@@ -280,6 +298,8 @@ Rendering the page
 
 We can now render the page. Provided ``plone.app.blocks`` is installed and working, it should perform its magic.
 We make sure that Zope is in "development mode" to get pretty-printed output.
+
+.. code-block:: python
 
     >>> browser.open(portal.absolute_url() + '/@@test-page')
     >>> print browser.contents.replace('<head><meta', '<head>\n\t<meta')
@@ -349,25 +369,35 @@ Using VHM
 
 Make sure to have a clean browser:
 
+.. code-block:: python
+
     >>> browser = Browser(app)
     >>> browser.handleErrors = False
 
 Using Virtual Host Monster we rewrite the url to consider all content being under ``/``:
+
+.. code-block:: python
 
     >>> vhm_url = 'http://nohost/VirtualHostBase/http/nohost:80/plone/VirtualHostRoot/'
     >>> browser.open(vhm_url + '/@@test-page')
 
 Tiles should return an url according to this:
 
+.. code-block:: python
+
     >>> 'Magic number: -1; Form: []; Query string: ; URL: http://nohost/@@test.tile1/tile2' in browser.contents
     True
 
 Now we deal with _vh_* arguments. We expect our site to be under a subdir with id *subplone*:
 
+.. code-block:: python
+
     >>> vhm_url = 'http://nohost/VirtualHostBase/http/nohost:80/plone/VirtualHostRoot/_vh_subplone'
     >>> browser.open(vhm_url + '/@@test-page')
 
 Tiles should return an url according to this:
+
+.. code-block:: python
 
     >>> 'Magic number: -1; Form: []; Query string: ; URL: http://nohost/subplone/@@test.tile1/tile2' in browser.contents
     True

@@ -27,6 +27,8 @@ Test setup
 
 Let's first register a two very simple tiles. One uses ESI, one does not.
 
+.. code-block:: python
+
     >>> from plone.tiles.esi import ESITile
     >>> from plone.tiles import Tile
     >>> from plone.tiles.type import TileType
@@ -77,6 +79,8 @@ Let's first register a two very simple tiles. One uses ESI, one does not.
 
 Register these in the same way that the ZCML handlers would, more or less.
 
+.. code-block:: python
+
     >>> from Products.Five.security import protectClass
     >>> protectClass(NonESITile, 'zope2.View')
     >>> protectClass(SimpleESITile, 'zope2.View')
@@ -93,6 +97,8 @@ Register these in the same way that the ZCML handlers would, more or less.
     >>> provideUtility(testTile3Type, name=u'test.tile3')
 
 We will also register a simple layout and a simple page using these tiles.
+
+.. code-block:: python
 
     >>> layoutHTML = u"""\
     ... <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -111,6 +117,8 @@ We will also register a simple layout and a simple page using these tiles.
 
 To keep things simple, we'll skip the resource directory and layout indirection view,
 instead just referencing a view containing the layout directly.
+
+.. code-block:: python
 
     >>> from zope.publisher.browser import BrowserView
     >>> class Layout(BrowserView):
@@ -152,6 +160,8 @@ ESI disabled
 We first render the page without enabling ESI.
 The ESI-capable tiles should be rendered as normal.
 
+.. code-block:: python
+
     >>> from plone.testing.z2 import Browser
     >>> app = layer['app']
     >>> browser = Browser(app)
@@ -161,6 +171,8 @@ The ESI-capable tiles should be rendered as normal.
     >>> browser.open(portal.absolute_url() + '/@@test-page')
 
 Some cleanup is needed to cover lxml platform discrepancies...
+
+.. code-block:: python
 
     >>> print browser.contents.replace('<head><meta', '<head>\n\t<meta')
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -200,6 +212,8 @@ We can now enable ESI. This could be done using GenericSetup (with the
 ``registry.xml`` import step), or through the configuration registry
 control panel. In code, it is done like so:
 
+.. code-block:: python
+
     >>> from zope.component import getUtility
     >>> from plone.registry.interfaces import IRegistry
     >>> from plone.app.blocks.interfaces import IBlocksSettings
@@ -210,6 +224,8 @@ control panel. In code, it is done like so:
 
 We can now perform the same rendering again. This time, the ESI-capable
 tiles should be rendered as ESI links. See `plone.tiles`_ for more details.
+
+.. code-block:: python
 
     >>> browser.open(portal.absolute_url() + '/@@test-page')
     >>> print browser.contents.replace('<head><meta', '<head>\n\t<meta')
@@ -238,6 +254,8 @@ tiles should be rendered as ESI links. See `plone.tiles`_ for more details.
     <BLANKLINE>
 
 When ESI rendering takes place, the following URLs will be called:
+
+.. code-block:: python
 
     >>> browser.open("http://nohost/plone/@@test.tile3/tile4/@@esi-body?foo=bar")
     >>> print browser.contents
