@@ -176,7 +176,7 @@ Next, we will define the markup of a content page that uses this layout via the 
 
 .. code-block:: python
 
-   >>> pageHTML = """\
+    >>> pageHTML = """\
     ... <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     ... <html data-layout="./@@default-site-layout">
     ...     <body>
