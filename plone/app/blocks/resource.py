@@ -123,7 +123,8 @@ def getLayoutsFromResources(format):
             try:
                 layouts.update(getLayoutsFromManifest(manifest, format, name))
             except:
-                logger.exception("Unable to read manifest for theme directory %s", name)
+                logger.exception(
+                    "Unable to read manifest for theme directory %s", name)
             finally:
                 manifest.close()
         else:
@@ -162,7 +163,8 @@ class _AvailableLayoutsVocabulary(object):
             title = config.get('title', _id)
             filename = config.get('file', defaultFilename)
 
-            path = "/++%s++%s/%s" % (format.resourceType, config['directory'], filename)
+            path = "/++%s++%s/%s" % (format.resourceType,
+                                     config['directory'], filename)
             if path in used:
                 # term values also need to be unique
                 # this should not happen but it's possible for users to screw up

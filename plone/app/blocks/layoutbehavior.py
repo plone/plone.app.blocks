@@ -75,7 +75,8 @@ class ILayoutAware(model.Schema):
 
     contentLayout = schema.ASCIILine(
         title=_(u'Content Layout'),
-        description=_(u'Selected content layout. If selected, custom layout is ignored.'),
+        description=_(
+            u'Selected content layout. If selected, custom layout is ignored.'),
         required=False)
 
     pageSiteLayout = schema.Choice(
