@@ -2,8 +2,9 @@ language: python
 python: 2.7
 sudo: false
 cache:
+  pip: true
   directories:
-  - eggs
+    - $HOME/buildout-cache
 env:
   matrix:
   - PLONE_VERSION=4.2.x
@@ -11,6 +12,12 @@ env:
   - PLONE_VERSION=5.x
 matrix:
   fast_finish: true
+before_install:
+  - mkdir -p $HOME/buildout-cache/{eggs,downloads}
+  - mkdir $HOME/.buildout
+  - echo "[buildout]" > $HOME/.buildout/default.cfg
+  - echo "download-cache = $HOME/buildout-cache/downloads" >> $HOME/.buildout/default.cfg
+  - echo "eggs-directory = $HOME/buildout-cache/eggs" >> $HOME/.buildout/default.cfg
 install:
 - sed -ie "s#test-4.x.cfg#test-$PLONE_VERSION.cfg#" buildout.cfg
 - python bootstrap.py
