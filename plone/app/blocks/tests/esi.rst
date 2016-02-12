@@ -1,20 +1,21 @@
 ESI rendering
 =============
 
-Blocks supports rendering of tiles for Edge Side Includes (ESI). A tile
-will be rendered to ESI provided that:
+Blocks supports rendering of tiles for Edge Side Includes (ESI).
+A tile will be rendered to ESI provided that:
 
-* The tile itself is marked with the ``IESIRendered`` marker interface. See
-  `plone.tiles`_ for more details.
-* The ``plone.app.blocks.interfaces.IBlocksSettings.esi`` record in the
-  registry is set to True. It is False by default. To switch this through-the-
-  web, you can visit the configuration registry control panel in Plone.
+* The tile itself is marked with the ``IESIRendered`` marker interface.
+  See `plone.tiles`_ for more details.
+* The ``plone.app.blocks.interfaces.IBlocksSettings.esi`` record in the registry is set to True.
+  It is False by default.
+  To switch this through-the-web, you can visit the configuration registry control panel in Plone.
 
-Note that if a tile is rendered using ESI, it's <head /> contents are ignored,
-instead of being merged into the final page. That is, only the ``@@esi-body``
-view form `plone.tiles`_ is used by default.
+Note that if a tile is rendered using ESI, it's <head /> contents are ignored, instead of being merged into the final page.
+That is, only the ``@@esi-body`` view form `plone.tiles`_ is used by default.
 
-An ESI link looks like this::
+An ESI link looks like this:
+
+.. code-block:: xml
 
     <esi:include src="http://example.com/plone/@@some.tile/tile-1/@@esi-body?param1=value1" />
 
@@ -108,9 +109,8 @@ We will also register a simple layout and a simple page using these tiles.
     ... </html>
     ... """
 
-To keep things simple, we'll skip the resource directory and layout
-indirection view, instead just referencing a view containing the layout
-directly.
+To keep things simple, we'll skip the resource directory and layout indirection view,
+instead just referencing a view containing the layout directly.
 
     >>> from zope.publisher.browser import BrowserView
     >>> class Layout(BrowserView):
@@ -149,8 +149,8 @@ directly.
 ESI disabled
 ------------
 
-We first render the page without enabling ESI. The ESI-capable tiles should
-be rendered as normal.
+We first render the page without enabling ESI.
+The ESI-capable tiles should be rendered as normal.
 
     >>> from plone.testing.z2 import Browser
     >>> app = layer['app']
