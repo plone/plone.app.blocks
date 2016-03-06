@@ -4,7 +4,11 @@ Changelog
 3.0.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+New:
+
+- Provide new getLayoutsFromDirectory utility to get layouts from any plone.resource
+  directory, not just the base resource directory
+  [vangheem]
 
 
 3.0.1 (2015-09-23)

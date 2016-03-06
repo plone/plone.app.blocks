@@ -81,13 +81,13 @@ class multidict(dict):
         dict.__setitem__(self, key, val)
 
 
-def getLayoutsFromManifest(fp, format, directory_name):
+def getLayoutsFromManifest(fp, _format, directory_name):
     parser = SafeConfigParser(None, multidict)
     parser.readfp(fp)
 
     layouts = {}
     for section in parser.sections():
-        if not section.startswith(format.resourceType) or ':variants' in section:
+        if not section.startswith(_format.resourceType) or ':variants' in section:
             continue
         # id is a combination of directory name + filename
         if parser.has_option(section, 'file'):
@@ -102,44 +102,49 @@ def getLayoutsFromManifest(fp, format, directory_name):
         data = {
             'directory': directory_name
         }
-        for key in format.keys:
+        for key in _format.keys:
             if parser.has_option(section, key):
                 data[key] = parser.get(section, key)
             else:
-                data[key] = format.defaults.get(key, None)
+                data[key] = _format.defaults.get(key, None)
         layouts[_id] = data
 
     return layouts
 
 
-def getLayoutsFromResources(format):
+def getLayoutsFromDirectory(directory, _format):
+    layouts = {}
+    name = directory.__name__
+    if directory.isFile(MANIFEST_FILENAME):
+        manifest = directory.openFile(MANIFEST_FILENAME)
+        try:
+            layouts.update(getLayoutsFromManifest(manifest, _format, name))
+        except:
+            logger.exception(
+                "Unable to read manifest for theme directory %s", name)
+        finally:
+            manifest.close()
+    else:
+        # can provide default file for it with no manifest
+        filename = _format.defaults.get('file', '')
+        if filename and directory.isFile(filename):
+            _id = name + '/' + filename
+            if _id not in layouts:
+                # not overridden
+                layouts[_id] = {
+                    'title': name.capitalize().replace('-', ' ').replace('.', ' '),
+                    'description': '',
+                    'directory': name,
+                    'file': _format.defaults.get('file', '')
+                }
+    return layouts
+
+
+def getLayoutsFromResources(_format):
     layouts = {}
 
-    for directory in iterDirectoriesOfType(format.resourceType):
-
-        name = directory.__name__
-        if directory.isFile(MANIFEST_FILENAME):
-            manifest = directory.openFile(MANIFEST_FILENAME)
-            try:
-                layouts.update(getLayoutsFromManifest(manifest, format, name))
-            except:
-                logger.exception(
-                    "Unable to read manifest for theme directory %s", name)
-            finally:
-                manifest.close()
-        else:
-            # can provide default file for it with no manifest
-            filename = format.defaults.get('file', '')
-            if filename and directory.isFile(filename):
-                _id = name + '/' + filename
-                if _id not in layouts:
-                    # not overridden
-                    layouts[_id] = {
-                        'title': name.capitalize().replace('-', ' ').replace('.', ' '),
-                        'description': '',
-                        'directory': name,
-                        'file': format.defaults.get('file', '')
-                    }
+    for directory in iterDirectoriesOfType(_format.resourceType):
+        layouts.update(getLayoutsFromDirectory(directory, _format))
 
     return layouts
 
