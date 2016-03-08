@@ -147,7 +147,7 @@ class TestContentLayout(unittest.TestCase):
     </div>
   </body>
 </html>"""
-        layout = getLayout()
+        layout = getLayout(self.portal['f1']['d1'])
         self.assertIn(
             './@@test.tile1/tile99?magicNumber:int=3',
             layout)
