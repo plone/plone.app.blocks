@@ -72,7 +72,7 @@ class TestSiteLayout(unittest.TestCase):
         rendered = view()
 
         # Should render main_template with template-layout in body class
-        self.assertTrue(u'<body class="template-layout' in rendered)
+        self.assertTrue(u'class="template-layout' in rendered)
 
     def test_default_site_layout_section_override(self):
         self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = \

@@ -1,32 +1,35 @@
 # -*- coding: utf-8 -*-
 from copy import deepcopy
+from hashlib import md5
 import logging
 
 from AccessControl import getSecurityManager
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-from diazo import rules
-from diazo import cssrules
+import Globals
 from diazo import compiler
+from diazo import cssrules
+from diazo import rules
+from diazo import utils
 from lxml import etree
 from lxml import html
-from diazo import utils
+from plone.app.blocks.interfaces import DEFAULT_AJAX_LAYOUT_REGISTRY_KEY
+from plone.app.blocks.interfaces import DEFAULT_CONTENT_LAYOUT_REGISTRY_KEY
+from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
+from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.memoize import ram
+from plone.memoize.ram import cache
 from plone.memoize.volatile import DontCache
 from plone.registry.interfaces import IRegistry
-from zExceptions import NotFound
+from plone.resource.utils import queryResourceDirectory
+from plone.subrequest import subrequest
 from z3c.form.interfaces import IFieldWidget
+from zExceptions import NotFound
 from zope.component import getMultiAdapter
+from zope.component import getUtility
 from zope.component import queryUtility
 from zope.security.interfaces import IPermission
 from zope.site.hooks import getSite
-import Globals
-
-from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
-from plone.app.blocks.interfaces import DEFAULT_AJAX_LAYOUT_REGISTRY_KEY
-from plone.app.blocks.layoutbehavior import ILayoutAware
-from plone.subrequest import subrequest
-
 
 headXPath = etree.XPath("/html/head")
 layoutAttrib = 'data-layout'
@@ -80,6 +83,17 @@ def resolveResource(url):
     """Resolve the given URL to a unicode string. If the URL is an absolute
     path, it will be made relative to the Plone site root.
     """
+    if url.count('++') == 2:
+        # it is a resource that can be resolved without a subrequest
+        _, resource_type, path = url.split('++')
+        resource_name, _, path = path.partition('/')
+        directory = queryResourceDirectory(resource_type, resource_name)
+        if directory:
+            try:
+                return directory.readFile(path)
+            except NotFound:
+                pass
+
     if url.startswith('/'):
         site = getSite()
         url = '/'.join(site.getPhysicalPath()) + url
@@ -378,3 +392,54 @@ def resolve_transform(rules_url, theme_node):
                              etree.ElementTree(deepcopy(theme_node)))
     transform = etree.XSLT(compiled)
     return transform
+
+
+def getLayout(content):
+    behavior_data = ILayoutAware(content)
+    if behavior_data.contentLayout:
+        try:
+            path = behavior_data.contentLayout
+            resolved = resolveResource(path)
+            layout = applyTilePersistent(path, resolved)
+        except (NotFound, RuntimeError):
+            layout = ''
+    else:
+        layout = behavior_data.content
+
+    if not layout:
+        registry = getUtility(IRegistry)
+        try:
+            path = registry['%s.%s' % (
+                DEFAULT_CONTENT_LAYOUT_REGISTRY_KEY,
+                content.portal_type.replace(' ', '-'))]
+        except (KeyError, AttributeError):
+            path = None
+        try:
+            path = path or registry[DEFAULT_CONTENT_LAYOUT_REGISTRY_KEY]
+            resolved = resolveResource(path)
+            layout = applyTilePersistent(path, resolved)
+        except (KeyError, NotFound, RuntimeError):
+            pass
+    return layout
+
+
+@cache(lambda fun, path, resolved: md5(resolved).hexdigest())
+def applyTilePersistent(path, resolved):
+    """Append X-Tile-Persistent into resolved layout's tile URLs to allow
+    context specific tile configuration overrides.
+
+    (Path is required for proper error message when lxml parser fails.)
+    """
+    from plone.app.blocks.utils import tileAttrib
+    from plone.app.blocks.utils import bodyTileXPath
+    from plone.app.blocks.utils import resolve
+    tree = resolve(path, resolved=resolved)
+    for node in bodyTileXPath(tree):
+        url = node.attrib[tileAttrib]
+        if 'X-Tile-Persistent' not in url:
+            if '?' in url:
+                url += '&X-Tile-Persistent=yes'
+            else:
+                url += '?X-Tile-Persistent=yes'
+        node.attrib[tileAttrib] = url
+    return html.tostring(tree)
