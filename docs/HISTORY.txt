@@ -1,12 +1,11 @@
 Changelog
 =========
 
-1.0b4 (unreleased)
-------------------
+1.0 (unreleased)
+----------------
 
-- make sure draft is available before initializing the draft proxy object
+- Make sure draft is available before initializing the draft proxy object
   [vangheem]
-
 
 1.0b3 (2015-06-10)
 ------------------
