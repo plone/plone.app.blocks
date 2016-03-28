@@ -1,12 +1,11 @@
 Changelog
 =========
 
-2.2.1 (unreleased)
+2.2.1 (2016-03-28)
 ------------------
 
 - Don't make a tile exception break other tiles (closes `#27`_).
   [rodfersou, datakurre]
-
 
 2.2.0 (2015-10-02)
 ------------------
