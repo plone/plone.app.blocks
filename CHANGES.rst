@@ -7,15 +7,18 @@ Changelog
 New:
 
 - Don't make a tile exception break other tiles (closes `#27`_).
-  [rodfersou]
+  [rodfersou, datakurre]
 
 - Provide new getLayoutsFromDirectory utility to get layouts from any
   plone.resource directory, not just the base resource directory
-
-- index layout data
   [vangheem]
 
-- cleanup tile data on save/edit
+- Index layout data; When collective.dexteritytextindexer is present,
+  its *Dynamic SearchableText indexer behavior* must be enabled for content
+  type
+  [vangheem, datakurre]
+
+- Cleanup tile data on save/edit
   [vangheem]
 
 
