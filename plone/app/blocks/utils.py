@@ -13,7 +13,6 @@ from diazo import rules
 from diazo import utils
 from lxml import etree
 from lxml import html
-from plone.app.blocks import PloneMessageFactory
 from plone.app.blocks.interfaces import DEFAULT_AJAX_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.interfaces import DEFAULT_CONTENT_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
@@ -116,7 +115,7 @@ def resolveResource(url):
             return resolveResource(location[len(site.absolute_url()):])
 
     elif response.status != 200:
-        return PloneMessageFactory('There was an error while rendering this tile')
+        raise RuntimeError(resolved)
 
     return resolved
 

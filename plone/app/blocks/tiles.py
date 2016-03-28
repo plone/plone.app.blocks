@@ -1,14 +1,22 @@
 # -*- coding: utf-8 -*-
-from urlparse import urljoin
-
+from plone.app.blocks import PloneMessageFactory
+from plone.app.blocks import utils
+from plone.app.blocks.interfaces import IBlocksSettings
+from plone.app.blocks.utils import resolve_transform
 from plone.registry.interfaces import IRegistry
+from plone.tiles.interfaces import ESI_HEADER
+from plone.tiles.interfaces import ESI_HEADER_KEY
+from urlparse import urljoin
 from zExceptions import NotFound
 from zope.component import queryUtility
+from zope.i18n import translate
+from lxml import html
 
-from plone.app.blocks.interfaces import IBlocksSettings
-from plone.app.blocks import utils
-from plone.app.blocks.utils import resolve_transform
-from plone.tiles.interfaces import ESI_HEADER, ESI_HEADER_KEY
+
+def errorTile(request):
+    msg = PloneMessageFactory('There was an error while rendering this tile')
+    translated = translate(msg, context=request)
+    return html.fromstring(translated).getroottree()
 
 
 def renderTiles(request, tree):
@@ -36,6 +44,8 @@ def renderTiles(request, tree):
             tileHref = urljoin(baseURL, tileHref)
         try:
             tileTree = utils.resolve(tileHref)
+        except RuntimeError:
+            tileTree = None
         except NotFound:
             continue
         if tileTree is not None:
@@ -50,6 +60,8 @@ def renderTiles(request, tree):
             tileHref = urljoin(baseURL, tileHref)
         try:
             tileTree = utils.resolve(tileHref)
+        except RuntimeError:
+            tileTree = errorTile(request)
         except NotFound:
             continue
 
