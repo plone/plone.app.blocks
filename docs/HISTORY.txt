@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0 (unreleased)
+1.0 (2016-03-28)
 ----------------
 
 - Make sure draft is available before initializing the draft proxy object
