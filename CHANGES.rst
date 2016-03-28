@@ -6,6 +6,9 @@ Changelog
 
 New:
 
+- Don't make a tile exception break other tiles (closes `#27`_).
+  [rodfersou]
+
 - Provide new getLayoutsFromDirectory utility to get layouts from any
   plone.resource directory, not just the base resource directory
 
@@ -232,3 +235,5 @@ New:
 
 - initial release.
   [garbas]
+
+.. _`#27`: https://github.com/plone/plone.app.blocks/issues/27

@@ -74,7 +74,7 @@ class TestTilesLayer(PloneSandboxLayer):
       />
 
   <plone:tile
-      name="test.broken"
+      name="test.tile1.broken"
       title="Broken Test Tile"
       description=""
       add_permission="cmf.ModifyPortalContent"
@@ -93,7 +93,7 @@ BLOCKS_TILES_INTEGRATION_TESTING = IntegrationTesting(
     bases=(BLOCKS_TILES_FIXTURE,), name="Blocks:Tiles:Integration")
 
 
-testLayout = """\
+testLayout1 = """\
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html data-layout="./@@default-site-layout">
 <head></head>
@@ -116,16 +116,50 @@ testLayout = """\
 """
 
 
+testLayout2 = """\
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html data-layout="./@@default-site-layout">
+<head></head>
+<body>
+  <h1>Welcome!</h1>
+  <div data-panel="panel1">
+    Page panel 1
+    <div id="page-tile2" data-tile="./@@test.tile1/tile2?magicNumber:int=2">Page tile 2 placeholder</div>
+  </div>
+  <div data-panel="panel2">
+    Page panel 2
+    <div id="page-tile3" data-tile="./@@test.tile1.broken/tile3">Page tile 3 placeholder</div>
+  </div>
+  <div data-panel="panel4">
+    Page panel 4 (ignored)
+    <div id="page-tile4" data-tile="./@@test.tile1/tile4">Page tile 4 placeholder</div>
+  </div>
+</body>
+</html>
+"""
+
+
 class TestRenderTiles(unittest.TestCase):
 
     layer = BLOCKS_TILES_INTEGRATION_TESTING
 
     def testRenderTiles(self):
-        serializer = getHTMLSerializer([testLayout])
+        serializer = getHTMLSerializer([testLayout1])
         request = self.layer['request']
         tree = serializer.tree
         renderTiles(request, tree)
         result = serializer.serialize()
         self.assertIn('This is a demo tile with id tile2', result)
         self.assertIn('This is a demo tile with id tile3', result)
+        self.assertIn('This is a demo tile with id tile4', result)
+
+    def testRenderTilesError(self):
+        serializer = getHTMLSerializer([testLayout2])
+        request = self.layer['request']
+        tree = serializer.tree
+        renderTiles(request, tree)
+        result = serializer.serialize()
+        self.assertIn('This is a demo tile with id tile2', result)
+        self.assertNotIn('This is a demo tile with id tile3', result)
+        self.assertIn('There was an error while rendering this tile', result)
         self.assertIn('This is a demo tile with id tile4', result)
