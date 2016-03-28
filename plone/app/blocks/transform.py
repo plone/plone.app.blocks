@@ -131,8 +131,8 @@ class MergePanels(object):
         result.tree = tree
 
         # Fix serializer when layout has changed doctype from XHTML to HTML
-        if (result.tree.docinfo.doctype
-                and 'XHTML' not in result.tree.docinfo.doctype):
+        if (result.tree.docinfo.doctype and
+                'XHTML' not in result.tree.docinfo.doctype):
             result.serializer = html.tostring
 
         return result

@@ -4,7 +4,8 @@ Changelog
 2.2.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Don't make a tile exception break other tiles (closes `#27`_).
+  [rodfersou, datakurre]
 
 
 2.2.0 (2015-10-02)
@@ -176,3 +177,5 @@ Changelog
 
 - initial release.
   [garbas]
+
+.. _`#27`: https://github.com/plone/plone.app.blocks/issues/27
