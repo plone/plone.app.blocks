@@ -205,10 +205,21 @@
         factory=".transform.DisableParsing"
         />
 
-    <adapter name="SearchableText" factory=".indexing.LayoutSearchableText" />
     <subscriber
         for=".layoutbehavior.ILayoutAware
              zope.lifecycleevent.interfaces.IObjectModifiedEvent"
         handler=".subscribers.onLayoutEdited" />
+
+    <adapter
+        name="SearchableText"
+        factory=".indexing.LayoutSearchableText"
+        zcml:condition="not-installed collective.dexteritytextindexer"
+        />
+
+    <adapter
+        name="content"
+        factory=".indexing.LayoutSearchableTextIndexExtender"
+        zcml:condition="installed collective.dexteritytextindexer"
+        />
 
 </configure>

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from Products.CMFPlone.utils import safe_unicode
 from lxml.html import fromstring
 from lxml.html import tostring
@@ -5,6 +6,17 @@ from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.indexer.decorator import indexer
 from plone.tiles.data import ANNOTATIONS_KEY_PREFIX
 from zope.annotation.interfaces import IAnnotations
+from zope.component import adapter
+from zope.interface import implementer
+import pkg_resources
+
+try:
+    pkg_resources.get_distribution('collective.dexteritytextindexer')
+except pkg_resources.DistributionNotFound:
+    HAS_DEXTERITYTEXTINDEXER = False
+else:
+    from collective.dexteritytextindexer.interfaces import IDynamicTextIndexExtender  # noqa
+    HAS_DEXTERITYTEXTINDEXER = True
 
 try:
     from plone.app.contenttypes import indexers
@@ -52,3 +64,16 @@ def LayoutSearchableText(obj):
             text.append(tostring(el))
 
     return concat(*text)
+
+
+if HAS_DEXTERITYTEXTINDEXER:
+
+    @implementer(IDynamicTextIndexExtender)
+    @adapter(ILayoutAware)
+    class LayoutSearchableTextIndexExtender(object):
+
+        def __init__(self, context):
+            self.context = context
+
+        def __call__(self):
+            return LayoutSearchableText(self.context)()
