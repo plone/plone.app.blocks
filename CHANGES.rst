@@ -4,7 +4,7 @@ Changelog
 1.0.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Behavior shortname ``plone.draftable`` added.
 
 
 1.0 (2016-03-28)
