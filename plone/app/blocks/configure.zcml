@@ -50,6 +50,7 @@
 
     <!-- Register the layout behavior -->
     <plone:behavior
+        name="plone.layoutaware"
         title="Layout support"
         description="Adds layout support to your content type"
         provides=".layoutbehavior.ILayoutAware"
