@@ -5,6 +5,7 @@
 .coverage
 .installed.cfg
 .mr.developer.cfg
+.idea
 bin/
 coverage/
 develop-eggs/

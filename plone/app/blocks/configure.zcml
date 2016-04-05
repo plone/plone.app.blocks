@@ -154,6 +154,7 @@
         />
 
     <!-- 8500: Finds and includes tiles in the output -->
+    <!--
     <adapter
         for="* .interfaces.IBlocksTransformEnabled"
         name="plone.app.blocks.tiles"
@@ -165,6 +166,23 @@
         name="plone.app.blocks.tiles"
         factory=".transform.IncludeTiles"
         />
+     -->
+
+    <adapter
+        for="* .interfaces.IBlocksTransformEnabled"
+        name="plone.app.blocks.bigpipe"
+        factory=".transform.BigPipe"
+        />
+
+    <adapter
+        for=".interfaces.IBlocksTransformEnabled .interfaces.IBlocksLayer"
+        name="plone.app.blocks.bigpipe"
+        factory=".transform.BigPipe"
+        />
+
+    <subscriber
+        for="ZPublisher.interfaces.IPubSuccess"
+        handler=".bigpipe.stream" />
 
     <!-- 8700: Replace css classes -->
     <adapter

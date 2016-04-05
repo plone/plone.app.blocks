@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
-import re
-
 from lxml import etree
 from lxml import html
+from plone.app.blocks import bigpipe
+from plone.app.blocks import gridsystem
+from plone.app.blocks import panel
+from plone.app.blocks import tiles
+from plone.tiles import esi
+from plone.tiles.interfaces import ESI_HEADER
 from plone.transformchain.interfaces import ITransform
 from repoze.xmliter.serializer import XMLSerializer
 from repoze.xmliter.utils import getHTMLSerializer
 from zope.interface import implements
-
-from plone.app.blocks import panel, tiles, gridsystem
-from plone.tiles import esi
-from plone.tiles.interfaces import ESI_HEADER
+import re
 
 
 class DisableParsing(object):
@@ -169,7 +170,7 @@ class IncludeTiles(object):
 
 
 class ApplyResponsiveClass(object):
-    """Turn a panel-merged page into the final composition by including tiles.
+    """Apply responsive gridsystem classnames.
     Assumes the input result is an lxml tree and returns an lxml tree for
     later serialization.
     """
@@ -226,3 +227,29 @@ class ESIRender(object):
             return None
 
         return esi.substituteESILinks("".join(result))
+
+
+class BigPipe(object):
+    """Stream tiles like the BigPipe does
+    Assumes the input result is an lxml tree and returns stream iterator.
+    """
+
+    implements(ITransform)
+
+    order = 8900
+
+    def __init__(self, published, request):
+        self.published = published
+        self.request = request
+
+    def transformString(self, result, encoding):
+        return None
+
+    def transformUnicode(self, result, encoding):
+        return None
+
+    def transformIterable(self, result, encoding):
+        if self.request.get('plone.app.blocks.merged'):
+            return bigpipe.BigPipeStreamIterator(self.request, result)
+        else:
+            return None
