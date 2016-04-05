@@ -1,13 +1,13 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.0.1.dev0'
+version = '1.1.0.dev0'
 
 setup(name='plone.app.drafts',
       version=version,
       description="Low-level container for draft content",
       long_description=open("README.rst").read() + "\n" +
-                       open(os.path.join("docs", "HISTORY.txt")).read(),
+                       open("CHANGES.rst").read(),
       # Get more strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[
         'Development Status :: 4 - Beta',
@@ -40,6 +40,7 @@ setup(name='plone.app.drafts',
           'zope.schema',
           'zope.annotation',
           'plone.app.uuid',
+          'plone.behavior>=1.1',
           'Zope2',
       ],
       extras_require={
