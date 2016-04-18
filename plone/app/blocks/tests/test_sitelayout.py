@@ -1,20 +1,21 @@
 # -*- coding: utf-8 -*-
+from lxml import etree
 from OFS.Image import File
-from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2
-from Products.CMFPlone.utils import getToolByName
-from StringIO import StringIO
 from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.app.blocks.layoutbehavior import SiteLayoutView
 from plone.app.blocks.testing import BLOCKS_FUNCTIONAL_TESTING
 from plone.app.testing import setRoles, TEST_USER_ID
-from plone.registry.interfaces import IRegistry
 from plone.memoize.volatile import ATTR
+from plone.registry.interfaces import IRegistry
+from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2
+from Products.CMFPlone.utils import getToolByName
+from StringIO import StringIO
 from zExceptions import NotFound
 from zope.component import adapts
-from zope.component import getUtility
 from zope.component import getMultiAdapter
 from zope.component import getSiteManager
+from zope.component import getUtility
 from zope.interface import implements
 
 import transaction
@@ -72,7 +73,10 @@ class TestSiteLayout(unittest.TestCase):
         rendered = view()
 
         # Should render main_template with template-layout in body class
-        self.assertTrue(u'class="template-layout' in rendered)
+        rendered_tree = etree.parse(StringIO(rendered), etree.HTMLParser())
+        xpath_body = etree.XPath('/html/body')
+        body_tag = xpath_body(rendered_tree)[0]
+        self.assertIn(u'template-layout', body_tag.attrib['class'])
 
     def test_default_site_layout_section_override(self):
         self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = \

@@ -4,7 +4,10 @@ Changelog
 3.1.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+Fixes:
+
+- Test failure in Plone 5
+  [jensens]
 
 
 3.1.0 (2016-03-28)
