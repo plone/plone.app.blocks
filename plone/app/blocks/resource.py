@@ -10,7 +10,7 @@ from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.interfaces import SITE_LAYOUT_FILE_NAME
 from plone.app.blocks.interfaces import SITE_LAYOUT_MANIFEST_FORMAT
 from plone.app.blocks.interfaces import SITE_LAYOUT_RESOURCE_NAME
-from plone.app.blocks.layoutbehavior import SiteLayoutView
+from plone.app.blocks.layoutviews import SiteLayoutView
 from plone.app.blocks.utils import getDefaultAjaxLayout
 from plone.app.blocks.utils import getDefaultSiteLayout
 from plone.app.blocks.utils import getLayoutAwareSiteLayout
@@ -27,7 +27,7 @@ from zExceptions import NotFound
 from zope.annotation import IAnnotations
 from zope.component import adapter
 from zope.globalrequest import getRequest
-from zope.interface import implements
+from zope.interface import implementer
 from zope.publisher.browser import BrowserView
 from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleTerm
@@ -62,10 +62,10 @@ class ContentLayoutTraverser(ResourceTraverser):
     name = CONTENT_LAYOUT_RESOURCE_NAME
 
 
+@implementer(IAnnotations)
 class AnnotationsDict(dict):
     """Volatile annotations dictionary to pass to view.memoize_contextless when
     request thread local is not set"""
-    implements(IAnnotations)
 
 
 class multidict(dict):
@@ -87,7 +87,8 @@ def getLayoutsFromManifest(fp, _format, directory_name):
 
     layouts = {}
     for section in parser.sections():
-        if not section.startswith(_format.resourceType) or ':variants' in section:
+        if not section.startswith(_format.resourceType) or \
+           ':variants' in section:
             continue
         # id is a combination of directory name + filename
         if parser.has_option(section, 'file'):
@@ -131,8 +132,9 @@ def getLayoutsFromDirectory(directory, _format):
             _id = name + '/' + filename
             if _id not in layouts:
                 # not overridden
+                title = name.capitalize().replace('-', ' ').replace('.', ' ')
                 layouts[_id] = {
-                    'title': name.capitalize().replace('-', ' ').replace('.', ' '),
+                    'title': title,
                     'description': '',
                     'directory': name,
                     'file': _format.defaults.get('file', '')
@@ -149,11 +151,10 @@ def getLayoutsFromResources(_format):
     return layouts
 
 
+@implementer(IVocabularyFactory)
 class _AvailableLayoutsVocabulary(object):
     """Vocabulary to return request cached available layouts of a given type
     """
-
-    implements(IVocabularyFactory)
 
     def __init__(self):
         self.request = getRequest() or AnnotationsDict()
@@ -172,8 +173,8 @@ class _AvailableLayoutsVocabulary(object):
                                      config['directory'], filename)
             if path in used:
                 # term values also need to be unique
-                # this should not happen but it's possible for users to screw up
-                # their layout definitions and it's better to not error here
+                # this should not happen but it's possible for users to screw
+                # up their layout definitions and it's better to not error here
                 continue
             used.append(path)
             items[_id] = SimpleTerm(path, _id, title)
@@ -182,11 +183,10 @@ class _AvailableLayoutsVocabulary(object):
         return SimpleVocabulary(items)
 
 
+@implementer(IVocabularyFactory)
 class AvailableLayoutsVocabulary(object):
     """Vocabulary to return available layouts of a given type
     """
-
-    implements(IVocabularyFactory)
 
     def __init__(self, format, defaultFilename):
         self.format = format
@@ -290,8 +290,7 @@ class DefaultSiteLayout(BrowserView):
     def _getLayout(self):
         if self.request.form.get('ajax_load'):
             return getDefaultAjaxLayout(self.context)
-        else:
-            return getDefaultSiteLayout(self.context)
+        return getDefaultSiteLayout(self.context)
 
 
 class PageSiteLayout(DefaultSiteLayout):
@@ -311,5 +310,4 @@ class PageSiteLayout(DefaultSiteLayout):
     def _getLayout(self):
         if self.request.form.get('ajax_load'):
             return getDefaultAjaxLayout(self.context)
-        else:
-            return getLayoutAwareSiteLayout(self.context)
+        return getLayoutAwareSiteLayout(self.context)

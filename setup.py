@@ -70,7 +70,7 @@ setup(
         'plone.transformchain',
         'plone.uuid',
         'Products.CMFCore',
-        'Products.CMFPlone >= 4.2',
+        'Products.CMFPlone >= 4.3',
         'repoze.xmliter',
         'setuptools',
         'z3c.form',

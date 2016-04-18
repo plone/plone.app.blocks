@@ -60,7 +60,7 @@
     <browser:page
         for=".layoutbehavior.ILayoutAware"
         name="layout_view"
-        class=".layoutbehavior.ContentLayoutView"
+        class=".layoutviews.ContentLayoutView"
         permission="zope2.View"
         />
 

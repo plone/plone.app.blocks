@@ -1,18 +1,15 @@
 # -*- coding: utf-8 -*-
 from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
-from plone.app.blocks.layoutbehavior import ILayoutAware
-from plone.app.blocks.layoutbehavior import SiteLayoutView
 from plone.app.blocks.testing import BLOCKS_FUNCTIONAL_TESTING
 from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
 from plone.registry.interfaces import IRegistry
 from zExceptions import NotFound
-from zope.component import adapts
+from zope.component import adapter
 from zope.component import getGlobalSiteManager
 from zope.component import getMultiAdapter
 from zope.component import getUtility
-from zope.interface import implements
-
+from zope.interface import implementer
 import pkg_resources
 import transaction
 import unittest
@@ -45,6 +42,7 @@ class TestPageSiteLayout(unittest.TestCase):
                                name=u'page-site-layout')
         self.assertRaises(NotFound, view.index)
 
+        from plone.app.blocks.layoutbehavior import SiteLayoutView
         default_view = SiteLayoutView(self.portal['f1']['d1'], self.request)
         self.assertEqual(view().split(), default_view().split())
 
@@ -66,9 +64,11 @@ class TestPageSiteLayout(unittest.TestCase):
         else:
             iface = self.portal['f1']['d1'].__class__
 
+        from plone.app.blocks.layoutbehavior import ILayoutAware
+
+        @implementer(ILayoutAware)
+        @adapter(iface)
         class DocumentLayoutAware(object):
-            implements(ILayoutAware)
-            adapts(iface)
 
             def __init__(self, context):
                 self.context = context
@@ -98,9 +98,11 @@ class TestPageSiteLayout(unittest.TestCase):
         self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
             '/++sitelayout++testlayout1/site.html'
 
+        from plone.app.blocks.layoutbehavior import ILayoutAware
+
+        @implementer(ILayoutAware)
+        @adapter(self.portal['f1'].__class__)
         class FolderLayoutAware(object):
-            implements(ILayoutAware)
-            adapts(self.portal['f1'].__class__)
 
             def __init__(self, context):
                 self.context = context
@@ -130,9 +132,11 @@ class TestPageSiteLayout(unittest.TestCase):
 
         currentSectionSiteLayout = '/++sitelayout++testlayout2/mylayout.html'
 
+        from plone.app.blocks.layoutbehavior import ILayoutAware
+
+        @implementer(ILayoutAware)
+        @adapter(self.portal['f1'].__class__)
         class FolderLayoutAware(object):
-            implements(ILayoutAware)
-            adapts(self.portal['f1'].__class__)
 
             def __init__(self, context):
                 self.context = context
@@ -174,9 +178,11 @@ class TestPageSiteLayout(unittest.TestCase):
 
         currentSectionSiteLayout = '/++sitelayout++testlayout2/mylayout.html'
 
+        from plone.app.blocks.layoutbehavior import ILayoutAware
+
+        @implementer(ILayoutAware)
+        @adapter(self.portal['f1'].__class__)
         class FolderLayoutAware(object):
-            implements(ILayoutAware)
-            adapts(self.portal['f1'].__class__)
 
             def __init__(self, context):
                 self.context = context
@@ -221,9 +227,11 @@ class TestPageSiteLayout(unittest.TestCase):
 
         currentSectionSiteLayout = '/++sitelayout++testlayout2/mylayout.html'
 
+        from plone.app.blocks.layoutbehavior import ILayoutAware
+
+        @implementer(ILayoutAware)
+        @adapter(self.portal['f1'].__class__)
         class FolderLayoutAware(object):
-            implements(ILayoutAware)
-            adapts(self.portal['f1'].__class__)
 
             def __init__(self, context):
                 self.context = context
@@ -267,9 +275,11 @@ class TestPageSiteLayout(unittest.TestCase):
 
         currentSectionSiteLayout = '/++sitelayout++testlayout2/mylayout.html'
 
+        from plone.app.blocks.layoutbehavior import ILayoutAware
+
+        @implementer(ILayoutAware)
+        @adapter(self.portal['f1'].__class__)
         class FolderLayoutAware(object):
-            implements(ILayoutAware)
-            adapts(self.portal['f1'].__class__)
 
             def __init__(self, context):
                 self.context = context

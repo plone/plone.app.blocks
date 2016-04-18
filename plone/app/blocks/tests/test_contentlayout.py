@@ -1,22 +1,15 @@
 # -*- coding: utf-8 -*-
 from lxml import html
-from plone.app.blocks.indexing import LayoutSearchableText
-from plone.app.blocks.layoutbehavior import ContentLayoutView
-from plone.app.blocks.layoutbehavior import ILayoutAware
-from plone.app.blocks.subscribers import onLayoutEdited
 from plone.app.blocks.testing import BLOCKS_FUNCTIONAL_TESTING
-from plone.app.blocks.utils import bodyTileXPath
-from plone.app.blocks.utils import getLayout
-from plone.app.blocks.utils import tileAttrib
 from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
 from plone.registry.interfaces import IRegistry
 from plone.tiles.data import ANNOTATIONS_KEY_PREFIX
 from zope.annotation.interfaces import IAnnotations
-from zope.component import adapts
+from zope.component import adapter
 from zope.component import getGlobalSiteManager
 from zope.component import getUtility
-from zope.interface import implements
+from zope.interface import implementer
 from zope.schema.interfaces import IVocabularyFactory
 
 import pkg_resources
@@ -51,9 +44,11 @@ class TestContentLayout(unittest.TestCase):
         else:
             iface = self.portal['f1']['d1'].__class__
 
+        from plone.app.blocks.layoutbehavior import ILayoutAware
+
+        @implementer(ILayoutAware)
+        @adapter(iface)
         class DocumentLayoutAware(object):
-            implements(ILayoutAware)
-            adapts(iface)
 
             def __init__(self, context):
                 self.context = context
@@ -72,6 +67,7 @@ class TestContentLayout(unittest.TestCase):
         self.assertEqual(len(list(registrations)), 1)
 
     def tearDown(self):
+        from plone.app.blocks.layoutbehavior import ILayoutAware
         sm = getGlobalSiteManager()
         sm.unregisterAdapter(self.behavior)
         registrations = sm.getAdapters((self.portal['f1']['d1'],),
@@ -109,6 +105,9 @@ class TestContentLayout(unittest.TestCase):
             'My content layout 2')
 
     def test_content_layout(self):
+        from plone.app.blocks.layoutbehavior import ContentLayoutView
+        from plone.app.blocks.utils import bodyTileXPath
+        from plone.app.blocks.utils import tileAttrib
         self.behavior.contentLayout = \
             '/++contentlayout++testlayout1/content.html'
         rendered = ContentLayoutView(self.portal['f1']['d1'], self.request)()
@@ -122,13 +121,16 @@ class TestContentLayout(unittest.TestCase):
             tiles)
 
     def test_error_layout(self):
+        from plone.app.blocks.layoutbehavior import ContentLayoutView
         self.behavior.contentLayout = \
             '/++sitelayout++missing/missing.html'
         rendered = ContentLayoutView(self.portal['f1']['d1'], self.request)()
         self.assertIn('Could not find layout for content', rendered)
 
     def test_getLayout(self):
-        self.behavior.contentLayout = '/++contentlayout++testlayout1/content.html'
+        from plone.app.blocks.utils import getLayout
+        self.behavior.contentLayout = \
+            '/++contentlayout++testlayout1/content.html'
         layout = getLayout(self.portal['f1']['d1'])
         self.assertIn(
             './@@test.tile1/tile2?magicNumber:int=2',
@@ -147,7 +149,8 @@ class TestContentLayout(unittest.TestCase):
        Page tile 2 placeholder</div>
     </div>
   </body>
-</html>"""
+</html>"""  # noqa
+        from plone.app.blocks.utils import getLayout
         layout = getLayout(self.portal['f1']['d1'])
         self.assertIn(
             './@@test.tile1/tile99?magicNumber:int=3',
@@ -177,6 +180,7 @@ class TestContentLayout(unittest.TestCase):
         annotations[ANNOTATIONS_KEY_PREFIX + '.rawhtml-1'] = {
             'content': '<p>Foobar inserted raw tile</p>'
         }
+        from plone.app.blocks.indexing import LayoutSearchableText
         indexed_data = LayoutSearchableText(content)()
         self.assertTrue('Foobar inserted text tile' in indexed_data)
         self.assertTrue('Foobar inserted raw tile' in indexed_data)
@@ -220,6 +224,7 @@ class TestContentLayout(unittest.TestCase):
             },
         })
 
+        from plone.app.blocks.subscribers import onLayoutEdited
         onLayoutEdited(content, None)
         annotations = IAnnotations(content)
         self.assertTrue(ANNOTATIONS_KEY_PREFIX + '.foobar-1' in annotations)

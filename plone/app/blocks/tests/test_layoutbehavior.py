@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
-from plone.app.blocks.layoutbehavior import ContentLayoutView
-from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.app.blocks.testing import BLOCKS_FUNCTIONAL_TESTING
 from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
 from plone.registry.interfaces import IRegistry
 from plone.uuid.interfaces import IUUID
-from zope.component import adapts
+from zope.component import adapter
 from zope.component import getGlobalSiteManager
 from zope.component import getUtility
-from zope.interface import implements
+from zope.interface import implementer
 
 import pkg_resources
 import unittest
@@ -43,9 +41,11 @@ class TestLayoutBehavior(unittest.TestCase):
         else:
             iface = self.portal['f1']['d1'].__class__
 
+        from plone.app.blocks.layoutbehavior import ILayoutAware
+
+        @implementer(ILayoutAware)
+        @adapter(iface)
         class DocumentLayoutAware(object):
-            implements(ILayoutAware)
-            adapts(iface)
 
             def __init__(self, context):
                 self.context = context
@@ -59,18 +59,24 @@ class TestLayoutBehavior(unittest.TestCase):
 
         sm = getGlobalSiteManager()
         sm.registerAdapter(self.behavior)
-        registrations = sm.getAdapters((self.portal['f1']['d1'],),
-                                       ILayoutAware)
+        registrations = sm.getAdapters(
+            (self.portal['f1']['d1'],),
+            ILayoutAware
+        )
         self.assertEqual(len(list(registrations)), 1)
 
     def tearDown(self):
+        from plone.app.blocks.layoutbehavior import ILayoutAware
         sm = getGlobalSiteManager()
         sm.unregisterAdapter(self.behavior)
-        registrations = sm.getAdapters((self.portal['f1']['d1'],),
-                                       ILayoutAware)
+        registrations = sm.getAdapters(
+            (self.portal['f1']['d1'],),
+            ILayoutAware
+        )
         self.assertEqual(len(list(registrations)), 0)
 
     def test_content(self):
+        from plone.app.blocks.layoutviews import ContentLayoutView
         self.behavior.content = \
             u'<html><body><a href="{0:s}"></a></body></html>'.format(
                 'resolveuid/{0:s}'.format(IUUID(self.portal['f1'])))

@@ -51,16 +51,18 @@ class IBlocksSettings(Interface):
 
     esi = schema.Bool(
         title=_(u"Enable Edge Side Includes"),
-        description=_(u"Allows tiles which support Edge Side Includes "
-                      u"(ESI) to be rendered as ESI links instead of "
-                      u"invoked directly."),
+        description=_(
+            u"Allows tiles which support Edge Side Includes (ESI) to be "
+            u"rendered as ESI links instead of invoked directly."
+        ),
         default=False,
     )
 
     default_grid_system = schema.ASCIILine(
         title=_(u'Default grid system'),
-        description=_(u'Grid system to use when one is not specified '
-                      u'the result DOM.'),
+        description=_(
+            u'Grid system to use when one is not specified the result DOM.'
+        ),
         default='deco')
 
 
@@ -72,6 +74,9 @@ class ILayoutField(Interface):
 class IOmittedField(Interface):
     """Marker interface to distinguish the layout behavior schema fields from
     other fields to allow hiding them in the user interfaces
+
+    DEPRECATED: Usage of this interface has no effect.
+    instead plone.autoform.directives.omitted is used now.
     """
 
 

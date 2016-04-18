@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from lxml.html import fromstring
 from plone.app.blocks import utils
 from plone.app.blocks.utils import getLayout
@@ -22,7 +23,10 @@ def onLayoutEdited(obj, event):
         if 'plone.app.standardtiles.field' in tile_url:
             continue
         tile_keys.append(
-            ANNOTATIONS_KEY_PREFIX + '.' + tile_url.split('?')[0].split('/')[-1])
+            ANNOTATIONS_KEY_PREFIX +
+            '.' +
+            tile_url.split('?')[0].split('/')[-1]
+        )
 
     annotations = IAnnotations(obj)
     for key in list(annotations.keys()):

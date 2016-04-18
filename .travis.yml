@@ -3,7 +3,6 @@ python: 2.7
 sudo: false
 env:
   matrix:
-  - PLONE_VERSION=4.2.x
   - PLONE_VERSION=4.x
   - PLONE_VERSION=5.x
 matrix:
