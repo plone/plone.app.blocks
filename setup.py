@@ -58,7 +58,7 @@ setup(
         'plone.app.layout',
         'plone.app.registry',
         'plone.autoform',
-        'plone.behavior',
+        'plone.behavior>=1.1',
         'plone.dexterity',
         'plone.memoize',
         'plone.outputfilters',

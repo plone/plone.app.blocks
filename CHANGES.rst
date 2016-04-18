@@ -1,8 +1,14 @@
 Changelog
 =========
 
-3.1.1 (unreleased)
+3.2.0 (unreleased)
 ------------------
+
+New:
+
+- Behavior shortname ``plone.layoutaware`` added.
+  [jensens]
+
 
 Fixes:
 
