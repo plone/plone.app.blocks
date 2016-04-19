@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
-from Products.CMFPlone.utils import safe_unicode
 from lxml.html import fromstring
 from lxml.html import tostring
 from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.indexer.decorator import indexer
 from plone.tiles.data import ANNOTATIONS_KEY_PREFIX
+from Products.CMFPlone.utils import safe_unicode
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapter
 from zope.interface import implementer
+
 import pkg_resources
+
 
 try:
     pkg_resources.get_distribution('collective.dexteritytextindexer')

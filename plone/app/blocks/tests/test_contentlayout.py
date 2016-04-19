@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-import unittest
-
 from lxml import html
-import pkg_resources
 from plone.app.blocks.indexing import LayoutSearchableText
 from plone.app.blocks.layoutbehavior import ContentLayoutView
 from plone.app.blocks.layoutbehavior import ILayoutAware
@@ -11,8 +8,8 @@ from plone.app.blocks.testing import BLOCKS_FUNCTIONAL_TESTING
 from plone.app.blocks.utils import bodyTileXPath
 from plone.app.blocks.utils import getLayout
 from plone.app.blocks.utils import tileAttrib
-from plone.app.testing import TEST_USER_ID
 from plone.app.testing import setRoles
+from plone.app.testing import TEST_USER_ID
 from plone.registry.interfaces import IRegistry
 from plone.tiles.data import ANNOTATIONS_KEY_PREFIX
 from zope.annotation.interfaces import IAnnotations
@@ -21,6 +18,10 @@ from zope.component import getGlobalSiteManager
 from zope.component import getUtility
 from zope.interface import implements
 from zope.schema.interfaces import IVocabularyFactory
+
+import pkg_resources
+import unittest
+
 
 try:
     pkg_resources.get_distribution('plone.app.contenttypes')

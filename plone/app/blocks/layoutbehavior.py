@@ -1,23 +1,24 @@
 # -*- coding: utf-8 -*-
-import logging
-import os
-
-from Products.Five import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from plone.app.blocks.interfaces import _
 from plone.app.blocks.interfaces import IBlocksTransformEnabled
 from plone.app.blocks.interfaces import ILayoutField
 from plone.app.blocks.interfaces import IOmittedField
-from plone.app.blocks.interfaces import _
 from plone.app.layout.globals.interfaces import IViewView
 from plone.autoform.directives import write_permission
 from plone.autoform.interfaces import IFormFieldProvider
 from plone.dexterity.browser.view import DefaultView
 from plone.outputfilters import apply_filters
 from plone.outputfilters.interfaces import IFilter
+from Products.Five import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope import schema
 from zope.component import getAdapters
 from zope.interface import alsoProvides
 from zope.interface import implements
+
+import logging
+import os
+
 
 try:
     from plone.supermodel import model

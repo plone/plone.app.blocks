@@ -5,7 +5,8 @@ from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.app.blocks.layoutbehavior import SiteLayoutView
 from plone.app.blocks.testing import BLOCKS_FUNCTIONAL_TESTING
-from plone.app.testing import setRoles, TEST_USER_ID
+from plone.app.testing import setRoles
+from plone.app.testing import TEST_USER_ID
 from plone.memoize.volatile import ATTR
 from plone.registry.interfaces import IRegistry
 from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2

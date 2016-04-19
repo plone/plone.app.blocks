@@ -7,8 +7,9 @@ from plone.tiles import Tile
 from repoze.xmliter.utils import getHTMLSerializer
 from zope import schema
 from zope.configuration import xmlconfig
-from zope.interface import Interface
 from zope.interface import implementer
+from zope.interface import Interface
+
 import unittest
 
 

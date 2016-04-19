@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from plone.registry import Record
 from plone.registry import field
+from plone.registry import Record
 from plone.registry.interfaces import IRegistry
 from zope.component import getUtility
 

@@ -3,19 +3,20 @@ from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.app.blocks.layoutbehavior import SiteLayoutView
 from plone.app.blocks.testing import BLOCKS_FUNCTIONAL_TESTING
-from plone.app.testing import TEST_USER_ID
 from plone.app.testing import setRoles
+from plone.app.testing import TEST_USER_ID
 from plone.registry.interfaces import IRegistry
 from zExceptions import NotFound
-from zope.interface import implements
 from zope.component import adapts
-from zope.component import getMultiAdapter
 from zope.component import getGlobalSiteManager
+from zope.component import getMultiAdapter
 from zope.component import getUtility
+from zope.interface import implements
 
 import pkg_resources
 import transaction
 import unittest
+
 
 try:
     pkg_resources.get_distribution('plone.app.contenttypes')

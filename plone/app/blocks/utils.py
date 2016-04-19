@@ -1,16 +1,13 @@
 # -*- coding: utf-8 -*-
-from copy import deepcopy
-from hashlib import md5
-import logging
-
 from AccessControl import getSecurityManager
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-import Globals
+from copy import deepcopy
 from diazo import compiler
 from diazo import cssrules
 from diazo import rules
 from diazo import utils
+from hashlib import md5
 from lxml import etree
 from lxml import html
 from plone.app.blocks.interfaces import DEFAULT_AJAX_LAYOUT_REGISTRY_KEY
@@ -18,7 +15,6 @@ from plone.app.blocks.interfaces import DEFAULT_CONTENT_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.memoize import ram
-from plone.memoize.ram import cache
 from plone.memoize.volatile import DontCache
 from plone.registry.interfaces import IRegistry
 from plone.resource.utils import queryResourceDirectory
@@ -30,6 +26,10 @@ from zope.component import getUtility
 from zope.component import queryUtility
 from zope.security.interfaces import IPermission
 from zope.site.hooks import getSite
+
+import Globals
+import logging
+
 
 headXPath = etree.XPath("/html/head")
 layoutAttrib = 'data-layout'
@@ -423,16 +423,13 @@ def getLayout(content):
     return layout
 
 
-@cache(lambda fun, path, resolved: md5(resolved).hexdigest())
+@ram.cache(lambda fun, path, resolved: md5(resolved).hexdigest())
 def applyTilePersistent(path, resolved):
     """Append X-Tile-Persistent into resolved layout's tile URLs to allow
     context specific tile configuration overrides.
 
     (Path is required for proper error message when lxml parser fails.)
     """
-    from plone.app.blocks.utils import tileAttrib
-    from plone.app.blocks.utils import bodyTileXPath
-    from plone.app.blocks.utils import resolve
     tree = resolve(path, resolved=resolved)
     for node in bodyTileXPath(tree):
         url = node.attrib[tileAttrib]

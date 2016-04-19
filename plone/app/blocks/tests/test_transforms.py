@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import unittest
-
 from plone.app.blocks.interfaces import IBlocksLayer
 from plone.app.blocks.interfaces import IBlocksSettings
 from plone.app.blocks.interfaces import IBlocksTransformEnabled
@@ -10,6 +8,8 @@ from plone.transformchain.zpublisher import applyTransform
 from zope.component import queryUtility
 from zope.interface import alsoProvides
 from zope.interface import implements
+
+import unittest
 
 
 gridsystem_test_body = """\

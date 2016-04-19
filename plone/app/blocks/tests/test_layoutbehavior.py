@@ -2,16 +2,18 @@
 from plone.app.blocks.layoutbehavior import ContentLayoutView
 from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.app.blocks.testing import BLOCKS_FUNCTIONAL_TESTING
-from plone.app.testing import TEST_USER_ID
 from plone.app.testing import setRoles
+from plone.app.testing import TEST_USER_ID
 from plone.registry.interfaces import IRegistry
 from plone.uuid.interfaces import IUUID
 from zope.component import adapts
 from zope.component import getGlobalSiteManager
 from zope.component import getUtility
 from zope.interface import implements
+
 import pkg_resources
 import unittest
+
 
 try:
     pkg_resources.get_distribution('plone.app.contenttypes')

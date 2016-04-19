@@ -1,12 +1,7 @@
 # -*- coding: utf-8 -*-
-from ConfigParser import SafeConfigParser
-import logging
-import urlparse
-
 from Acquisition import aq_parent
-import Globals
+from ConfigParser import SafeConfigParser
 from OFS.interfaces import ITraversable
-from Products.CMFCore.utils import getToolByName
 from plone.app.blocks.interfaces import CONTENT_LAYOUT_FILE_NAME
 from plone.app.blocks.interfaces import CONTENT_LAYOUT_MANIFEST_FORMAT
 from plone.app.blocks.interfaces import CONTENT_LAYOUT_RESOURCE_NAME
@@ -27,6 +22,7 @@ from plone.resource.manifest import MANIFEST_FILENAME
 from plone.resource.traversal import ResourceTraverser
 from plone.resource.utils import iterDirectoriesOfType
 from plone.subrequest import ISubRequest
+from Products.CMFCore.utils import getToolByName
 from zExceptions import NotFound
 from zope.annotation import IAnnotations
 from zope.component import adapter
@@ -37,6 +33,10 @@ from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleTerm
 from zope.schema.vocabulary import SimpleVocabulary
 from zope.site.hooks import getSite
+
+import Globals
+import logging
+import urlparse
 
 
 logger = logging.getLogger('plone.app.blocks')

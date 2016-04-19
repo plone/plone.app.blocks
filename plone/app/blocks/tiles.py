@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from lxml import html
 from plone.app.blocks import PloneMessageFactory
 from plone.app.blocks import utils
 from plone.app.blocks.interfaces import IBlocksSettings
@@ -10,7 +11,6 @@ from urlparse import urljoin
 from zExceptions import NotFound
 from zope.component import queryUtility
 from zope.i18n import translate
-from lxml import html
 
 
 def errorTile(request):

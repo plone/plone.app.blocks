@@ -13,5 +13,6 @@ eggs/
 htmlcov/
 include/
 lib/
+local/
 parts/
 var/

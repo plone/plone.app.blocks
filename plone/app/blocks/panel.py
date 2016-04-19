@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
+from plone.app.blocks import utils
 from urllib import urlencode
+from urlparse import parse_qs
 from urlparse import urljoin
 from urlparse import urlparse
-from urlparse import parse_qs
 from urlparse import urlunparse
-
-from plone.app.blocks import utils
 
 
 def merge(request, pageTree, removePanelLinks=False, removeLayoutLink=True):
