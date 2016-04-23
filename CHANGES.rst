@@ -4,6 +4,15 @@ Changelog
 3.2.0 (unreleased)
 ------------------
 
+Incompatibilities:
+
+- Moved views from ``.layoutbehavior`` to new module ``.layoutviews`` in order to avoid circular imports.
+  Deprecated deferred imports are in place.
+  [jensens]
+
+- Drop official Plone 4.2 support.
+  [jensens]
+
 New:
 
 - Behavior shortname ``plone.layoutaware`` added.
@@ -13,6 +22,9 @@ New:
 Fixes:
 
 - Test failure in Plone 5
+  [jensens]
+
+- Housekeeping: ZCA decorators, sorted imports, line-lengths and related.
   [jensens]
 
 

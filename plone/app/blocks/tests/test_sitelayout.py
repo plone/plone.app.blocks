@@ -2,8 +2,6 @@
 from lxml import etree
 from OFS.Image import File
 from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
-from plone.app.blocks.layoutbehavior import ILayoutAware
-from plone.app.blocks.layoutbehavior import SiteLayoutView
 from plone.app.blocks.testing import BLOCKS_FUNCTIONAL_TESTING
 from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
@@ -13,11 +11,11 @@ from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2
 from Products.CMFPlone.utils import getToolByName
 from StringIO import StringIO
 from zExceptions import NotFound
-from zope.component import adapts
+from zope.component import adapter
 from zope.component import getMultiAdapter
 from zope.component import getSiteManager
 from zope.component import getUtility
-from zope.interface import implements
+from zope.interface import implementer
 
 import transaction
 import unittest
@@ -47,6 +45,7 @@ class TestSiteLayout(unittest.TestCase):
                                name=u'default-site-layout')
         self.assertRaises(NotFound, view.index)
 
+        from plone.app.blocks.layoutbehavior import SiteLayoutView
         default_view = SiteLayoutView(self.portal, self.request)
         self.assertEqual(view().split(), default_view().split())
 
@@ -83,9 +82,11 @@ class TestSiteLayout(unittest.TestCase):
         self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = \
             '/++sitelayout++testlayout1/site.html'
 
+        from plone.app.blocks.layoutbehavior import ILayoutAware
+
+        @implementer(ILayoutAware)
+        @adapter(self.portal['f1'].__class__)
         class FolderLayoutAware(object):
-            implements(ILayoutAware)
-            adapts(self.portal['f1'].__class__)
 
             def __init__(self, context):
                 self.context = context
