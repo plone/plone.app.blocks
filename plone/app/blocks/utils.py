@@ -21,6 +21,7 @@ from plone.resource.utils import queryResourceDirectory
 from plone.subrequest import subrequest
 from z3c.form.interfaces import IFieldWidget
 from zExceptions import NotFound
+from zExceptions import Unauthorized
 from zope.component import getMultiAdapter
 from zope.component import getUtility
 from zope.component import queryUtility
@@ -70,13 +71,21 @@ def resolve(url, resolved=None):
     try:
         if isinstance(resolved, unicode):
             html_parser = html.HTMLParser(encoding='utf-8')
-            return html.fromstring(resolved.encode('utf-8'),
-                                   parser=html_parser).getroottree()
-        else:
-            return html.fromstring(resolved).getroottree()
+            return html.fromstring(
+                resolved.encode('utf-8'),
+                parser=html_parser
+            ).getroottree()
+        return html.fromstring(resolved).getroottree()
     except etree.XMLSyntaxError as e:
         logger.error('%s: %s' % (repr(e), url))
         return None
+
+
+def subresponse_exception_handler(response, exception):
+    if isinstance(exception, Unauthorized):
+        response.setStatus = 401
+        return
+    return response.exception()
 
 
 def resolveResource(url):
@@ -98,9 +107,11 @@ def resolveResource(url):
         site = getSite()
         url = '/'.join(site.getPhysicalPath()) + url
 
-    response = subrequest(url)
+    response = subrequest(url, exception_handler=subresponse_exception_handler)
     if response.status == 404:
         raise NotFound(url)
+    elif response.status == 401:
+        raise Unauthorized(url)
 
     resolved = response.getBody()
 
@@ -253,8 +264,10 @@ class PermissionChecker(object):
                     self.cache[permission_name] = True
                 else:
                     self.cache[permission_name] = bool(
-                        self.sm.checkPermission(permission.title,
-                                                self.context),
+                        self.sm.checkPermission(
+                            permission.title,
+                            self.context
+                        )
                     )
         return self.cache.get(permission_name, True)
 
