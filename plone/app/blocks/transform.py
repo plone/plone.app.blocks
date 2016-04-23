@@ -9,19 +9,18 @@ from plone.tiles.interfaces import ESI_HEADER
 from plone.transformchain.interfaces import ITransform
 from repoze.xmliter.serializer import XMLSerializer
 from repoze.xmliter.utils import getHTMLSerializer
-from zope.interface import implements
+from zope.interface import implementer
 
 import re
 
 
+@implementer(ITransform)
 class DisableParsing(object):
     """A no-op transform which sets flags to stop plone.app.blocks
     transformations. You may register this for a particular published
     object or request as required. By default, it's registered for ESI-
     rendered tiles when they are fetched via ESI.
     """
-
-    implements(ITransform)
 
     order = 8000
 
@@ -42,6 +41,7 @@ class DisableParsing(object):
         return None
 
 
+@implementer(ITransform)
 class ParseXML(object):
     """First stage in the 8000's chain: parse the content to an lxml tree
     encapsulated in an XMLSerializer.
@@ -51,8 +51,6 @@ class ParseXML(object):
     the option to parse the content here, and if we decide it's not HTML,
     we can avoid trying to parse it again.
     """
-
-    implements(ITransform)
 
     order = 8000
 
@@ -99,11 +97,10 @@ class ParseXML(object):
             return None
 
 
+@implementer(ITransform)
 class MergePanels(object):
     """Find the site layout and merge panels.
     """
-
-    implements(ITransform)
 
     order = 8100
 
@@ -133,20 +130,21 @@ class MergePanels(object):
         result.tree = tree
 
         # Fix serializer when layout has changed doctype from XHTML to HTML
-        if (result.tree.docinfo.doctype
-                and 'XHTML' not in result.tree.docinfo.doctype):
+        if (
+            result.tree.docinfo.doctype and
+            'XHTML' not in result.tree.docinfo.doctype
+        ):
             result.serializer = html.tostring
 
         return result
 
 
+@implementer(ITransform)
 class IncludeTiles(object):
     """Turn a panel-merged page into the final composition by including tiles.
     Assumes the input result is an lxml tree and returns an lxml tree for
     later serialization.
     """
-
-    implements(ITransform)
 
     order = 8500
 
@@ -169,13 +167,12 @@ class IncludeTiles(object):
         return result
 
 
+@implementer(ITransform)
 class ApplyResponsiveClass(object):
     """Turn a panel-merged page into the final composition by including tiles.
     Assumes the input result is an lxml tree and returns an lxml tree for
     later serialization.
     """
-
-    implements(ITransform)
 
     order = 8700
 
@@ -197,12 +194,11 @@ class ApplyResponsiveClass(object):
         return result
 
 
+@implementer(ITransform)
 class ESIRender(object):
     """If ESI rendering was used, render the page down to a format that allows
     ESI to work.
     """
-
-    implements(ITransform)
 
     order = 8900
 
