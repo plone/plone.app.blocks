@@ -18,7 +18,6 @@ New:
 - Behavior shortname ``plone.layoutaware`` added.
   [jensens]
 
-
 Fixes:
 
 - A tile raising an 401 Unauthorized on traversal,

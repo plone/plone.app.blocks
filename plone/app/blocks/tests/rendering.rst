@@ -273,13 +273,15 @@ We register these views and tiles in the same way the ZCML handlers for ``<brows
     ...     title=u"Test tile",
     ...     description=u"A tile used for testing",
     ...     add_permission="cmf.ManagePortal",
+    ...     view_permission="zope2.View",
     ...     schema=ITestTile)
 
     >>> testTileTypeNoBody = TileType(
     ...     name=u'test.tile_nobody',
     ...     title=u"Test tile using only a header",
     ...     description=u"Another tile used for testing",
-    ...     add_permission="cmf.ManagePortal")
+    ...     add_permission="cmf.ManagePortal",
+    ...     view_permission="zope2.View")
 
     >>> protectClass(Page, 'zope2.View')
     >>> protectClass(TestTile, 'zope2.View')
