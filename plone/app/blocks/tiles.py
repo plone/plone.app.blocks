@@ -9,7 +9,6 @@ from plone.tiles.interfaces import ESI_HEADER
 from plone.tiles.interfaces import ESI_HEADER_KEY
 from urlparse import urljoin
 from zExceptions import NotFound
-from zExceptions import Unauthorized
 from zope.component import queryUtility
 from zope.i18n import translate
 
