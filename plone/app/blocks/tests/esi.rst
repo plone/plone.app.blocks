@@ -53,7 +53,8 @@ Let's first register a two very simple tiles. One uses ESI, one does not.
     ...     name=u'test.tile2',
     ...     title=u"Test tile 2",
     ...     description=u"A tile used for testing",
-    ...     add_permission="cmf.ManagePortal")
+    ...     add_permission="cmf.ManagePortal",
+    ...     view_permission="zope2.View")
 
     >>> class SimpleESITile(ESITile):
     ...     __name__ = 'test.tile3' # normally set by ZCML handler
@@ -75,7 +76,8 @@ Let's first register a two very simple tiles. One uses ESI, one does not.
     ...     name=u'test.tile3',
     ...     title=u"Test tile 3",
     ...     description=u"A tile used for testing",
-    ...     add_permission="cmf.ManagePortal")
+    ...     add_permission="cmf.ManagePortal",
+    ...     view_permission="zope2.View")
 
 Register these in the same way that the ZCML handlers would, more or less.
 

@@ -18,8 +18,15 @@ New:
 - Behavior shortname ``plone.layoutaware`` added.
   [jensens]
 
-
 Fixes:
+
+- A tile raising an 401 Unauthorized on traversal,
+  results in a status rewriting to a 302 which results in 200 login form.
+  The whole login form page then is rendered as the tile contents.
+  This patch catches the 401 by providing a custom exception handler.
+  The 401 is catched and ignored. This is not pefect yet and need some work,
+  but it at least does not break design and intended behavior of tiles.
+  [jensens]
 
 - Test failure in Plone 5
   [jensens]

@@ -9,8 +9,14 @@ from plone.tiles.interfaces import ESI_HEADER
 from plone.tiles.interfaces import ESI_HEADER_KEY
 from urlparse import urljoin
 from zExceptions import NotFound
+from zExceptions import Unauthorized
 from zope.component import queryUtility
 from zope.i18n import translate
+
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 def errorTile(request):
@@ -47,6 +53,11 @@ def renderTiles(request, tree):
         except RuntimeError:
             tileTree = None
         except NotFound:
+            logger.warn(
+                'NotFound while trying to render tile: {0}'.format(
+                    tileHref
+                )
+            )
             continue
         if tileTree is not None:
             tileRoot = tileTree.getroot()
