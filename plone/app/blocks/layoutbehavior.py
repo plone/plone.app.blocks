@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from plone.app.blocks.interfaces import _
 from plone.app.blocks.interfaces import ILayoutField
-from plone.autoform.directives import omitted
 from plone.autoform.directives import write_permission
 from plone.autoform.interfaces import IFormFieldProvider
 from plone.supermodel import model
@@ -75,10 +74,4 @@ class ILayoutAware(model.Schema):
             'sectionSiteLayout',
             'contentLayout'
         )
-    )
-
-    omitted(
-        'content',
-        'pageSiteLayout',
-        'sectionSiteLayout'
     )
