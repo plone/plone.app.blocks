@@ -10,6 +10,10 @@ Incompatibilities:
   Deprecated deferred imports are in place.
   [jensens]
 
+- Drop IOmittedField marker from layout behavior fields not meant to be
+  displayed on legacy Deco UIs
+  [jensens]
+
 - Drop official Plone 4.2 support.
   [jensens]
 
