@@ -350,8 +350,11 @@ def process_rules(rules_doc, theme=None, trace=None, css=True,
     rules_doc = rules.annotate_themes(rules_doc)
     if stop == 11:
         return rules_doc
-    rules_doc = rules.annotate_rules(rules_doc)
+    rules_doc = rules.include(rules_doc)
     if stop == 12:
+        return rules_doc
+    rules_doc = rules.annotate_rules(rules_doc)
+    if stop == 13:
         return rules_doc
     rules_doc = rules.apply_rules(rules_doc, trace=trace)
     return rules_doc
