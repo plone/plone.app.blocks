@@ -20,6 +20,7 @@ from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
 from plone.app.testing import TEST_USER_NAME
 from plone.app.testing import TEST_USER_PASSWORD
+from plone.protect.authenticator import createToken
 from plone.testing.z2 import Browser
 from plone.uuid.interfaces import IUUID
 from zope.annotation.interfaces import IAnnotations
@@ -551,6 +552,11 @@ class TestCurrentDraft(unittest.TestCase):
         current.targetKey = u'123'
         current.draftName = u'draft-1'
         current.path = '/test'
+
+        # clear data
+        del self.request.response.cookies['plone.app.drafts.targetKey']
+        del self.request.response.cookies['plone.app.drafts.draftName']
+
         self.assertEqual(True, current.save())
 
         self.assertEqual(
@@ -780,14 +786,10 @@ class TestArchetypesIntegration(unittest.TestCase):
         browser.getControl('Log in').click()
 
         # Enter the add screen for a temporary portal_factory-managed object
-        browser.open(self.portal.absolute_url(
-        ) + '/portal_factory/Document/document.2010-02-04.2866363923/edit')
-
-        # Confirm pass CSRF protection
-        try:
-            browser.getControl(name='form.button.confirm').click()
-        except LookupError:
-            pass
+        browser.open(
+            '{}/portal_factory/Document/document.2010-02-04.2866363923/edit?_authenticator={}'.format(  # noqa
+                self.portal.absolute_url(),
+                createToken()))
 
         # We should now have cookies with the drafts information
         cookies = browser.cookies.forURL(browser.url)
@@ -830,14 +832,10 @@ class TestArchetypesIntegration(unittest.TestCase):
         browser.getControl('Log in').click()
 
         # Enter the add screen for a temporary portal_factory-managed object
-        browser.open(self.portal.absolute_url(
-        ) + '/portal_factory/Document/document.2010-02-04.2866363923/edit')
-
-        # Confirm pass CSRF protection
-        try:
-            browser.getControl(name='form.button.confirm').click()
-        except LookupError:
-            pass
+        browser.open(
+            '{}/portal_factory/Document/document.2010-02-04.2866363923/edit?_authenticator={}'.format(  # noqa
+                self.portal.absolute_url(),
+                createToken()))
 
         # We should now have cookies with the drafts information
         cookies = browser.cookies.forURL(browser.url)
@@ -885,14 +883,10 @@ class TestArchetypesIntegration(unittest.TestCase):
         browser.getControl('Log in').click()
 
         # Enter the add screen for a temporary portal_factory-managed object
-        browser.open(self.folder.absolute_url(
-        ) + '/portal_factory/Document/document.2010-02-04.2866363923/edit')
-
-        # Confirm pass CSRF protection
-        try:
-            browser.getControl(name='form.button.confirm').click()
-        except LookupError:
-            pass
+        browser.open(
+            '{}/portal_factory/Document/document.2010-02-04.2866363923/edit?_authenticator={}'.format(  # noqa
+                self.folder.absolute_url(),
+                createToken()))
 
         # We should now have cookies with the drafts information
         cookies = browser.cookies.forURL(browser.url)
@@ -1225,7 +1219,7 @@ class TestDexterityIntegration(unittest.TestCase):
             cookies['plone.app.drafts.path']
         )
         self.assertEqual(
-            '"%2B%2Badd%2B%2BMyDocument"',
+            '"{}"'.format(IUUID(self.folder)),
             cookies['plone.app.drafts.targetKey'],
         )
         self.assertNotIn(

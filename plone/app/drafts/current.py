@@ -107,18 +107,30 @@ class DefaultCurrentDraftManagement(object):
             return False
 
         path = self.path or self.defaultPath
-        self.request.response.setCookie(TARGET_KEY, self.targetKey, path=path)
-
-        if self.draftName is not None:
+        if TARGET_KEY not in self.request.response.cookies:
             self.request.response.setCookie(
-                DRAFT_NAME_KEY, self.draftName, path=path)
+                TARGET_KEY,
+                self.targetKey,
+                path=path
+            )
+
+        if self.draftName is not None and \
+                DRAFT_NAME_KEY not in self.request.response.cookies:
+            self.request.response.setCookie(
+                DRAFT_NAME_KEY,
+                self.draftName,
+                path=path
+            )
 
         # Save userId, because it may be needed to access draft during traverse
-        if self.draftName is not None and self.userId is not None:
+        if self.draftName is not None and \
+                self.userId is not None and \
+                USERID_KEY not in self.request.response.cookies:
             self.request.response.setCookie(USERID_KEY, self.userId, path=path)
 
         # Save the path only if we set it explicitly during this request.
-        if self.annotations.get(PATH_KEY, None) is not None:
+        if self.annotations.get(PATH_KEY, None) is not None and \
+                PATH_KEY not in self.request.response.cookies:
             self.request.response.setCookie(PATH_KEY, self.path, path=path)
 
         return True
