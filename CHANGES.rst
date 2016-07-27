@@ -1,10 +1,14 @@
 Changelog
 =========
 
-3.2.0 (unreleased)
+4.0.0 (unreleased)
 ------------------
 
 Incompatibilities:
+
+- Moved functions ``getDefaultAjaxLayout``, ``getDefaultSiteLayout``, ``getLayout`` and ``getLayoutAwareSiteLayout`` to ``.layoutbehavior`` in order to avoid circular imports
+  (all deprecated now, see section New).
+  [jensens]
 
 - Change default grid to bs3
   [vangheem]
@@ -22,7 +26,16 @@ Incompatibilities:
 
 New:
 
+- Get layouts always by adapting with ``ILayoutAware``.
+  This introduces a generic adapter and a behavior adapter.
+  Deprecated the formerly used functions ``getLayout``
+  ``getDefaultSiteLayout`` just calls ``ILayoutAware().site_layout`` and is deprected.
+  ``getLayout`` just calls ``ILayoutAware().content_layout`` and is deprecated.
+
 - Behavior shortname ``plone.layoutaware`` added.
+  [jensens]
+
+- ``ILayoutAware`` is now also responsible to lookup the behaviors.
   [jensens]
 
 Fixes:

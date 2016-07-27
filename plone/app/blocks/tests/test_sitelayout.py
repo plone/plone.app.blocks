@@ -104,7 +104,7 @@ class TestSiteLayout(unittest.TestCase):
         rendered = view()
 
         self.assertFalse(u"Layout title" in rendered)
-        self.assertTrue(u"Layout 2 title" in rendered)
+        self.assertTrue(u"My Layout 1 Title" in rendered)
 
     def test_default_site_layout_section_no_override(self):
         self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = \
@@ -114,7 +114,7 @@ class TestSiteLayout(unittest.TestCase):
                                name=u'default-site-layout')
         rendered = view()
 
-        self.assertFalse(u"Layout 2 title" in rendered)
+        self.assertFalse(u"My Layout 1 Title" in rendered)
         self.assertTrue(u"Layout title" in rendered)
 
     def test_default_site_layout_cache(self):
@@ -227,5 +227,5 @@ class TestSiteLayout(unittest.TestCase):
                                name=u'default-site-layout')
         rendered = view()
 
-        self.assertTrue(u"Layout 2 title" in rendered)
+        self.assertTrue(u"My Layout 1 Title" in rendered)
         self.assertFalse(u"Layout title" in rendered)

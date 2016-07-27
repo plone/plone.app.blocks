@@ -6,10 +6,8 @@ from plone.app.testing import TEST_USER_ID
 from plone.registry.interfaces import IRegistry
 from plone.tiles.data import ANNOTATIONS_KEY_PREFIX
 from zope.annotation.interfaces import IAnnotations
-from zope.component import adapter
 from zope.component import getGlobalSiteManager
 from zope.component import getUtility
-from zope.interface import implementer
 from zope.schema.interfaces import IVocabularyFactory
 
 import pkg_resources
@@ -45,34 +43,16 @@ class TestContentLayout(unittest.TestCase):
             iface = self.portal['f1']['d1'].__class__
 
         from plone.app.blocks.layoutbehavior import ILayoutAware
-
-        @implementer(ILayoutAware)
-        @adapter(iface)
-        class DocumentLayoutAware(object):
-
-            def __init__(self, context):
-                self.context = context
-
-            content = None
-            contentLayout = None
-            sectionSiteLayout = None
-            pageSiteLayout = None
-
-        self.behavior = DocumentLayoutAware
+        from plone.app.blocks.layoutbehavior import LayoutAwareBehavior
 
         sm = getGlobalSiteManager()
-        sm.registerAdapter(self.behavior)
-        registrations = sm.getAdapters((self.portal['f1']['d1'],),
-                                       ILayoutAware)
+        sm.registerAdapter(LayoutAwareBehavior, [iface])
+        registrations = sm.getAdapters(
+            (self.portal['f1']['d1'],),
+            ILayoutAware
+        )
         self.assertEqual(len(list(registrations)), 1)
-
-    def tearDown(self):
-        from plone.app.blocks.layoutbehavior import ILayoutAware
-        sm = getGlobalSiteManager()
-        sm.unregisterAdapter(self.behavior)
-        registrations = sm.getAdapters((self.portal['f1']['d1'],),
-                                       ILayoutAware)
-        self.assertEqual(len(list(registrations)), 0)
+        self.behavior = ILayoutAware(self.portal['f1']['d1'])
 
     def test_content_layout_vocabulary(self):
         factory = getUtility(IVocabularyFactory,
@@ -154,7 +134,8 @@ class TestContentLayout(unittest.TestCase):
         layout = getLayout(self.portal['f1']['d1'])
         self.assertIn(
             './@@test.tile1/tile99?magicNumber:int=3',
-            layout)
+            layout
+        )
 
     def test_getting_indexed_data(self):
         self.behavior.content = """

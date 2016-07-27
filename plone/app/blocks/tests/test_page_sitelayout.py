@@ -5,11 +5,9 @@ from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
 from plone.registry.interfaces import IRegistry
 from zExceptions import NotFound
-from zope.component import adapter
 from zope.component import getGlobalSiteManager
 from zope.component import getMultiAdapter
 from zope.component import getUtility
-from zope.interface import implementer
 import pkg_resources
 import transaction
 import unittest
@@ -36,6 +34,32 @@ class TestPageSiteLayout(unittest.TestCase):
         self.portal['f1'].invokeFactory('Document', 'd1', title=u"Document 1")
         setRoles(self.portal, TEST_USER_ID, ('Member',))
 
+        # setup default behavior
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
+            '/++sitelayout++testlayout1/site.html'
+        if HAS_PLONE_APP_CONTENTTYPES:
+            from plone.app.contenttypes.interfaces import IDocument
+            iface = IDocument
+        else:
+            iface = self.portal['f1']['d1'].__class__
+
+        from plone.app.blocks.layoutbehavior import ILayoutAware
+        from plone.app.blocks.layoutbehavior import LayoutAwareBehavior
+
+        sm = getGlobalSiteManager()
+        sm.registerAdapter(LayoutAwareBehavior, [iface])
+        registrations = sm.getAdapters(
+            (self.portal['f1']['d1'],),
+            ILayoutAware
+        )
+        self.assertEqual(len(list(registrations)), 1)
+        self.behavior = ILayoutAware(self.portal['f1']['d1'])
+        registrations = sm.getAdapters(
+            (self.portal['f1']['d1'],),
+            ILayoutAware
+        )
+        self.assertEqual(len(list(registrations)), 1)
+
     def test_page_site_layout_no_registry_key(self):
         self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = None
         view = getMultiAdapter((self.portal['f1']['d1'], self.request,),
@@ -55,265 +79,133 @@ class TestPageSiteLayout(unittest.TestCase):
         self.assertTrue(u"Layout title" in rendered)
 
     def test_page_site_layout_page_override(self):
-        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
-            '/++sitelayout++testlayout1/site.html'
-
-        if HAS_PLONE_APP_CONTENTTYPES:
-            from plone.app.contenttypes.interfaces import IDocument
-            iface = IDocument
-        else:
-            iface = self.portal['f1']['d1'].__class__
-
-        from plone.app.blocks.layoutbehavior import ILayoutAware
-
-        @implementer(ILayoutAware)
-        @adapter(iface)
-        class DocumentLayoutAware(object):
-
-            def __init__(self, context):
-                self.context = context
-
-            content = u"<html><body>N/A</body></html>"
-            contentLayout = None
-            sectionSiteLayout = None
-            pageSiteLayout = '/++sitelayout++testlayout2/mylayout.html'
-
-        sm = getGlobalSiteManager()
-        sm.registerAdapter(DocumentLayoutAware)
-
-        registrations = sm.getAdapters((self.portal['f1']['d1'],),
-                                       ILayoutAware)
-        self.assertEqual(len(list(registrations)), 1)
+        self.behavior.content = u"<html><body>N/A</body></html>"
+        self.behavior.pageSiteLayout = \
+            '/++sitelayout++testlayout2/mylayout.html'
 
         view = getMultiAdapter((self.portal['f1']['d1'], self.request,),
                                name=u'page-site-layout')
         rendered = view()
-
-        sm.unregisterAdapter(DocumentLayoutAware)
-
         self.assertFalse(u"Layout title" in rendered)
-        self.assertTrue(u"Layout 2 title" in rendered)
+        self.assertTrue(u"My Layout 1 Title" in rendered)
 
     def test_page_site_layout_section_override(self):
-        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
-            '/++sitelayout++testlayout1/site.html'
+        self.behavior.sectionSiteLayout = \
+            '/++sitelayout++testlayout2/mylayout.html'
 
-        from plone.app.blocks.layoutbehavior import ILayoutAware
-
-        @implementer(ILayoutAware)
-        @adapter(self.portal['f1'].__class__)
-        class FolderLayoutAware(object):
-
-            def __init__(self, context):
-                self.context = context
-
-            content = u"<html><body>N/A</body></html>"
-            sectionSiteLayout = '/++sitelayout++testlayout2/mylayout.html'
-            pageSiteLayout = None
-
-        sm = getGlobalSiteManager()
-        sm.registerAdapter(FolderLayoutAware)
-
-        registrations = sm.getAdapters((self.portal['f1'],), ILayoutAware)
-        self.assertEqual(len(list(registrations)), 1)
-
-        view = getMultiAdapter((self.portal['f1']['d1'], self.request,),
-                               name=u'page-site-layout')
+        view = getMultiAdapter(
+            (self.portal['f1']['d1'], self.request,),
+            name=u'page-site-layout'
+        )
         rendered = view()
 
-        sm.unregisterAdapter(FolderLayoutAware)
-
         self.assertFalse(u"Layout title" in rendered)
-        self.assertTrue(u"Layout 2 title" in rendered)
+        self.assertTrue(u"My Layout 1 Title" in rendered)
 
     def test_page_site_layout_cache(self):
-        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
-            '/++sitelayout++testlayout1/site.html'
+        self.behavior.pageSiteLayout = \
+            '/++sitelayout++testlayout2/mylayout.html'
 
-        currentSectionSiteLayout = '/++sitelayout++testlayout2/mylayout.html'
-
-        from plone.app.blocks.layoutbehavior import ILayoutAware
-
-        @implementer(ILayoutAware)
-        @adapter(self.portal['f1'].__class__)
-        class FolderLayoutAware(object):
-
-            def __init__(self, context):
-                self.context = context
-
-            content = u"<html><body>N/A</body></html>"
-            pageSiteLayout = None
-
-            @property
-            def sectionSiteLayout(self):
-                return currentSectionSiteLayout
-
-        sm = getGlobalSiteManager()
-        sm.registerAdapter(FolderLayoutAware)
-
-        view = getMultiAdapter((self.portal['f1']['d1'], self.request,),
-                               name=u'page-site-layout')
+        view = getMultiAdapter(
+            (self.portal['f1']['d1'], self.request,),
+            name=u'page-site-layout'
+        )
         rendered = view()
 
         self.assertFalse(u"Layout title" in rendered)
-        self.assertTrue(u"Layout 2 title" in rendered)
+        self.assertTrue(u"My Layout 1 Title" in rendered)
 
         # Change the section value
-        currentSectionSiteLayout = '/++sitelayout++testlayout1/site.html'
+        self.behavior.pageSiteLayout = \
+            '/++sitelayout++testlayout1/site.html'
 
-        view = getMultiAdapter((self.portal['f1']['d1'], self.request,),
-                               name=u'page-site-layout')
+        view = getMultiAdapter(
+            (self.portal['f1']['d1'], self.request,),
+            name=u'page-site-layout'
+        )
         rendered = view()
-
-        sm.unregisterAdapter(FolderLayoutAware)
 
         # Cache means our change is ignored
         self.assertFalse(u"Layout title" in rendered)
-        self.assertTrue(u"Layout 2 title" in rendered)
+        self.assertTrue(u"My Layout 1 Title" in rendered)
 
     def test_page_site_layout_cache_invalidate_mtime(self):
-
-        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
-            '/++sitelayout++testlayout1/site.html'
-
-        currentSectionSiteLayout = '/++sitelayout++testlayout2/mylayout.html'
-
-        from plone.app.blocks.layoutbehavior import ILayoutAware
-
-        @implementer(ILayoutAware)
-        @adapter(self.portal['f1'].__class__)
-        class FolderLayoutAware(object):
-
-            def __init__(self, context):
-                self.context = context
-
-            content = u"<html><body>N/A</body></html>"
-            pageSiteLayout = None
-
-            @property
-            def sectionSiteLayout(self):
-                return currentSectionSiteLayout
-
-        sm = getGlobalSiteManager()
-        sm.registerAdapter(FolderLayoutAware)
+        self.behavior.content = u"<html><body>N/A</body></html>"
+        self.behavior.sectionSiteLayout = \
+            '/++sitelayout++testlayout2/mylayout.html'
 
         view = getMultiAdapter((self.portal['f1']['d1'], self.request,),
                                name=u'page-site-layout')
         rendered = view()
 
         self.assertFalse(u"Layout title" in rendered)
-        self.assertTrue(u"Layout 2 title" in rendered)
+        self.assertTrue(u"My Layout 1 Title" in rendered)
 
         # Trigger invalidation by modifying the context
         self.portal['f1']['d1'].title = u"New title"
         transaction.commit()
 
         # Change the section value
-        currentSectionSiteLayout = '/++sitelayout++testlayout1/site.html'
+        self.behavior.sectionSiteLayout = \
+            '/++sitelayout++testlayout1/site.html'
 
         view = getMultiAdapter((self.portal['f1']['d1'], self.request,),
                                name=u'page-site-layout')
         rendered = view()
 
-        sm.unregisterAdapter(FolderLayoutAware)
-
         # We now get the new layout
         self.assertTrue(u"Layout title" in rendered)
-        self.assertFalse(u"Layout 2 title" in rendered)
+        self.assertFalse(u"My Layout 1 Title" in rendered)
 
     def test_page_site_layout_cache_invalidate_catalog_counter(self):
-        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
-            '/++sitelayout++testlayout1/site.html'
-
-        currentSectionSiteLayout = '/++sitelayout++testlayout2/mylayout.html'
-
-        from plone.app.blocks.layoutbehavior import ILayoutAware
-
-        @implementer(ILayoutAware)
-        @adapter(self.portal['f1'].__class__)
-        class FolderLayoutAware(object):
-
-            def __init__(self, context):
-                self.context = context
-
-            content = u"<html><body>N/A</body></html>"
-            pageSiteLayout = None
-
-            @property
-            def sectionSiteLayout(self):
-                return currentSectionSiteLayout
-
-        sm = getGlobalSiteManager()
-        sm.registerAdapter(FolderLayoutAware)
+        self.behavior.sectionSiteLayout = \
+            '/++sitelayout++testlayout2/mylayout.html'
 
         view = getMultiAdapter((self.portal['f1']['d1'], self.request,),
                                name=u'page-site-layout')
         rendered = view()
 
         self.assertFalse(u"Layout title" in rendered)
-        self.assertTrue(u"Layout 2 title" in rendered)
+        self.assertTrue(u"My Layout 1 Title" in rendered)
 
         # Trigger invalidation by incrementing the catalog counter
         self.portal['portal_catalog']._increment_counter()
 
         # Change the section value
-        currentSectionSiteLayout = '/++sitelayout++testlayout1/site.html'
+        self.behavior.sectionSiteLayout = \
+            '/++sitelayout++testlayout1/site.html'
 
         view = getMultiAdapter((self.portal['f1']['d1'], self.request,),
                                name=u'page-site-layout')
         rendered = view()
 
-        sm.unregisterAdapter(FolderLayoutAware)
-
         # We now get the new layout
         self.assertTrue(u"Layout title" in rendered)
-        self.assertFalse(u"Layout 2 title" in rendered)
+        self.assertFalse(u"My Layout 1 Title" in rendered)
 
     def test_page_site_layout_cache_invalidate_registry_key(self):
-        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
-            '/++sitelayout++testlayout1/site.html'
-
-        currentSectionSiteLayout = '/++sitelayout++testlayout2/mylayout.html'
-
-        from plone.app.blocks.layoutbehavior import ILayoutAware
-
-        @implementer(ILayoutAware)
-        @adapter(self.portal['f1'].__class__)
-        class FolderLayoutAware(object):
-
-            def __init__(self, context):
-                self.context = context
-
-            content = u"<html><body>N/A</body></html>"
-            pageSiteLayout = None
-
-            @property
-            def sectionSiteLayout(self):
-                return currentSectionSiteLayout
-
-        sm = getGlobalSiteManager()
-        sm.registerAdapter(FolderLayoutAware)
+        self.behavior.sectionSiteLayout = \
+            '/++sitelayout++testlayout2/mylayout.html'
 
         view = getMultiAdapter((self.portal['f1']['d1'], self.request,),
                                name=u'page-site-layout')
         rendered = view()
 
         self.assertFalse(u"Layout title" in rendered)
-        self.assertTrue(u"Layout 2 title" in rendered)
+        self.assertTrue(u"My Layout 1 Title" in rendered)
 
         # Trigger invalidation by modifying the global registry key
         self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
             '/++sitelayout++testlayout2/mylayout.html'
 
         # Change the section value
-        currentSectionSiteLayout = '/++sitelayout++testlayout1/site.html'
+        self.behavior.sectionSiteLayout = \
+            '/++sitelayout++testlayout1/site.html'
 
         view = getMultiAdapter((self.portal['f1']['d1'], self.request,),
                                name=u'page-site-layout')
         rendered = view()
 
-        sm.unregisterAdapter(FolderLayoutAware)
-
         # We now get the new layout
         self.assertTrue(u"Layout title" in rendered)
-        self.assertFalse(u"Layout 2 title" in rendered)
+        self.assertFalse(u"My Layout 1 Title" in rendered)
