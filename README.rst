@@ -14,8 +14,8 @@ Introduction to Blocks
     :target: https://pypi.python.org/pypi/plone.app.blocks/
     :alt: Downloads
 
-This package implements the 'blocks' rendering model, by providing several
-transform stages that hook into ``plone.transformchain``.
+This package implements the 'blocks' rendering model,
+by providing several transform stages that hook into ``plone.transformchain``.
 
 The rendering stages are:
 
@@ -30,18 +30,18 @@ The rendering stages are:
 
 ``plone.app.blocks.tiles`` (order 8500)
     Resolve tiles and place them directly into the merged layout.
-    This is the fallback for views that do not opt into ITilePageRendered.
+    This is the fallback for views that do not opt into ``ITilePageRendered``.
 
 ``plone.app.blocks.gridsystem`` (order 8700)
     Apply responsive classes to the grid system.
-    The grid system setting is on the html tag attribute "data-gridsystem".
+    The grid system setting is on the html tag attribute ``data-gridsystem``.
     It defaults to "deco" which is the plone 4 sunburst theme grid system.
     plone.app.blocks also supports the value of "bs3" which is bootstrap 3 grid system.
-    To change the grid system used, change the IBlocksSettings.default_grid_system value in the Configuration Registry.
+    To change the grid system used, change the ``IBlocksSettings.default_grid_system`` value in the Configuration Registry.
     If you're only using content tile transforms, you'll need to set a default grid system that matches your theme.
 
 ``plone.app.blocks.esirender`` (order 8900)
-    Only executed if the request key ``plone.app.blocks.esi`` is set and has a true value,
+    Only executed if the request key ``plone.app.blocks.esi`` is set and its value is true,
     as would be the case if any ESI-rendered tiles are included and ESI rendering is enabled globally.
     This step will serialise the response down to a string and perform some substitution to make ESI rendering work.
 
@@ -73,7 +73,8 @@ To create such a manifest, put a ``manifest.cfg`` file in the layout directory w
 * Single manifest may contain multiple ``[sitelayout]`` sections.
 
 A vocabulary factory called ``plone.availableSiteLayouts`` is registered to allow lookup of all registered site layouts.
-The terms in this vocabulary use the URL as a value, the resource directory name as a token,
+The terms in this vocabulary use the URL as a value,
+the resource directory name as a token,
 and the title from the manifest (falling back on a sanitised version of the resource directory name) as the title.
 
 The current default site layout can be identified by the ``plone.registry`` key ``plone.defaultSiteLayout``,
@@ -84,8 +85,7 @@ To always use the current site default, use:
 
     <html data-layout="./@@default-site-layout">
 
-The ``@@default-site-layout`` view will render the current default site
-layout.
+The ``@@default-site-layout`` view will render the current default site layout.
 
 
 Content layouts
@@ -112,15 +112,17 @@ To create such a manifest, put a ``manifest.cfg`` file in the layout directory w
     screenshot = mylayout.png
     for = Document,Folder
 
-All keys are optional. The file defaults to ``content.html``.
-Single manifest may contain multiple ``[contentlayout]`` sections.
+* All keys are optional.
+* The file defaults to ``content.html``.
+* Single manifest may contain multiple ``[contentlayout]`` sections.
 
 A vocabulary factory called ``plone.availableContentLayouts`` is registered to allow lookup of all registered content layouts.
 The terms in this vocabulary use the URL as a value,
 the resource directory name as a token,
 and the title from the manifest (falling back on a sanitised version of the resource directory name) as the title.
 
-The default content layout can be identified by the ``plone.registry`` key ``plone.app.blocks.default_layout`` and default content layout for some specific content type with key ``plone.app.blocks.default_layout.my_type``.
+The default content layout can be identified by the ``plone.registry`` key ``plone.app.blocks.default_layout``,
+and the default content layout for some specific content type with key ``plone.app.blocks.default_layout.my_type``.
 The default content layout is supported by the built-in ``layout_view`` browser view for content with ``ILayoutAware`` behavior.
 
 
