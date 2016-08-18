@@ -22,29 +22,29 @@ def read(*path):
     return open(os.path.join(*path)).read()
 
 long_description = '%s\n%s\n%s\n%s' % (
-    read("README.rst"),
-    read("plone", "app", "blocks", "tests", "rendering.rst"),
-    read("plone", "app", "blocks", "tests", "esi.rst"),
-    read("CHANGES.rst")
+    read('README.rst'),
+    read('plone', 'app', 'blocks', 'tests', 'rendering.rst'),
+    read('plone', 'app', 'blocks', 'tests', 'esi.rst'),
+    read('CHANGES.rst')
 )
 
 setup(
     name='plone.app.blocks',
     version=version,
-    description="Implements the in-Plone blocks rendering process",
+    description='Implements the in-Plone blocks rendering process',
     long_description=long_description,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
-        "Framework :: Plone",
+        'Framework :: Plone',
         'Framework :: Plone :: 4.3',
         'Framework :: Plone :: 5.0',
         'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
-        "Programming Language :: Python",
+        'Programming Language :: Python',
         'Programming Language :: Python :: 2.7',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
-        "Topic :: Software Development :: Libraries :: Python Modules",
+        'Topic :: Software Development :: Libraries :: Python Modules',
     ],
     keywords='plone blocks deco',
     author='Martin Aspeli, Laurence Rowe',
