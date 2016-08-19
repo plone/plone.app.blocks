@@ -6,22 +6,29 @@ At a high level, it consists of the following steps:
 
 0. Obtain the content page, an HTML document.
 1. Look for a site layout link in the content page.
+
    This takes the form of an attribute on the html tag like ``<html data-layout="..." />``.
 
    Usually, the site layout URL will refer to a resource in a resource  directory of type ``sitelayout``,
    e.g. ``/++sitelayout++foo/site.html``,
-   although the layout can be any URL. An absolute path like this will be adjusted so that it is always relative to the Plone site root.
+   although the layout can be any URL.
+   An absolute path like this will be adjusted so that it is always relative to the Plone site root.
 2. Resolve and obtain the site layout.
+
    This is another HTML document.
 3. Extract panels from the site layout.
+
    A panel is an element (usually a ``<div />``) in the layout page with a data-panel attribute,
    for example: ``<div data-panel="panel1" />``.
    The attribute specifies an id which *may* be used in the content page.
 4. Merge panels.
+
    This is the process which applies the layout to the unstyled page.
-   All panels in the layout page that have a matching element in the content page, are replaced by the content page element.
+   All panels in the layout page that have a matching element in the content page are replaced by the content page element.
    The rest of the content page is discarded.
-5. Resolve and obtain tiles. A tile is a placeholder element in the page which will be replaced by the contents of a document referenced by a URL.
+5. Resolve and obtain tiles.
+
+   A tile is a placeholder element in the page which will be replaced by the contents of a document referenced by a URL.
 
    A tile is identified by a placeholder element with a ``data-tile`` attribute containing the tile URL.
 
@@ -31,15 +38,17 @@ At a high level, it consists of the following steps:
 
    The ``plone.tiles`` package provides a framework for writing tiles,
    although in reality a tile can be any HTML page.
-6. Place tiles into the page. The tile should resolve to a full HTML document.
+6. Place tiles into the page.
+
+   The tile should resolve to a full HTML document.
    Any content found in the ``<head />`` of the tile content will be merged into the ``<head />`` of the rendered content.
    The contents of the ``<body />`` of the tile content are put into the rendered document at the tile placeholder.
 
 Rendering step-by-step
 ----------------------
 
-Let us now illustrate the rendering process. We'll need a few variables
-defined first:
+Let us now illustrate the rendering process.
+We'll need a few variables defined first:
 
 .. code-block:: python
 
@@ -298,7 +307,8 @@ We register these views and tiles in the same way the ZCML handlers for ``<brows
 Rendering the page
 ~~~~~~~~~~~~~~~~~~
 
-We can now render the page. Provided ``plone.app.blocks`` is installed and working, it should perform its magic.
+We can now render the page.
+Provided ``plone.app.blocks`` is installed and working, it should perform its magic.
 We make sure that Zope is in "development mode" to get pretty-printed output.
 
 .. code-block:: python
