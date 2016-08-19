@@ -10,10 +10,6 @@ Introduction to Blocks
     :alt: Coveralls badge
     :target: https://coveralls.io/r/plone/plone.app.blocks
 
-.. image:: https://pypip.in/d/plone.app.blocks/badge.png
-    :target: https://pypi.python.org/pypi/plone.app.blocks/
-    :alt: Downloads
-
 This package implements the 'blocks' rendering model,
 by providing several transform stages that hook into ``plone.transformchain``.
 
