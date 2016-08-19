@@ -38,6 +38,8 @@ Fixes:
 - Housekeeping: ZCA decorators, sorted imports, line-lengths and related.
   [jensens]
 
+- Reformat documentation.
+  [gforcada]
 
 3.1.0 (2016-03-28)
 ------------------
