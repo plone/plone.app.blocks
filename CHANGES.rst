@@ -41,6 +41,9 @@ Fixes:
 - Reformat documentation.
   [gforcada]
 
+- Update travis configuration.
+  [gforcada]
+
 3.1.0 (2016-03-28)
 ------------------
 
