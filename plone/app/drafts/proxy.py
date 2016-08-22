@@ -80,7 +80,7 @@ class DraftProxy(object):
         if name in deleted:
             raise AttributeError(name)
 
-        if hasattr(self.__draft, name):
+        if getattr(self.__draft, name, None):
             return getattr(self.__draft, name)
 
         return getattr(self.__target, name)
@@ -103,7 +103,7 @@ class DraftProxy(object):
             setattr(self.__draft, '_proxyDeleted', deleted)
 
         # only delete on draft
-        if hasattr(self.__draft, name):
+        if getattr(self.__draft, name, None):
             delattr(self.__draft, name)
 
 
@@ -123,7 +123,8 @@ class AliasAnnotations(DictMixin):
         self.targetAnnotations = IAnnotations(self.target)
 
     def __nonzero__(self):
-        return self.targetAnnotations.__nonzero__() or self.draftAnnotations.__nonzero__()
+        return self.targetAnnotations.__nonzero__() or \
+               self.draftAnnotations.__nonzero__()
 
     def get(self, key, default=None):
 

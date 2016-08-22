@@ -62,10 +62,10 @@ class DefaultAddFormFieldWidgets(FieldWidgetsBase):
         if IDraftable.__identifier__ in fti.behaviors:
             current = ICurrentDraftManagement(request)
 
-            if current.targetKey != '++add++%s' % form.portal_type:
+            if current.targetKey != '++add++{0}'.format(form.portal_type):
                 beginDrafting(context, None)
                 current.path = '/'.join(context.getPhysicalPath())
-                current.targetKey = '++add++%s' % form.portal_type
+                current.targetKey = '++add++{0}'.format(form.portal_type)
                 current.save()
             else:
                 current.mark()
@@ -140,7 +140,7 @@ def autosave(event):
 
     view = getattr(request, 'PUBLISHED', None)
     form = getattr(view, 'context', None)
-    if hasattr(aq_base(form), 'form_instance'):
+    if getattr(aq_base(form), 'form_instance', None):
         form = form.form_instance
 
     if IAddForm.providedBy(form):
@@ -154,7 +154,7 @@ def autosave(event):
         if target is None:
             target = createContent(form.portal_type)
             target.id = ''
-            IMutableUUID(target).set('++add++%s' % form.portal_type)
+            IMutableUUID(target).set('++add++{0}'.format(form.portal_type))
             draft._draftAddFormTarget = target
         target = target.__of__(context)
 
@@ -170,7 +170,7 @@ def autosave(event):
     if IDraftable.__identifier__ not in fti.behaviors:
         return
 
-    if not hasattr(form, "extractData"):
+    if not getattr(form, 'extractData', None):
         return
 
     data, errors = form.extractData()

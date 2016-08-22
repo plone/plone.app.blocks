@@ -91,14 +91,14 @@ class TestStorage(unittest.TestCase):
 
     def test_createDraft_factory(self):
         def factory(userId, targetKey):
-            return Draft(name=u"foo")
+            return Draft(name=u'foo')
 
         draft1 = self.storage.createDraft('user1', '123', factory=factory)
-        self.assertEqual(u"foo", draft1.__name__)
+        self.assertEqual(u'foo', draft1.__name__)
         self.assertTrue(draft1.__name__ in self.storage.drafts['user1']['123'])
 
         draft2 = self.storage.createDraft('user1', '123', factory=factory)
-        self.assertEqual(u"foo-1", draft2.__name__)
+        self.assertEqual(u'foo-1', draft2.__name__)
         self.assertTrue(draft2.__name__ in self.storage.drafts['user1']['123'])
 
     def test_discardDrafts(self):
@@ -158,17 +158,17 @@ class TestStorage(unittest.TestCase):
 
     def test_discardDraft_not_found(self):
         self.storage.createDraft('user1', '123')
-        draft = Draft('user1', '123', u"bogus")
+        draft = Draft('user1', '123', u'bogus')
         self.storage.discardDraft(draft)
 
     def test_discardDraft_no_key(self):
         self.storage.createDraft('user1', '123')
-        draft = Draft('user1', '234', u"draft")
+        draft = Draft('user1', '234', u'draft')
         self.storage.discardDraft(draft)
 
     def test_discardDraft_no_user(self):
         self.storage.createDraft('user1', '123')
-        draft = Draft('user2', '123', u"draft")
+        draft = Draft('user2', '123', u'draft')
         self.storage.discardDraft(draft)
 
     def test_getDrafts(self):
@@ -197,7 +197,7 @@ class TestStorage(unittest.TestCase):
     def test_getDraft_not_found(self):
         self.storage.createDraft('user1', '123')
         self.assertEqual(None, self.storage.getDraft(
-            'user1', '123', u"bogus"))
+            'user1', '123', u'bogus'))
 
     def test_getDraft_no_key(self):
         draft = self.storage.createDraft('user1', '123')
@@ -228,32 +228,32 @@ class TestDraftProxy(unittest.TestCase):
         self.folder.invokeFactory('Document', 'd1')
         target = self.folder['d1']
 
-        target.title = u"Old title"
+        target.title = u'Old title'
 
         draft = Draft()
         draft.someAttribute = 1
 
         proxy = DraftProxy(draft, target)
 
-        self.assertEqual(u"Old title", proxy.title)
+        self.assertEqual(u'Old title', proxy.title)
         self.assertEqual(1, proxy.someAttribute)
 
-        proxy.title = u"New title"
+        proxy.title = u'New title'
 
-        self.assertEqual(u"New title", proxy.title)
+        self.assertEqual(u'New title', proxy.title)
 
     def test_attribute_deletion(self):
 
         self.folder.invokeFactory('Document', 'd1')
         target = self.folder['d1']
 
-        target.title = u"Old title"
-        target.description = u"Old description"
+        target.title = u'Old title'
+        target.description = u'Old description'
 
         draft = Draft()
 
         draft.someAttribute = 1
-        draft.description = u"New description"
+        draft.description = u'New description'
 
         proxy = DraftProxy(draft, target)
 
@@ -262,7 +262,9 @@ class TestDraftProxy(unittest.TestCase):
         del proxy.description
 
         self.assertEqual(
-            set(['someAttribute', 'title', 'description']), draft._proxyDeleted)
+            set(['someAttribute', 'title', 'description']),
+            draft._proxyDeleted
+        )
 
         self.assertFalse(hasattr(draft, 'someAttribute'))
         self.assertFalse(hasattr(draft, 'title'))
@@ -272,8 +274,8 @@ class TestDraftProxy(unittest.TestCase):
         self.assertFalse(hasattr(proxy, 'title'))
         self.assertFalse(hasattr(proxy, 'description'))
 
-        self.assertEqual(u"Old title", target.title)
-        self.assertEqual(u"Old description", target.description)
+        self.assertEqual(u'Old title', target.title)
+        self.assertEqual(u'Old description', target.description)
 
     def test_interfaces(self):
 
@@ -299,58 +301,58 @@ class TestDraftProxy(unittest.TestCase):
         target = self.folder['d1']
 
         targetAnnotations = IAnnotations(target)
-        targetAnnotations[u"test.key"] = 123
-        targetAnnotations[u"other.key"] = 456
+        targetAnnotations[u'test.key'] = 123
+        targetAnnotations[u'other.key'] = 456
 
         draft = Draft()
 
         draftAnnotations = IAnnotations(draft)
-        draftAnnotations[u"some.key"] = 234
+        draftAnnotations[u'some.key'] = 234
 
         proxy = DraftProxy(draft, target)
 
         proxyAnnotations = IAnnotations(proxy)
 
-        self.assertEqual(123, proxyAnnotations[u"test.key"])
-        self.assertEqual(234, proxyAnnotations[u"some.key"])
+        self.assertEqual(123, proxyAnnotations[u'test.key'])
+        self.assertEqual(234, proxyAnnotations[u'some.key'])
 
-        proxyAnnotations[u"test.key"] = 789
+        proxyAnnotations[u'test.key'] = 789
 
-        self.assertEqual(789, proxyAnnotations[u"test.key"])
-        self.assertEqual(123, targetAnnotations[u"test.key"])
+        self.assertEqual(789, proxyAnnotations[u'test.key'])
+        self.assertEqual(123, targetAnnotations[u'test.key'])
 
         # Annotations API
 
-        self.assertEqual(789, proxyAnnotations.get(u"test.key"))
+        self.assertEqual(789, proxyAnnotations.get(u'test.key'))
 
         keys = proxyAnnotations.keys()
-        self.assertTrue(u"test.key" in keys)
-        self.assertTrue(u"some.key" in keys)
-        self.assertTrue(u"other.key" in keys)
+        self.assertTrue(u'test.key' in keys)
+        self.assertTrue(u'some.key' in keys)
+        self.assertTrue(u'other.key' in keys)
 
-        self.assertEqual(789, proxyAnnotations.setdefault(u"test.key", -1))
-        self.assertEqual(234, proxyAnnotations.setdefault(u"some.key", -1))
-        self.assertEqual(456, proxyAnnotations.setdefault(u"other.key", -1))
-        self.assertEqual(-1, proxyAnnotations.setdefault(u"new.key", -1))
+        self.assertEqual(789, proxyAnnotations.setdefault(u'test.key', -1))
+        self.assertEqual(234, proxyAnnotations.setdefault(u'some.key', -1))
+        self.assertEqual(456, proxyAnnotations.setdefault(u'other.key', -1))
+        self.assertEqual(-1, proxyAnnotations.setdefault(u'new.key', -1))
 
-        del proxyAnnotations[u"test.key"]
-        self.assertFalse(u"test.key" in proxyAnnotations)
-        self.assertFalse(u"test.key" in draftAnnotations)
-        self.assertTrue(u"test.key" in targetAnnotations)
-        self.assertTrue(u"test.key" in draft._proxyAnnotationsDeleted)
+        del proxyAnnotations[u'test.key']
+        self.assertFalse(u'test.key' in proxyAnnotations)
+        self.assertFalse(u'test.key' in draftAnnotations)
+        self.assertTrue(u'test.key' in targetAnnotations)
+        self.assertTrue(u'test.key' in draft._proxyAnnotationsDeleted)
 
-        del proxyAnnotations[u"some.key"]
-        self.assertFalse(u"some.key" in proxyAnnotations)
-        self.assertFalse(u"some.key" in draftAnnotations)
-        self.assertFalse(u"some.key" in targetAnnotations)
-        self.assertTrue(u"some.key" in draft._proxyAnnotationsDeleted)
+        del proxyAnnotations[u'some.key']
+        self.assertFalse(u'some.key' in proxyAnnotations)
+        self.assertFalse(u'some.key' in draftAnnotations)
+        self.assertFalse(u'some.key' in targetAnnotations)
+        self.assertTrue(u'some.key' in draft._proxyAnnotationsDeleted)
 
         # this key was never in the proxy/draft
-        del proxyAnnotations[u"other.key"]
-        self.assertFalse(u"other.key" in proxyAnnotations)
-        self.assertFalse(u"other.key" in draftAnnotations)
-        self.assertTrue(u"other.key" in targetAnnotations)
-        self.assertTrue(u"other.key" in draft._proxyAnnotationsDeleted)
+        del proxyAnnotations[u'other.key']
+        self.assertFalse(u'other.key' in proxyAnnotations)
+        self.assertFalse(u'other.key' in draftAnnotations)
+        self.assertTrue(u'other.key' in targetAnnotations)
+        self.assertTrue(u'other.key' in draft._proxyAnnotationsDeleted)
 
 
 class TestDraftSyncer(unittest.TestCase):
@@ -379,7 +381,7 @@ class TestDraftSyncer(unittest.TestCase):
             def __call__(self):
                 self.target.a1 = self.draft.a1
 
-        provideAdapter(Syncer1, name=u"s1")
+        provideAdapter(Syncer1, name=u's1')
 
         class Syncer2(object):
             implements(IDraftSyncer)
@@ -392,7 +394,7 @@ class TestDraftSyncer(unittest.TestCase):
             def __call__(self):
                 self.target.a2 = self.draft.a2
 
-        provideAdapter(Syncer2, name=u"s2")
+        provideAdapter(Syncer2, name=u's2')
 
         syncDraft(draft, target)
 
@@ -413,8 +415,8 @@ class TestCurrentDraft(unittest.TestCase):
         current = ICurrentDraftManagement(request)
         self.assertEqual(TEST_USER_ID, current.userId)
 
-        current.userId = u"third-user"
-        self.assertEqual(u"third-user", current.userId)
+        current.userId = u'third-user'
+        self.assertEqual(u'third-user', current.userId)
 
     def test_targetKey(self):
         request = self.request
@@ -422,13 +424,13 @@ class TestCurrentDraft(unittest.TestCase):
         current = ICurrentDraftManagement(request)
         self.assertEqual(None, current.targetKey)
 
-        request.set('plone.app.drafts.targetKey', u"123")
-        self.assertEqual(u"123", current.targetKey)
+        request.set('plone.app.drafts.targetKey', u'123')
+        self.assertEqual(u'123', current.targetKey)
 
-        current.targetKey = u"234"
-        self.assertEqual(u"234", current.targetKey)
+        current.targetKey = u'234'
+        self.assertEqual(u'234', current.targetKey)
 
-        self.assertEqual(u"123", request.get('plone.app.drafts.targetKey'))
+        self.assertEqual(u'123', request.get('plone.app.drafts.targetKey'))
 
     def test_draftName(self):
         request = self.request
@@ -436,14 +438,14 @@ class TestCurrentDraft(unittest.TestCase):
         current = ICurrentDraftManagement(request)
         self.assertEqual(None, current.draftName)
 
-        request.set('plone.app.drafts.draftName', u"draft-1")
-        self.assertEqual(u"draft-1", current.draftName)
+        request.set('plone.app.drafts.draftName', u'draft-1')
+        self.assertEqual(u'draft-1', current.draftName)
 
-        current.draftName = u"draft-2"
-        self.assertEqual(u"draft-2", current.draftName)
+        current.draftName = u'draft-2'
+        self.assertEqual(u'draft-2', current.draftName)
 
         self.assertEqual(
-            u"draft-1", request.get('plone.app.drafts.draftName'))
+            u'draft-1', request.get('plone.app.drafts.draftName'))
 
     def test_path(self):
         request = self.request
@@ -451,13 +453,13 @@ class TestCurrentDraft(unittest.TestCase):
         current = ICurrentDraftManagement(request)
         self.assertEqual(None, current.path)
 
-        request.set('plone.app.drafts.path', u"/test")
-        self.assertEqual(u"/test", current.path)
+        request.set('plone.app.drafts.path', u'/test')
+        self.assertEqual(u'/test', current.path)
 
-        current.path = u"/test/test-1"
-        self.assertEqual(u"/test/test-1", current.path)
+        current.path = u'/test/test-1'
+        self.assertEqual(u'/test/test-1', current.path)
 
-        self.assertEqual(u"/test", request.get('plone.app.drafts.path'))
+        self.assertEqual(u'/test', request.get('plone.app.drafts.path'))
 
     def test_draft(self):
         request = self.request
@@ -465,19 +467,19 @@ class TestCurrentDraft(unittest.TestCase):
         current = ICurrentDraftManagement(request)
         self.assertEqual(None, current.draft)
 
-        current.userId = u"user1"
-        current.targetKey = u"123"
-        current.draftName = u"draft"
+        current.userId = u'user1'
+        current.targetKey = u'123'
+        current.draftName = u'draft'
 
         self.assertEqual(None, current.draft)
 
         storage = getUtility(IDraftStorage)
-        created = storage.createDraft(u"user1", u"123")
+        created = storage.createDraft(u'user1', u'123')
         current.draftName = created.__name__
 
         self.assertEqual(created, current.draft)
 
-        newDraft = storage.createDraft(u"user1", u"123")
+        newDraft = storage.createDraft(u'user1', u'123')
         current.draft = newDraft
 
         self.assertEqual(newDraft, current.draft)
@@ -488,16 +490,16 @@ class TestCurrentDraft(unittest.TestCase):
         request['URL'] = 'http://nohost'
 
         current = ICurrentDraftManagement(request)
-        self.assertEqual("/", current.defaultPath)
+        self.assertEqual('/', current.defaultPath)
 
         request['URL'] = 'http://nohost/'
-        self.assertEqual("/", current.defaultPath)
+        self.assertEqual('/', current.defaultPath)
 
         request['URL'] = 'http://nohost/test/edit'
-        self.assertEqual("/test", current.defaultPath)
+        self.assertEqual('/test', current.defaultPath)
 
         request['URL'] = 'http://nohost/test/edit/'
-        self.assertEqual("/test/edit", current.defaultPath)
+        self.assertEqual('/test/edit', current.defaultPath)
 
     def test_mark(self):
         request = self.request
@@ -506,7 +508,7 @@ class TestCurrentDraft(unittest.TestCase):
         current.mark()
         self.assertFalse(IDrafting.providedBy(request))
 
-        current.targetKey = u"123"
+        current.targetKey = u'123'
         current.mark()
         self.assertTrue(IDrafting.providedBy(request))
 
@@ -522,35 +524,47 @@ class TestCurrentDraft(unittest.TestCase):
         self.assertFalse('plone.app.drafts.userId' in response.cookies)
         self.assertFalse('plone.app.drafts.path' in response.cookies)
 
-        current.targetKey = u"123"
+        current.targetKey = u'123'
         self.assertEqual(True, current.save())
 
-        self.assertEqual({'value': '123', 'quoted': True, 'path': '/'},
-                          response.cookies['plone.app.drafts.targetKey'])
+        self.assertEqual(
+            {'value': '123', 'quoted': True, 'path': '/'},
+            response.cookies['plone.app.drafts.targetKey'],
+        )
         self.assertFalse('plone.app.drafts.draftName' in response.cookies)
         self.assertFalse('plone.app.drafts.path' in response.cookies)
 
-        current.targetKey = u"123"
-        current.draftName = u"draft-1"
+        current.targetKey = u'123'
+        current.draftName = u'draft-1'
         self.assertEqual(True, current.save())
 
-        self.assertEqual({'value': '123', 'quoted': True, 'path': '/'},
-                          response.cookies['plone.app.drafts.targetKey'])
-        self.assertEqual({'value': 'draft-1', 'quoted': True, 'path': '/'},
-                          response.cookies['plone.app.drafts.draftName'])
+        self.assertEqual(
+            {'value': '123', 'quoted': True, 'path': '/'},
+            response.cookies['plone.app.drafts.targetKey'],
+        )
+        self.assertEqual(
+            {'value': 'draft-1', 'quoted': True, 'path': '/'},
+            response.cookies['plone.app.drafts.draftName'],
+        )
         self.assertFalse('plone.app.drafts.path' in response.cookies)
 
-        current.targetKey = u"123"
-        current.draftName = u"draft-1"
+        current.targetKey = u'123'
+        current.draftName = u'draft-1'
         current.path = '/test'
         self.assertEqual(True, current.save())
 
-        self.assertEqual({'value': '123', 'quoted': True, 'path': '/test'},
-                          response.cookies['plone.app.drafts.targetKey'])
-        self.assertEqual({'value': 'draft-1', 'quoted': True, 'path': '/test'},
-                          response.cookies['plone.app.drafts.draftName'])
-        self.assertEqual({'value': '/test', 'quoted': True,
-                           'path': '/test'}, response.cookies['plone.app.drafts.path'])
+        self.assertEqual(
+            {'value': '123', 'quoted': True, 'path': '/test'},
+            response.cookies['plone.app.drafts.targetKey'],
+        )
+        self.assertEqual(
+            {'value': 'draft-1', 'quoted': True, 'path': '/test'},
+            response.cookies['plone.app.drafts.draftName'],
+        )
+        self.assertEqual(
+            {'value': '/test', 'quoted': True, 'path': '/test'},
+            response.cookies['plone.app.drafts.path'],
+        )
 
     def test_discard(self):
         request = self.request
@@ -569,7 +583,7 @@ class TestCurrentDraft(unittest.TestCase):
         self.assertEqual(deletedToken, response.cookies[
                           'plone.app.drafts.path'])
 
-        current.path = "/test"
+        current.path = '/test'
         current.discard()
 
         deletedToken['path'] = '/test'
@@ -655,9 +669,9 @@ class TestUtils(unittest.TestCase):
         request = self.request
 
         management = ICurrentDraftManagement(request)
-        management.userId = u"user1"
-        management.targetKey = u"123"
-        management.draftName = u"bogus"
+        management.userId = u'user1'
+        management.targetKey = u'123'
+        management.draftName = u'bogus'
 
         draft = getCurrentDraft(request)
         self.assertEqual(None, draft)
@@ -670,13 +684,13 @@ class TestUtils(unittest.TestCase):
         request = self.request
 
         management = ICurrentDraftManagement(request)
-        management.userId = u"user1"
-        management.targetKey = u"123"
-        management.draftName = u"bogus"
+        management.userId = u'user1'
+        management.targetKey = u'123'
+        management.draftName = u'bogus'
 
         draft = getCurrentDraft(request, create=True)
         inStorage = getUtility(IDraftStorage).getDraft(
-            u"user1", u"123", draft.__name__)
+            u'user1', u'123', draft.__name__)
 
         self.assertEqual(inStorage, draft)
 
@@ -692,11 +706,11 @@ class TestUtils(unittest.TestCase):
     def test_getCurrentDraft_draft_details_set_in_storage(self):
         request = self.request
 
-        inStorage = getUtility(IDraftStorage).createDraft(u"user1", u"123")
+        inStorage = getUtility(IDraftStorage).createDraft(u'user1', u'123')
 
         management = ICurrentDraftManagement(request)
-        management.userId = u"user1"
-        management.targetKey = u"123"
+        management.userId = u'user1'
+        management.targetKey = u'123'
         management.draftName = inStorage.__name__
 
         draft = getCurrentDraft(request)
@@ -709,11 +723,11 @@ class TestUtils(unittest.TestCase):
     def test_getCurrentDraft_draft_details_set_in_storage_create(self):
         request = self.request
 
-        inStorage = getUtility(IDraftStorage).createDraft(u"user1", u"123")
+        inStorage = getUtility(IDraftStorage).createDraft(u'user1', u'123')
 
         management = ICurrentDraftManagement(request)
-        management.userId = u"user1"
-        management.targetKey = u"123"
+        management.userId = u'user1'
+        management.targetKey = u'123'
         management.draftName = inStorage.__name__
 
         draft = getCurrentDraft(request, create=True)
@@ -762,20 +776,32 @@ class TestArchetypesIntegration(unittest.TestCase):
         # We should now have cookies with the drafts information
         cookies = browser.cookies.forURL(browser.url)
         self.assertEqual(
-            '"/plone/portal_factory/Document/document.2010-02-04.2866363923"', cookies['plone.app.drafts.path'])
-        self.assertEqual('"0%3ADocument"', cookies[
-                          'plone.app.drafts.targetKey'])
-        self.assertFalse(
-            'plone.app.drafts.draftName' in browser.cookies.forURL(browser.url))
+            '"/plone/portal_factory/Document/document.2010-02-04.2866363923"',
+            cookies['plone.app.drafts.path'],
+        )
+        self.assertEqual(
+            '"0%3ADocument"',
+            cookies['plone.app.drafts.targetKey'],
+        )
+        self.assertNotIn(
+            'plone.app.drafts.draftName',
+            browser.cookies.forURL(browser.url)
+        )
 
         # We can now cancel the edit. The cookies should expire.
         browser.getControl(name='form.button.cancel').click()
-        self.assertFalse(
-            'plone.app.drafts.targetKey' in browser.cookies.forURL(browser.url))
-        self.assertFalse(
-            'plone.app.drafts.path' in browser.cookies.forURL(browser.url))
-        self.assertFalse(
-            'plone.app.drafts.draftName' in browser.cookies.forURL(browser.url))
+        self.assertNotIn(
+            'plone.app.drafts.targetKey',
+            browser.cookies.forURL(browser.url),
+        )
+        self.assertNotIn(
+            'plone.app.drafts.path',
+            browser.cookies.forURL(browser.url),
+        )
+        self.assertNotIn(
+            'plone.app.drafts.draftName',
+            browser.cookies.forURL(browser.url),
+        )
 
     def test_add_to_portal_root_save(self):
         browser = Browser(self.layer['app'])
@@ -800,23 +826,35 @@ class TestArchetypesIntegration(unittest.TestCase):
         # We should now have cookies with the drafts information
         cookies = browser.cookies.forURL(browser.url)
         self.assertEqual(
-            '"/plone/portal_factory/Document/document.2010-02-04.2866363923"', cookies['plone.app.drafts.path'])
-        self.assertEqual('"0%3ADocument"', cookies[
-                          'plone.app.drafts.targetKey'])
-        self.assertFalse(
-            'plone.app.drafts.draftName' in browser.cookies.forURL(browser.url))
+            '"/plone/portal_factory/Document/document.2010-02-04.2866363923"',
+            cookies['plone.app.drafts.path'],
+        )
+        self.assertEqual(
+            '"0%3ADocument"',
+            cookies['plone.app.drafts.targetKey'],
+        )
+        self.assertNotIn(
+            'plone.app.drafts.draftName',
+            browser.cookies.forURL(browser.url),
+        )
 
         # We can now fill in the required fields and save. The cookies should
         # expire.
 
-        browser.getControl(name='title').value = u"New document"
+        browser.getControl(name='title').value = u'New document'
         browser.getControl(name='form.button.save').click()
-        self.assertFalse(
-            'plone.app.drafts.targetKey' in browser.cookies.forURL(browser.url))
-        self.assertFalse(
-            'plone.app.drafts.path' in browser.cookies.forURL(browser.url))
-        self.assertFalse(
-            'plone.app.drafts.draftName' in browser.cookies.forURL(browser.url))
+        self.assertNotIn(
+            'plone.app.drafts.targetKey',
+            browser.cookies.forURL(browser.url),
+        )
+        self.assertNotIn(
+            'plone.app.drafts.path',
+            browser.cookies.forURL(browser.url),
+        )
+        self.assertNotIn(
+            'plone.app.drafts.draftName',
+            browser.cookies.forURL(browser.url),
+        )
 
     def test_add_to_folder(self):
         browser = Browser(self.layer['app'])
@@ -842,28 +880,37 @@ class TestArchetypesIntegration(unittest.TestCase):
 
         # We should now have cookies with the drafts information
         cookies = browser.cookies.forURL(browser.url)
+        path = '"{0}/portal_factory/Document/document.2010-02-04.2866363923"'
         self.assertEqual(
-            '"%s/portal_factory/Document/document.2010-02-04.2866363923"' % self.folder.absolute_url_path(),
+            path.format(self.folder.absolute_url_path()),
             cookies['plone.app.drafts.path']
         )
-        self.assertEqual('"%s%%3ADocument"' %
-                          uuid, cookies['plone.app.drafts.targetKey'])
-        self.assertFalse(
-            'plone.app.drafts.draftName' in browser.cookies.forURL(browser.url))
+        self.assertEqual(
+            '"{0}%3ADocument"'.format(uuid),
+            cookies['plone.app.drafts.targetKey'],
+        )
+        self.assertNotIn(
+            'plone.app.drafts.draftName',
+            browser.cookies.forURL(browser.url),
+        )
 
         # We can now cancel the edit. The cookies should expire.
         browser.getControl(name='form.button.cancel').click()
-        self.assertFalse(
-            'plone.app.drafts.targetKey' in browser.cookies.forURL(browser.url))
-        self.assertFalse(
-            'plone.app.drafts.path' in browser.cookies.forURL(browser.url))
+        self.assertNotIn(
+            'plone.app.drafts.targetKey',
+            browser.cookies.forURL(browser.url),
+        )
+        self.assertNotIn(
+            'plone.app.drafts.path',
+            browser.cookies.forURL(browser.url),
+        )
 
     def test_edit(self):
         browser = Browser(self.layer['app'])
         browser.handleErrors = False
 
         self.folder.invokeFactory('Document', 'd1')
-        self.folder['d1'].setTitle(u"New title")
+        self.folder['d1'].setTitle(u'New title')
 
         transaction.commit()
 
@@ -886,27 +933,39 @@ class TestArchetypesIntegration(unittest.TestCase):
 
         # We should now have cookies with the drafts information
         cookies = browser.cookies.forURL(browser.url)
-        self.assertEqual('"%s"' % self.folder['d1'].absolute_url_path(), cookies[
-                          'plone.app.drafts.path'])
-        self.assertEqual('"%s"' % uuid, cookies['plone.app.drafts.targetKey'])
-        self.assertFalse(
-            'plone.app.drafts.draftName' in browser.cookies.forURL(browser.url))
+        self.assertEqual(
+            '"{0}"'.format(self.folder['d1'].absolute_url_path()),
+            cookies['plone.app.drafts.path'],
+        )
+        self.assertEqual(
+            '"{0}"'.format(uuid),
+            cookies['plone.app.drafts.targetKey'])
+        self.assertNotIn(
+            'plone.app.drafts.draftName',
+            browser.cookies.forURL(browser.url),
+        )
 
         # We can now save the page. The cookies should expire.
         browser.getControl(name='form.button.save').click()
-        self.assertFalse(
-            'plone.app.drafts.targetKey' in browser.cookies.forURL(browser.url))
-        self.assertFalse(
-            'plone.app.drafts.path' in browser.cookies.forURL(browser.url))
-        self.assertFalse(
-            'plone.app.drafts.draftName' in browser.cookies.forURL(browser.url))
+        self.assertNotIn(
+            'plone.app.drafts.targetKey',
+            browser.cookies.forURL(browser.url),
+        )
+        self.assertNotIn(
+            'plone.app.drafts.path',
+            browser.cookies.forURL(browser.url),
+        )
+        self.assertNotIn(
+            'plone.app.drafts.draftName',
+            browser.cookies.forURL(browser.url),
+        )
 
     def test_edit_existing_draft(self):
         browser = Browser(self.layer['app'])
         browser.handleErrors = False
 
         self.folder.invokeFactory('Document', 'd1')
-        self.folder['d1'].setTitle(u"New title")
+        self.folder['d1'].setTitle(u'New title')
 
         uuid = IUUID(self.folder['d1'])
 
@@ -933,31 +992,48 @@ class TestArchetypesIntegration(unittest.TestCase):
 
         # We should now have cookies with the drafts information
         cookies = browser.cookies.forURL(browser.url)
-        self.assertEqual('"%s"' % self.folder['d1'].absolute_url_path(), cookies[
-                          'plone.app.drafts.path'])
-        self.assertEqual('"%s"' % uuid, cookies['plone.app.drafts.targetKey'])
-        self.assertEqual('"%s"' % TEST_USER_ID, cookies[
-                          'plone.app.drafts.userId'])
-        self.assertEqual('"%s"' % draft.__name__, cookies[
-                          'plone.app.drafts.draftName'])
+        self.assertEqual(
+            '"{0}"'.format(self.folder['d1'].absolute_url_path()),
+            cookies['plone.app.drafts.path'],
+        )
+        self.assertEqual(
+            '"{0}"'.format(uuid),
+            cookies['plone.app.drafts.targetKey'],
+        )
+        self.assertEqual(
+            '"{0}"'.format(TEST_USER_ID),
+            cookies['plone.app.drafts.userId'],
+        )
+        self.assertEqual(
+            '"{0}"'.format(draft.__name__),
+            cookies['plone.app.drafts.draftName'],
+        )
 
         # We can now save the page. The cookies should expire.
         browser.getControl(name='form.button.save').click()
-        self.assertFalse(
-            'plone.app.drafts.targetKey' in browser.cookies.forURL(browser.url))
-        self.assertFalse(
-            'plone.app.drafts.path' in browser.cookies.forURL(browser.url))
-        self.assertFalse(
-            'plone.app.drafts.draftName' in browser.cookies.forURL(browser.url))
-        self.assertFalse(
-            'plone.app.drafts.userId' in browser.cookies.forURL(browser.url))
+        self.assertNotIn(
+            'plone.app.drafts.targetKey',
+            browser.cookies.forURL(browser.url),
+        )
+        self.assertNotIn(
+            'plone.app.drafts.path',
+            browser.cookies.forURL(browser.url),
+        )
+        self.assertNotIn(
+            'plone.app.drafts.draftName',
+            browser.cookies.forURL(browser.url),
+        )
+        self.assertNotIn(
+            'plone.app.drafts.userId',
+            browser.cookies.forURL(browser.url),
+        )
 
     def test_edit_multiple_existing_drafts(self):
         browser = Browser(self.layer['app'])
         browser.handleErrors = False
 
         self.folder.invokeFactory('Document', 'd1')
-        self.folder['d1'].setTitle(u"New title")
+        self.folder['d1'].setTitle(u'New title')
 
         transaction.commit()
 
@@ -985,20 +1061,33 @@ class TestArchetypesIntegration(unittest.TestCase):
 
         # We should now have cookies with the drafts information
         cookies = browser.cookies.forURL(browser.url)
-        self.assertEqual('"%s"' % self.folder['d1'].absolute_url_path(), cookies[
-                          'plone.app.drafts.path'])
-        self.assertEqual('"%s"' % uuid, cookies['plone.app.drafts.targetKey'])
-        self.assertFalse(
-            'plone.app.drafts.draftName' in browser.cookies.forURL(browser.url))
+        self.assertEqual(
+            '"{0}"'.format(self.folder['d1'].absolute_url_path()),
+            cookies['plone.app.drafts.path'],
+        )
+        self.assertEqual(
+            '"{0}"'.format(uuid),
+            cookies['plone.app.drafts.targetKey'],
+        )
+        self.assertNotIn(
+            'plone.app.drafts.draftName',
+            browser.cookies.forURL(browser.url),
+        )
 
         # We can now save the page. The cookies should expire.
         browser.getControl(name='form.button.save').click()
-        self.assertFalse(
-            'plone.app.drafts.targetKey' in browser.cookies.forURL(browser.url))
-        self.assertFalse(
-            'plone.app.drafts.path' in browser.cookies.forURL(browser.url))
-        self.assertFalse(
-            'plone.app.drafts.draftName' in browser.cookies.forURL(browser.url))
+        self.assertNotIn(
+            'plone.app.drafts.targetKey',
+            browser.cookies.forURL(browser.url),
+        )
+        self.assertNotIn(
+            'plone.app.drafts.path',
+            browser.cookies.forURL(browser.url),
+        )
+        self.assertNotIn(
+            'plone.app.drafts.draftName',
+            browser.cookies.forURL(browser.url),
+        )
 
 
 class TestDexterityIntegration(unittest.TestCase):
@@ -1032,19 +1121,29 @@ class TestDexterityIntegration(unittest.TestCase):
         # We should now have cookies with the drafts information
         cookies = browser.cookies.forURL(browser.url)
         self.assertEqual('"/plone"', cookies['plone.app.drafts.path'])
-        self.assertEqual('"%2B%2Badd%2B%2BMyDocument"',
-                          cookies['plone.app.drafts.targetKey'])
-        self.assertFalse(
-            'plone.app.drafts.draftName' in browser.cookies.forURL(browser.url))
+        self.assertEqual(
+            '"%2B%2Badd%2B%2BMyDocument"',
+            cookies['plone.app.drafts.targetKey'],
+        )
+        self.assertNotIn(
+            'plone.app.drafts.draftName',
+            browser.cookies.forURL(browser.url),
+        )
 
         # We can now cancel the edit. The cookies should expire.
         browser.getControl(name='form.buttons.cancel').click()
-        self.assertFalse(
-            'plone.app.drafts.targetKey' in browser.cookies.forURL(browser.url))
-        self.assertFalse(
-            'plone.app.drafts.path' in browser.cookies.forURL(browser.url))
-        self.assertFalse(
-            'plone.app.drafts.draftName' in browser.cookies.forURL(browser.url))
+        self.assertNotIn(
+            'plone.app.drafts.targetKey',
+            browser.cookies.forURL(browser.url),
+        )
+        self.assertNotIn(
+            'plone.app.drafts.path',
+            browser.cookies.forURL(browser.url),
+        )
+        self.assertNotIn(
+            'plone.app.drafts.draftName',
+            browser.cookies.forURL(browser.url),
+        )
 
     def test_add_to_portal_root_save(self):
         browser = Browser(self.layer['app'])
@@ -1062,23 +1161,33 @@ class TestDexterityIntegration(unittest.TestCase):
         # We should now have cookies with the drafts information
         cookies = browser.cookies.forURL(browser.url)
         self.assertEqual('"/plone"', cookies['plone.app.drafts.path'])
-        self.assertEqual('"%2B%2Badd%2B%2BMyDocument"',
-                          cookies['plone.app.drafts.targetKey'])
-        self.assertFalse(
-            'plone.app.drafts.draftName' in browser.cookies.forURL(browser.url))
+        self.assertEqual(
+            '"%2B%2Badd%2B%2BMyDocument"',
+            cookies['plone.app.drafts.targetKey'],
+        )
+        self.assertNotIn(
+            'plone.app.drafts.draftName',
+            browser.cookies.forURL(browser.url),
+        )
 
         # We can now fill in the required fields and save. The cookies should
         # expire.
 
         browser.getControl(
-            name='form.widgets.IDublinCore.title').value = u"New Document"
+            name='form.widgets.IDublinCore.title').value = u'New Document'
         browser.getControl(name='form.buttons.save').click()
-        self.assertFalse(
-            'plone.app.drafts.targetKey' in browser.cookies.forURL(browser.url))
-        self.assertFalse(
-            'plone.app.drafts.path' in browser.cookies.forURL(browser.url))
-        self.assertFalse(
-            'plone.app.drafts.draftName' in browser.cookies.forURL(browser.url))
+        self.assertNotIn(
+            'plone.app.drafts.targetKey',
+            browser.cookies.forURL(browser.url),
+        )
+        self.assertNotIn(
+            'plone.app.drafts.path',
+            browser.cookies.forURL(browser.url),
+        )
+        self.assertNotIn(
+            'plone.app.drafts.draftName',
+            browser.cookies.forURL(browser.url),
+        )
 
     def test_add_to_folder(self):
         browser = Browser(self.layer['app'])
@@ -1096,27 +1205,35 @@ class TestDexterityIntegration(unittest.TestCase):
         # We should now have cookies with the drafts information
         cookies = browser.cookies.forURL(browser.url)
         self.assertEqual(
-            '"%s"' % self.folder.absolute_url_path(),
+            '"{0}"'.format(self.folder.absolute_url_path()),
             cookies['plone.app.drafts.path']
         )
-        self.assertEqual('"%2B%2Badd%2B%2BMyDocument"',
-                          cookies['plone.app.drafts.targetKey'])
-        self.assertFalse(
-            'plone.app.drafts.draftName' in browser.cookies.forURL(browser.url))
+        self.assertEqual(
+            '"%2B%2Badd%2B%2BMyDocument"',
+            cookies['plone.app.drafts.targetKey'],
+        )
+        self.assertNotIn(
+            'plone.app.drafts.draftName',
+            browser.cookies.forURL(browser.url),
+        )
 
         # We can now cancel the edit. The cookies should expire.
         browser.getControl(name='form.buttons.cancel').click()
-        self.assertFalse(
-            'plone.app.drafts.targetKey' in browser.cookies.forURL(browser.url))
-        self.assertFalse(
-            'plone.app.drafts.path' in browser.cookies.forURL(browser.url))
+        self.assertNotIn(
+            'plone.app.drafts.targetKey',
+            browser.cookies.forURL(browser.url),
+        )
+        self.assertNotIn(
+            'plone.app.drafts.path',
+            browser.cookies.forURL(browser.url),
+        )
 
     def test_edit(self):
         browser = Browser(self.layer['app'])
         browser.handleErrors = False
 
         self.folder.invokeFactory('MyDocument', 'd1')
-        self.folder['d1'].title = u"New title"
+        self.folder['d1'].title = u'New title'
 
         transaction.commit()
 
@@ -1133,27 +1250,40 @@ class TestDexterityIntegration(unittest.TestCase):
 
         # We should now have cookies with the drafts information
         cookies = browser.cookies.forURL(browser.url)
-        self.assertEqual('"%s"' % self.folder['d1'].absolute_url_path(), cookies[
-                          'plone.app.drafts.path'])
-        self.assertEqual('"%s"' % uuid, cookies['plone.app.drafts.targetKey'])
-        self.assertFalse(
-            'plone.app.drafts.draftName' in browser.cookies.forURL(browser.url))
+        self.assertEqual(
+            '"{0}"'.format(self.folder['d1'].absolute_url_path()),
+            cookies['plone.app.drafts.path'],
+        )
+        self.assertEqual(
+            '"{0}"'.format(uuid),
+            cookies['plone.app.drafts.targetKey'],
+        )
+        self.assertNotIn(
+            'plone.app.drafts.draftName',
+            browser.cookies.forURL(browser.url),
+        )
 
         # We can now save the page. The cookies should expire.
         browser.getControl(name='form.buttons.save').click()
-        self.assertFalse(
-            'plone.app.drafts.targetKey' in browser.cookies.forURL(browser.url))
-        self.assertFalse(
-            'plone.app.drafts.path' in browser.cookies.forURL(browser.url))
-        self.assertFalse(
-            'plone.app.drafts.draftName' in browser.cookies.forURL(browser.url))
+        self.assertNotIn(
+            'plone.app.drafts.targetKey',
+            browser.cookies.forURL(browser.url),
+        )
+        self.assertNotIn(
+            'plone.app.drafts.path',
+            browser.cookies.forURL(browser.url),
+        )
+        self.assertNotIn(
+            'plone.app.drafts.draftName',
+            browser.cookies.forURL(browser.url),
+        )
 
     def test_edit_existing_draft(self):
         browser = Browser(self.layer['app'])
         browser.handleErrors = False
 
         self.folder.invokeFactory('MyDocument', 'd1')
-        self.folder['d1'].title = u"New title"
+        self.folder['d1'].title = u'New title'
 
         uuid = IUUID(self.folder['d1'])
 
@@ -1174,31 +1304,48 @@ class TestDexterityIntegration(unittest.TestCase):
 
         # We should now have cookies with the drafts information
         cookies = browser.cookies.forURL(browser.url)
-        self.assertEqual('"%s"' % self.folder['d1'].absolute_url_path(), cookies[
-                          'plone.app.drafts.path'])
-        self.assertEqual('"%s"' % uuid, cookies['plone.app.drafts.targetKey'])
-        self.assertEqual('"%s"' % TEST_USER_ID, cookies[
-                          'plone.app.drafts.userId'])
-        self.assertEqual('"%s"' % draft.__name__, cookies[
-                          'plone.app.drafts.draftName'])
+        self.assertEqual(
+            '"{0}"'.format(self.folder['d1'].absolute_url_path()),
+            cookies['plone.app.drafts.path'],
+        )
+        self.assertEqual(
+            '"{0}"'.format(uuid),
+            cookies['plone.app.drafts.targetKey'],
+        )
+        self.assertEqual(
+            '"{0}"'.format(TEST_USER_ID),
+            cookies['plone.app.drafts.userId'],
+        )
+        self.assertEqual(
+            '"{0}"'.format(draft.__name__),
+            cookies['plone.app.drafts.draftName'],
+        )
 
         # We can now save the page. The cookies should expire.
         browser.getControl(name='form.buttons.save').click()
-        self.assertFalse(
-            'plone.app.drafts.targetKey' in browser.cookies.forURL(browser.url))
-        self.assertFalse(
-            'plone.app.drafts.path' in browser.cookies.forURL(browser.url))
-        self.assertFalse(
-            'plone.app.drafts.draftName' in browser.cookies.forURL(browser.url))
-        self.assertFalse(
-            'plone.app.drafts.userId' in browser.cookies.forURL(browser.url))
+        self.assertNotIn(
+            'plone.app.drafts.targetKey',
+            browser.cookies.forURL(browser.url),
+        )
+        self.assertNotIn(
+            'plone.app.drafts.path',
+            browser.cookies.forURL(browser.url),
+        )
+        self.assertNotIn(
+            'plone.app.drafts.draftName',
+            browser.cookies.forURL(browser.url),
+        )
+        self.assertNotIn(
+            'plone.app.drafts.userId',
+            browser.cookies.forURL(browser.url),
+        )
 
     def test_edit_multiple_existing_drafts(self):
         browser = Browser(self.layer['app'])
         browser.handleErrors = False
 
         self.folder.invokeFactory('MyDocument', 'd1')
-        self.folder['d1'].title = u"New title"
+        self.folder['d1'].title = u'New title'
 
         transaction.commit()
 
@@ -1220,17 +1367,30 @@ class TestDexterityIntegration(unittest.TestCase):
 
         # We should now have cookies with the drafts information
         cookies = browser.cookies.forURL(browser.url)
-        self.assertEqual('"%s"' % self.folder['d1'].absolute_url_path(), cookies[
-                          'plone.app.drafts.path'])
-        self.assertEqual('"%s"' % uuid, cookies['plone.app.drafts.targetKey'])
-        self.assertFalse(
-            'plone.app.drafts.draftName' in browser.cookies.forURL(browser.url))
+        self.assertEqual(
+            '"{0}"'.format(self.folder['d1'].absolute_url_path()),
+            cookies['plone.app.drafts.path'],
+        )
+        self.assertEqual(
+            '"{0}"'.format(uuid),
+            cookies['plone.app.drafts.targetKey'],
+        )
+        self.assertNotIn(
+            'plone.app.drafts.draftName',
+            browser.cookies.forURL(browser.url),
+        )
 
         # We can now save the page. The cookies should expire.
         browser.getControl(name='form.buttons.save').click()
-        self.assertFalse(
-            'plone.app.drafts.targetKey' in browser.cookies.forURL(browser.url))
-        self.assertFalse(
-            'plone.app.drafts.path' in browser.cookies.forURL(browser.url))
-        self.assertFalse(
-            'plone.app.drafts.draftName' in browser.cookies.forURL(browser.url))
+        self.assertNotIn(
+            'plone.app.drafts.targetKey',
+            browser.cookies.forURL(browser.url),
+        )
+        self.assertNotIn(
+            'plone.app.drafts.path',
+            browser.cookies.forURL(browser.url),
+        )
+        self.assertNotIn(
+            'plone.app.drafts.draftName',
+            browser.cookies.forURL(browser.url),
+        )

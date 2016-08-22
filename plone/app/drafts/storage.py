@@ -46,9 +46,9 @@ class Storage(SimpleItem):
 
         if draft.__name__ in container:
             idx = len(container)
-            while u"%s-%d" % (draft.__name__, idx,) in container:
+            while u"{0}-{1}".format(draft.__name__, idx, ) in container:
                 idx += 1
-            draft.__name__ = u"%s-%d" % (draft.__name__, idx,)
+            draft.__name__ = u"{0}-{1}".format(draft.__name__, idx, )
 
         container[draft.__name__] = draft
         return draft

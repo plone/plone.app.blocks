@@ -83,10 +83,9 @@ class DefaultCurrentDraftManagement(object):
     def draft(self):
         draft = self.annotations.get(DRAFT_KEY, None)
         if draft is None:
-            if (self.userId is not None and
-                self.targetKey is not None and
-                self.draftName is not None
-                ):
+            if self.userId is not None and \
+                    self.targetKey is not None and \
+                    self.draftName is not None:
                 storage = getUtility(IDraftStorage)
                 draft = storage.getDraft(
                     self.userId, self.targetKey, self.draftName)

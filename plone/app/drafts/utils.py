@@ -89,4 +89,4 @@ def getObjectKey(context):
         # probably the portal root
         defaultKey = '0'
 
-    return "%s:%s" % (defaultKey, tempFolder.getId())
+    return '{0}:{1}'.format(defaultKey, tempFolder.getId())
