@@ -38,7 +38,6 @@ setup(name='plone.app.drafts',
       zip_safe=False,
       install_requires=[
           'setuptools',
-          'rwproperty',
           'ZODB3',
           'zope.interface',
           'zope.component',

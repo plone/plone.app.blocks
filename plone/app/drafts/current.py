@@ -8,8 +8,6 @@ from plone.app.drafts.interfaces import PATH_KEY
 from plone.app.drafts.interfaces import TARGET_KEY
 from plone.app.drafts.interfaces import USERID_KEY
 from plone.app.drafts.utils import getCurrentUserId
-from rwproperty import getproperty
-from rwproperty import setproperty
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapts
 from zope.component import getUtility
@@ -29,59 +27,59 @@ class DefaultCurrentDraftManagement(object):
 
     # User id
 
-    @getproperty
+    @property
     def userId(self):
         userId = self.annotations.get(USERID_KEY, None)
         if userId is None:
             return getCurrentUserId()
         return userId
 
-    @setproperty
+    @userId.setter
     def userId(self, value):
         self.annotations[USERID_KEY] = value
 
     # Target key
 
-    @getproperty
+    @property
     def targetKey(self):
         targetKey = self.annotations.get(TARGET_KEY, None)
         if targetKey is None:
             targetKey = self.request.get(TARGET_KEY, None)
         return targetKey
 
-    @setproperty
+    @targetKey.setter
     def targetKey(self, value):
         self.annotations[TARGET_KEY] = value
 
     # Path
 
-    @getproperty
+    @property
     def path(self):
         path = self.annotations.get(PATH_KEY, None)
         if path is None:
             path = self.request.get(PATH_KEY, None)
         return path
 
-    @setproperty
+    @path.setter
     def path(self, value):
         self.annotations[PATH_KEY] = value
 
     # Draft name
 
-    @getproperty
+    @property
     def draftName(self):
         draftName = self.annotations.get(DRAFT_NAME_KEY, None)
         if draftName is None:
             draftName = self.request.get(DRAFT_NAME_KEY, None)
         return draftName
 
-    @setproperty
+    @draftName.setter
     def draftName(self, value):
         self.annotations[DRAFT_NAME_KEY] = value
 
     # Draft
 
-    @getproperty
+    @property
     def draft(self):
         draft = self.annotations.get(DRAFT_KEY, None)
         if draft is None:
@@ -94,7 +92,7 @@ class DefaultCurrentDraftManagement(object):
                     self.userId, self.targetKey, self.draftName)
         return draft
 
-    @setproperty
+    @draft.setter
     def draft(self, value):
         self.annotations[DRAFT_KEY] = value
 
