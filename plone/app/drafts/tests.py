@@ -1,10 +1,10 @@
 from plone.app.drafts.draft import Draft
 from plone.app.drafts.interfaces import ICurrentDraftManagement
 from plone.app.drafts.interfaces import IDraft
+from plone.app.drafts.interfaces import IDrafting
 from plone.app.drafts.interfaces import IDraftProxy
 from plone.app.drafts.interfaces import IDraftStorage
 from plone.app.drafts.interfaces import IDraftSyncer
-from plone.app.drafts.interfaces import IDrafting
 from plone.app.drafts.proxy import DraftProxy
 from plone.app.drafts.testing import DRAFTS_AT_FUNCTIONAL_TESTING
 from plone.app.drafts.testing import DRAFTS_DX_FUNCTIONAL_TESTING
@@ -13,23 +13,25 @@ from plone.app.drafts.utils import getCurrentDraft
 from plone.app.drafts.utils import getCurrentUserId
 from plone.app.drafts.utils import getDefaultKey
 from plone.app.drafts.utils import syncDraft
-from plone.app.testing import TEST_USER_ID
-from plone.app.testing import TEST_USER_NAME
-from plone.app.testing import TEST_USER_PASSWORD
 from plone.app.testing import login
 from plone.app.testing import logout
 from plone.app.testing import setRoles
+from plone.app.testing import TEST_USER_ID
+from plone.app.testing import TEST_USER_NAME
+from plone.app.testing import TEST_USER_PASSWORD
 from plone.testing.z2 import Browser
 from plone.uuid.interfaces import IUUID
-import transaction
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapts
 from zope.component import getUtility
 from zope.component import provideAdapter
 from zope.component import queryUtility
 from zope.interface import implements
+
 import pkg_resources
+import transaction
 import unittest
+
 
 try:
     pkg_resources.get_distribution('plone.app.contenttypes')

@@ -1,8 +1,9 @@
-from zope.interface import Interface
 from zope import schema
+from zope.interface import Interface
 
 # Keys used for request annotations and cookies
 import zope.interface
+
 
 USERID_KEY = 'plone.app.drafts.userId'
 TARGET_KEY = 'plone.app.drafts.targetKey'

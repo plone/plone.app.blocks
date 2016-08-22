@@ -1,5 +1,8 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages
+from setuptools import setup
+
 import os
+
 
 version = '1.1.0.dev0'
 

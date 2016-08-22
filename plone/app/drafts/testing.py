@@ -5,7 +5,9 @@ from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import PloneSandboxLayer
 from plone.dexterity.fti import DexterityFTI
 from plone.testing import z2
+
 import pkg_resources
+
 
 try:
     pkg_resources.get_distribution('plone.app.contenttypes')

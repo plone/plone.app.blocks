@@ -1,10 +1,8 @@
 from BTrees.OOBTree import OOBTree
 from OFS.SimpleItem import SimpleItem
-
-from zope.interface import implements
-
-from plone.app.drafts.interfaces import IDraftStorage
 from plone.app.drafts.draft import Draft
+from plone.app.drafts.interfaces import IDraftStorage
+from zope.interface import implements
 
 
 class Storage(SimpleItem):

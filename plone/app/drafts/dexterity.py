@@ -25,11 +25,13 @@ from z3c.form.interfaces import IWidgets
 from zope.component import adapter
 from zope.component import queryUtility
 from zope.globalrequest import getRequest
-from zope.interface import Interface
 from zope.interface import alsoProvides
 from zope.interface import implementer
+from zope.interface import Interface
 from zope.lifecycleevent import IObjectAddedEvent
+
 import transaction
+
 
 try:
     from plone.protect.interfaces import IDisableCSRFProtection

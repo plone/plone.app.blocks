@@ -1,14 +1,12 @@
 from AccessControl import getSecurityManager
 from Acquisition import aq_parent
-
-from Products.CMFCore.utils import getToolByName
-from plone.uuid.interfaces import IUUID
-from zope.component import queryUtility
-from zope.component import getAdapters
-
+from plone.app.drafts.interfaces import ICurrentDraftManagement
 from plone.app.drafts.interfaces import IDraftStorage
 from plone.app.drafts.interfaces import IDraftSyncer
-from plone.app.drafts.interfaces import ICurrentDraftManagement
+from plone.uuid.interfaces import IUUID
+from Products.CMFCore.utils import getToolByName
+from zope.component import getAdapters
+from zope.component import queryUtility
 
 
 def syncDraft(draft, target):

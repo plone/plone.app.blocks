@@ -1,8 +1,7 @@
 from persistent import Persistent
-
-from zope.interface import implements
-from zope.annotation.interfaces import IAttributeAnnotatable
 from plone.app.drafts.interfaces import IDraft
+from zope.annotation.interfaces import IAttributeAnnotatable
+from zope.interface import implements
 
 
 class Draft(Persistent):

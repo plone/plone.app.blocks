@@ -1,26 +1,20 @@
-from rwproperty import getproperty, setproperty
-
-from zope.interface import alsoProvides
-from zope.interface import implements
-
+from plone.app.drafts.interfaces import DRAFT_KEY
+from plone.app.drafts.interfaces import DRAFT_NAME_KEY
+from plone.app.drafts.interfaces import ICurrentDraftManagement
+from plone.app.drafts.interfaces import IDrafting
+from plone.app.drafts.interfaces import IDraftStorage
+from plone.app.drafts.interfaces import PATH_KEY
+from plone.app.drafts.interfaces import TARGET_KEY
+from plone.app.drafts.interfaces import USERID_KEY
+from plone.app.drafts.utils import getCurrentUserId
+from rwproperty import getproperty
+from rwproperty import setproperty
+from zope.annotation.interfaces import IAnnotations
 from zope.component import adapts
 from zope.component import getUtility
-
-from zope.annotation.interfaces import IAnnotations
+from zope.interface import alsoProvides
+from zope.interface import implements
 from zope.publisher.interfaces import IRequest
-
-from plone.app.drafts.interfaces import IDraftStorage
-
-from plone.app.drafts.interfaces import IDrafting
-from plone.app.drafts.interfaces import ICurrentDraftManagement
-
-from plone.app.drafts.interfaces import USERID_KEY
-from plone.app.drafts.interfaces import TARGET_KEY
-from plone.app.drafts.interfaces import PATH_KEY
-from plone.app.drafts.interfaces import DRAFT_NAME_KEY
-from plone.app.drafts.interfaces import DRAFT_KEY
-
-from plone.app.drafts.utils import getCurrentUserId
 
 
 class DefaultCurrentDraftManagement(object):

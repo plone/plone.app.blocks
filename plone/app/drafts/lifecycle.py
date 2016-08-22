@@ -1,10 +1,10 @@
+from plone.app.drafts.interfaces import ICurrentDraftManagement
+from plone.app.drafts.interfaces import IDraftStorage
+from plone.app.drafts.utils import getCurrentDraft
+from plone.app.drafts.utils import getObjectKey
+from plone.app.drafts.utils import syncDraft
 from zope.component import queryUtility
 
-from plone.app.drafts.interfaces import IDraftStorage, ICurrentDraftManagement
-
-from plone.app.drafts.interfaces import ICurrentDraftManagement
-from plone.app.drafts.utils import syncDraft, getObjectKey
-from plone.app.drafts.utils import getCurrentDraft
 
 # Main event handlers
 

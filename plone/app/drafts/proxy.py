@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 from Acquisition import aq_base
-from UserDict import DictMixin
 from plone.app.drafts.interfaces import IDraftProxy
+from UserDict import DictMixin
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapter
 from zope.interface import implementedBy
 from zope.interface import implementer
 from zope.interface import providedBy
-from zope.interface.declarations import ObjectSpecificationDescriptor
 from zope.interface.declarations import getObjectSpecification
+from zope.interface.declarations import ObjectSpecificationDescriptor
+
 
 _marker = object()
 
