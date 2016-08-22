@@ -6,6 +6,8 @@ Changelog
 
 - Behavior shortname ``plone.draftable`` added.
 
+- Fix code analysis errors.
+  [gforcada]
 
 1.0 (2016-03-28)
 ----------------

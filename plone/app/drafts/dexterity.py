@@ -25,11 +25,13 @@ from z3c.form.interfaces import IWidgets
 from zope.component import adapter
 from zope.component import queryUtility
 from zope.globalrequest import getRequest
-from zope.interface import Interface
 from zope.interface import alsoProvides
 from zope.interface import implementer
+from zope.interface import Interface
 from zope.lifecycleevent import IObjectAddedEvent
+
 import transaction
+
 
 try:
     from plone.protect.interfaces import IDisableCSRFProtection
@@ -54,15 +56,16 @@ class IEditFormDrafting(IFormLayer):
 @adapter(DefaultAddForm, IFormLayer, Interface)
 @implementer(IWidgets)
 class DefaultAddFormFieldWidgets(FieldWidgetsBase):
+
     def __init__(self, form, request, context):
         fti = queryUtility(IDexterityFTI, name=form.portal_type)
         if IDraftable.__identifier__ in fti.behaviors:
             current = ICurrentDraftManagement(request)
 
-            if current.targetKey != '++add++%s' % form.portal_type:
+            if current.targetKey != '++add++{0}'.format(form.portal_type):
                 beginDrafting(context, None)
                 current.path = '/'.join(context.getPhysicalPath())
-                current.targetKey = '++add++%s' % form.portal_type
+                current.targetKey = '++add++{0}'.format(form.portal_type)
                 current.save()
             else:
                 current.mark()
@@ -83,6 +86,7 @@ class DefaultAddFormFieldWidgets(FieldWidgetsBase):
 @adapter(IGroup, IAddFormDrafting, Interface)
 @implementer(IWidgets)
 class DefaultAddFormGroupFieldWidgets(FieldWidgetsBase):
+
     def __init__(self, form, request, context):
         draft = getCurrentDraft(request)
         target = getattr(draft, '_draftAddFormTarget')
@@ -97,6 +101,7 @@ class DefaultAddFormGroupFieldWidgets(FieldWidgetsBase):
 @adapter(DefaultEditForm, IFormLayer, IDexterityContent)
 @implementer(IWidgets)
 class DefaultEditFormFieldWidgets(FieldWidgetsBase):
+
     def __init__(self, form, request, context):
         fti = queryUtility(IDexterityFTI, name=form.portal_type)
         if IDraftable.__identifier__ in fti.behaviors:
@@ -120,6 +125,7 @@ class DefaultEditFormFieldWidgets(FieldWidgetsBase):
 @adapter(IGroup, IEditFormDrafting, Interface)
 @implementer(IWidgets)
 class DefaultEditFormGroupFieldWidgets(FieldWidgetsBase):
+
     def __init__(self, form, request, context):
         draft = getCurrentDraft(request)
         context = DraftProxy(draft, context)
@@ -134,7 +140,7 @@ def autosave(event):
 
     view = getattr(request, 'PUBLISHED', None)
     form = getattr(view, 'context', None)
-    if hasattr(aq_base(form), 'form_instance'):
+    if getattr(aq_base(form), 'form_instance', None):
         form = form.form_instance
 
     if IAddForm.providedBy(form):
@@ -148,7 +154,7 @@ def autosave(event):
         if target is None:
             target = createContent(form.portal_type)
             target.id = ''
-            IMutableUUID(target).set('++add++%s' % form.portal_type)
+            IMutableUUID(target).set('++add++{0}'.format(form.portal_type))
             draft._draftAddFormTarget = target
         target = target.__of__(context)
 
@@ -164,7 +170,7 @@ def autosave(event):
     if IDraftable.__identifier__ not in fti.behaviors:
         return
 
-    if not hasattr(form, "extractData"):
+    if not getattr(form, 'extractData', None):
         return
 
     data, errors = form.extractData()

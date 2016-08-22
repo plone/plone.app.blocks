@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 from Acquisition import aq_base
-from UserDict import DictMixin
 from plone.app.drafts.interfaces import IDraftProxy
+from UserDict import DictMixin
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapter
 from zope.interface import implementedBy
 from zope.interface import implementer
 from zope.interface import providedBy
-from zope.interface.declarations import ObjectSpecificationDescriptor
 from zope.interface.declarations import getObjectSpecification
+from zope.interface.declarations import ObjectSpecificationDescriptor
+
 
 _marker = object()
 
@@ -44,7 +45,7 @@ class ProxySpecification(ObjectSpecificationDescriptor):
         # See if we have a valid cache. Reasons to do this include:
         if cache is not None:
             cached_mtime, cached_direct_spec, \
-            cached_target_spec, cached_spec = cache
+                cached_target_spec, cached_spec = cache
 
             if cache[:-1] == updated:
                 return cached_spec
@@ -62,7 +63,7 @@ class DraftProxy(object):
     against the draft; all reads are performed against the draft unless the
     specified attribute or key is not not found, in which case the they are
     read from the target object instead.
-    
+
     Attribute deletions are saved in a set ``draft._proxyDeleted``. Annotation
     key deletions are saved in a set ``draft._proxyAnnotationsDeleted``.
     """
@@ -79,7 +80,7 @@ class DraftProxy(object):
         if name in deleted:
             raise AttributeError(name)
 
-        if hasattr(self.__draft, name):
+        if getattr(self.__draft, name, None):
             return getattr(self.__draft, name)
 
         return getattr(self.__target, name)
@@ -102,7 +103,7 @@ class DraftProxy(object):
             setattr(self.__draft, '_proxyDeleted', deleted)
 
         # only delete on draft
-        if hasattr(self.__draft, name):
+        if getattr(self.__draft, name, None):
             delattr(self.__draft, name)
 
 
@@ -122,7 +123,8 @@ class AliasAnnotations(DictMixin):
         self.targetAnnotations = IAnnotations(self.target)
 
     def __nonzero__(self):
-        return self.targetAnnotations.__nonzero__() or self.draftAnnotations.__nonzero__()
+        return self.targetAnnotations.__nonzero__() or \
+               self.draftAnnotations.__nonzero__()
 
     def get(self, key, default=None):
 

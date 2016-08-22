@@ -5,7 +5,9 @@ from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import PloneSandboxLayer
 from plone.dexterity.fti import DexterityFTI
 from plone.testing import z2
+
 import pkg_resources
+
 
 try:
     pkg_resources.get_distribution('plone.app.contenttypes')
@@ -43,9 +45,9 @@ class DraftingLayer(PloneSandboxLayer):
 
 DRAFTS_FIXTURE = DraftingLayer()
 DRAFTS_INTEGRATION_TESTING = IntegrationTesting(
-    bases=(DRAFTS_FIXTURE,), name="Drafts:Integration")
+    bases=(DRAFTS_FIXTURE,), name='Drafts:Integration')
 DRAFTS_FUNCTIONAL_TESTING = FunctionalTesting(
-    bases=(DRAFTS_FIXTURE,), name="Drafts:Functional")
+    bases=(DRAFTS_FIXTURE,), name='Drafts:Functional')
 
 
 class ArchetypesDraftingLayer(PloneSandboxLayer):
@@ -74,9 +76,9 @@ class ArchetypesDraftingLayer(PloneSandboxLayer):
 
 DRAFTS_AT_FIXTURE = ArchetypesDraftingLayer()
 DRAFTS_AT_INTEGRATION_TESTING = IntegrationTesting(
-    bases=(DRAFTS_AT_FIXTURE,), name="Drafts:AT:Integration")
+    bases=(DRAFTS_AT_FIXTURE,), name='Drafts:AT:Integration')
 DRAFTS_AT_FUNCTIONAL_TESTING = FunctionalTesting(
-    bases=(DRAFTS_AT_FIXTURE,), name="Drafts:AT:Functional")
+    bases=(DRAFTS_AT_FIXTURE,), name='Drafts:AT:Functional')
 
 
 class DexterityDraftingLayer(PloneSandboxLayer):
@@ -114,6 +116,6 @@ class DexterityDraftingLayer(PloneSandboxLayer):
 
 DRAFTS_DX_FIXTURE = DexterityDraftingLayer()
 DRAFTS_DX_INTEGRDXION_TESTING = IntegrationTesting(
-    bases=(DRAFTS_DX_FIXTURE,), name="Drafts:DX:Integration")
+    bases=(DRAFTS_DX_FIXTURE,), name='Drafts:DX:Integration')
 DRAFTS_DX_FUNCTIONAL_TESTING = FunctionalTesting(
-    bases=(DRAFTS_DX_FIXTURE,), name="Drafts:DX:Functional")
+    bases=(DRAFTS_DX_FIXTURE,), name='Drafts:DX:Functional')

@@ -39,29 +39,29 @@
                     Object of type <span i18n:name="portal_type" tal:content="targetInfo/portal_type" />
                     being added to
                 </span>
-                
+
                 <span tal:content="targetInfo/title" tal:attributes="title targetInfo/url | nothing"/>
-                
+
                 &mdash;
-                
+
                 <a tal:attributes="href string:${context/absolute_url}/@@drafts?userId=${userId}&amp;targetKey=${quotedKey}">
                     View drafts
                 </a>
-                
+
                 <span tal:condition="targetInfo/url">
                     |
                     <a tal:condition="targetInfo/url" tal:attributes="href targetInfo/url">View content object</a>
                 </span>
             </tal:block>
         </div>
-        
+
         <div>&nbsp;</div>
-        
+
         <div>
             <input type="submit" name="form.button.PruneTargets" value="Remove drafts for selected targets" />
         </div>
     </form>
-    
+
 </tal:block>
 
 <div tal:replace="structure context/manage_page_footer" />

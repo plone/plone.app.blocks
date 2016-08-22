@@ -7,7 +7,7 @@
         name="plone.app.drafts.gif"
         image="tool.gif"
         />
-    
+
     <browser:page
         name="overview"
         for="..interfaces.IDraftStorage"
@@ -15,7 +15,7 @@
         class=".view.View"
         template="overview.pt"
         />
-    
+
     <browser:page
         name="targets"
         for="..interfaces.IDraftStorage"
@@ -23,7 +23,7 @@
         class=".view.View"
         template="targets.pt"
         />
-    
+
     <browser:page
         name="drafts"
         for="..interfaces.IDraftStorage"

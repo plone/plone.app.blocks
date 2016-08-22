@@ -2,7 +2,7 @@
 <componentregistry>
     <adapters/>
     <utilities>
-        <utility 
+        <utility
             interface="plone.app.drafts.interfaces.IDraftStorage"
             object="portal_drafts"
             />

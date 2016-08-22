@@ -1,12 +1,14 @@
+# -*- coding: utf-8 -*-
+from plone.app.drafts.interfaces import ICurrentDraftManagement
+from plone.app.drafts.interfaces import IDraftStorage
+from plone.app.drafts.utils import getCurrentDraft
+from plone.app.drafts.utils import getObjectKey
+from plone.app.drafts.utils import syncDraft
 from zope.component import queryUtility
 
-from plone.app.drafts.interfaces import IDraftStorage, ICurrentDraftManagement
-
-from plone.app.drafts.interfaces import ICurrentDraftManagement
-from plone.app.drafts.utils import syncDraft, getObjectKey
-from plone.app.drafts.utils import getCurrentDraft
 
 # Main event handlers
+
 
 def beginDrafting(context, event):
     """When we enter the edit screen, set up the target key and draft cookie
@@ -33,7 +35,7 @@ def beginDrafting(context, event):
         if len(drafts) == 1:
             current.draftName = tuple(drafts.keys())[0]
 
-    # Save the path now so that we can use it again later, even on URLs 
+    # Save the path now so that we can use it again later, even on URLs
     # (e.g. in AJAX dialogues) that are below this path.
     current.path = current.defaultPath
 

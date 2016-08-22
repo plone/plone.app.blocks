@@ -1,123 +1,117 @@
-from rwproperty import getproperty, setproperty
-
-from zope.interface import alsoProvides
-from zope.interface import implements
-
-from zope.component import adapts
-from zope.component import getUtility
-
+# -*- coding: utf-8 -*-
+from plone.app.drafts.interfaces import DRAFT_KEY
+from plone.app.drafts.interfaces import DRAFT_NAME_KEY
+from plone.app.drafts.interfaces import ICurrentDraftManagement
+from plone.app.drafts.interfaces import IDrafting
+from plone.app.drafts.interfaces import IDraftStorage
+from plone.app.drafts.interfaces import PATH_KEY
+from plone.app.drafts.interfaces import TARGET_KEY
+from plone.app.drafts.interfaces import USERID_KEY
+from plone.app.drafts.utils import getCurrentUserId
 from zope.annotation.interfaces import IAnnotations
+from zope.component import adapter
+from zope.component import getUtility
+from zope.interface import alsoProvides
+from zope.interface import implementer
 from zope.publisher.interfaces import IRequest
 
-from plone.app.drafts.interfaces import IDraftStorage
 
-from plone.app.drafts.interfaces import IDrafting
-from plone.app.drafts.interfaces import ICurrentDraftManagement
-
-from plone.app.drafts.interfaces import USERID_KEY
-from plone.app.drafts.interfaces import TARGET_KEY
-from plone.app.drafts.interfaces import PATH_KEY
-from plone.app.drafts.interfaces import DRAFT_NAME_KEY
-from plone.app.drafts.interfaces import DRAFT_KEY
-
-from plone.app.drafts.utils import getCurrentUserId
-
+@adapter(IRequest)
+@implementer(ICurrentDraftManagement)
 class DefaultCurrentDraftManagement(object):
-    
-    implements(ICurrentDraftManagement)
-    adapts(IRequest)
-    
+
     def __init__(self, request):
         self.request = request
         self.annotations = IAnnotations(request)
-    
+
     # User id
-    
-    @getproperty
+
+    @property
     def userId(self):
         userId = self.annotations.get(USERID_KEY, None)
         if userId is None:
             return getCurrentUserId()
         return userId
 
-    @setproperty
+    @userId.setter
     def userId(self, value):
         self.annotations[USERID_KEY] = value
-    
+
     # Target key
-    
-    @getproperty
+
+    @property
     def targetKey(self):
         targetKey = self.annotations.get(TARGET_KEY, None)
         if targetKey is None:
             targetKey = self.request.get(TARGET_KEY, None)
         return targetKey
-    
-    @setproperty
+
+    @targetKey.setter
     def targetKey(self, value):
         self.annotations[TARGET_KEY] = value
-    
+
     # Path
-    
-    @getproperty
+
+    @property
     def path(self):
         path = self.annotations.get(PATH_KEY, None)
         if path is None:
             path = self.request.get(PATH_KEY, None)
         return path
-    
-    @setproperty
+
+    @path.setter
     def path(self, value):
         self.annotations[PATH_KEY] = value
-    
+
     # Draft name
-    
-    @getproperty
+
+    @property
     def draftName(self):
         draftName = self.annotations.get(DRAFT_NAME_KEY, None)
         if draftName is None:
             draftName = self.request.get(DRAFT_NAME_KEY, None)
         return draftName
-        
-    @setproperty
+
+    @draftName.setter
     def draftName(self, value):
         self.annotations[DRAFT_NAME_KEY] = value
-    
+
     # Draft
-    
-    @getproperty
+
+    @property
     def draft(self):
         draft = self.annotations.get(DRAFT_KEY, None)
         if draft is None:
-            if (self.userId is not None and 
-                self.targetKey is not None and
-                self.draftName is not None
-            ):
+            if self.userId is not None and \
+                    self.targetKey is not None and \
+                    self.draftName is not None:
                 storage = getUtility(IDraftStorage)
-                draft = storage.getDraft(self.userId, self.targetKey, self.draftName)
+                draft = storage.getDraft(
+                    self.userId, self.targetKey, self.draftName)
         return draft
-    
-    @setproperty
+
+    @draft.setter
     def draft(self, value):
         self.annotations[DRAFT_KEY] = value
-    
+
     # Request marking
-    
+
     def mark(self):
         if self.userId and self.targetKey:
             alsoProvides(self.request, IDrafting)
-    
+
     # Cookie management
-    
+
     def save(self):
         if self.targetKey is None:
             return False
 
         path = self.path or self.defaultPath
         self.request.response.setCookie(TARGET_KEY, self.targetKey, path=path)
-        
+
         if self.draftName is not None:
-            self.request.response.setCookie(DRAFT_NAME_KEY, self.draftName, path=path)
+            self.request.response.setCookie(
+                DRAFT_NAME_KEY, self.draftName, path=path)
 
         # Save userId, because it may be needed to access draft during traverse
         if self.draftName is not None and self.userId is not None:
@@ -126,16 +120,16 @@ class DefaultCurrentDraftManagement(object):
         # Save the path only if we set it explicitly during this request.
         if self.annotations.get(PATH_KEY, None) is not None:
             self.request.response.setCookie(PATH_KEY, self.path, path=path)
-        
+
         return True
-    
+
     def discard(self):
         path = self.path or self.defaultPath
         self.request.response.expireCookie(USERID_KEY, path=path)
         self.request.response.expireCookie(TARGET_KEY, path=path)
         self.request.response.expireCookie(DRAFT_NAME_KEY, path=path)
         self.request.response.expireCookie(PATH_KEY, path=path)
-    
+
     @property
     def defaultPath(self):
         # Get the context minus the view
