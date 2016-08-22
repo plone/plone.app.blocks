@@ -9,6 +9,9 @@ Changelog
 - Fix code analysis errors.
   [gforcada]
 
+- Update testing infrastructure.
+  [gforcada]
+
 1.0 (2016-03-28)
 ----------------
 
