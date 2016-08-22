@@ -44,7 +44,7 @@ class ProxySpecification(ObjectSpecificationDescriptor):
         # See if we have a valid cache. Reasons to do this include:
         if cache is not None:
             cached_mtime, cached_direct_spec, \
-            cached_target_spec, cached_spec = cache
+                cached_target_spec, cached_spec = cache
 
             if cache[:-1] == updated:
                 return cached_spec
@@ -62,7 +62,7 @@ class DraftProxy(object):
     against the draft; all reads are performed against the draft unless the
     specified attribute or key is not not found, in which case the they are
     read from the target object instead.
-    
+
     Attribute deletions are saved in a set ``draft._proxyDeleted``. Annotation
     key deletions are saved in a set ``draft._proxyAnnotationsDeleted``.
     """

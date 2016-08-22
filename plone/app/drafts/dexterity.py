@@ -54,6 +54,7 @@ class IEditFormDrafting(IFormLayer):
 @adapter(DefaultAddForm, IFormLayer, Interface)
 @implementer(IWidgets)
 class DefaultAddFormFieldWidgets(FieldWidgetsBase):
+
     def __init__(self, form, request, context):
         fti = queryUtility(IDexterityFTI, name=form.portal_type)
         if IDraftable.__identifier__ in fti.behaviors:
@@ -83,6 +84,7 @@ class DefaultAddFormFieldWidgets(FieldWidgetsBase):
 @adapter(IGroup, IAddFormDrafting, Interface)
 @implementer(IWidgets)
 class DefaultAddFormGroupFieldWidgets(FieldWidgetsBase):
+
     def __init__(self, form, request, context):
         draft = getCurrentDraft(request)
         target = getattr(draft, '_draftAddFormTarget')
@@ -97,6 +99,7 @@ class DefaultAddFormGroupFieldWidgets(FieldWidgetsBase):
 @adapter(DefaultEditForm, IFormLayer, IDexterityContent)
 @implementer(IWidgets)
 class DefaultEditFormFieldWidgets(FieldWidgetsBase):
+
     def __init__(self, form, request, context):
         fti = queryUtility(IDexterityFTI, name=form.portal_type)
         if IDraftable.__identifier__ in fti.behaviors:
@@ -120,6 +123,7 @@ class DefaultEditFormFieldWidgets(FieldWidgetsBase):
 @adapter(IGroup, IEditFormDrafting, Interface)
 @implementer(IWidgets)
 class DefaultEditFormGroupFieldWidgets(FieldWidgetsBase):
+
     def __init__(self, form, request, context):
         draft = getCurrentDraft(request)
         context = DraftProxy(draft, context)

@@ -22,14 +22,14 @@ def syncDraft(draft, target):
 
 def getCurrentDraft(request, create=False):
     """Get the current draft as stored in the request.
-    
+
     The request must have been set up via an ``ICurrentDraftManagement``
     adapter. This should happen in the integration layer between the drafts
     storage and the draft edit form.
-    
+
     If no draft is available, but a user id and target key have been given,
     a new draft will be created if ``create`` is True.
-    
+
     If not found, return None.
     """
 

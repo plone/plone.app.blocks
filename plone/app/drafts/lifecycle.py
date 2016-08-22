@@ -8,6 +8,7 @@ from plone.app.drafts.utils import getCurrentDraft
 
 # Main event handlers
 
+
 def beginDrafting(context, event):
     """When we enter the edit screen, set up the target key and draft cookie
     path. If there is exactly one draft for the given user id and target key,
@@ -33,7 +34,7 @@ def beginDrafting(context, event):
         if len(drafts) == 1:
             current.draftName = tuple(drafts.keys())[0]
 
-    # Save the path now so that we can use it again later, even on URLs 
+    # Save the path now so that we can use it again later, even on URLs
     # (e.g. in AJAX dialogues) that are below this path.
     current.path = current.defaultPath
 
