@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from plone.app.drafts.interfaces import DRAFT_KEY
 from plone.app.drafts.interfaces import DRAFT_NAME_KEY
 from plone.app.drafts.interfaces import ICurrentDraftManagement

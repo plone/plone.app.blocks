@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from datetime import datetime
 from plone.app.uuid.utils import uuidToObject
 from urllib import quote

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from persistent import Persistent
 from plone.app.drafts.interfaces import IDraft
 from zope.annotation.interfaces import IAttributeAnnotatable

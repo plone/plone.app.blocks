@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from AccessControl import getSecurityManager
 from Acquisition import aq_parent
 from plone.app.drafts.interfaces import ICurrentDraftManagement

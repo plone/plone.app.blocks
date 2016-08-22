@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from BTrees.OOBTree import OOBTree
 from OFS.SimpleItem import SimpleItem
 from plone.app.drafts.draft import Draft

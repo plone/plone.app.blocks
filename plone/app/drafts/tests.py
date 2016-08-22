@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from plone.app.drafts.draft import Draft
 from plone.app.drafts.interfaces import ICurrentDraftManagement
 from plone.app.drafts.interfaces import IDraft
