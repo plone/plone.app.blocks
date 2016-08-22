@@ -9,17 +9,16 @@ from plone.app.drafts.interfaces import TARGET_KEY
 from plone.app.drafts.interfaces import USERID_KEY
 from plone.app.drafts.utils import getCurrentUserId
 from zope.annotation.interfaces import IAnnotations
-from zope.component import adapts
+from zope.component import adapter
 from zope.component import getUtility
 from zope.interface import alsoProvides
-from zope.interface import implements
+from zope.interface import implementer
 from zope.publisher.interfaces import IRequest
 
 
+@adapter(IRequest)
+@implementer(ICurrentDraftManagement)
 class DefaultCurrentDraftManagement(object):
-
-    implements(ICurrentDraftManagement)
-    adapts(IRequest)
 
     def __init__(self, request):
         self.request = request

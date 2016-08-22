@@ -23,11 +23,11 @@ from plone.app.testing import TEST_USER_PASSWORD
 from plone.testing.z2 import Browser
 from plone.uuid.interfaces import IUUID
 from zope.annotation.interfaces import IAnnotations
-from zope.component import adapts
+from zope.component import adapter
 from zope.component import getUtility
 from zope.component import provideAdapter
 from zope.component import queryUtility
-from zope.interface import implements
+from zope.interface import implementer
 
 import pkg_resources
 import transaction
@@ -370,9 +370,9 @@ class TestDraftSyncer(unittest.TestCase):
 
         target = Target()
 
+        @adapter(Draft, Target)
+        @implementer(IDraftSyncer)
         class Syncer1(object):
-            implements(IDraftSyncer)
-            adapts(Draft, Target)
 
             def __init__(self, draft, target):
                 self.draft = draft
@@ -383,9 +383,9 @@ class TestDraftSyncer(unittest.TestCase):
 
         provideAdapter(Syncer1, name=u's1')
 
+        @adapter(Draft, Target)
+        @implementer(IDraftSyncer)
         class Syncer2(object):
-            implements(IDraftSyncer)
-            adapts(Draft, Target)
 
             def __init__(self, draft, target):
                 self.draft = draft

@@ -3,14 +3,13 @@ from BTrees.OOBTree import OOBTree
 from OFS.SimpleItem import SimpleItem
 from plone.app.drafts.draft import Draft
 from plone.app.drafts.interfaces import IDraftStorage
-from zope.interface import implements
+from zope.interface import implementer
 
 
+@implementer(IDraftStorage)
 class Storage(SimpleItem):
     """The draft storage
     """
-
-    implements(IDraftStorage)
 
     id = 'portal_drafts'
     title = 'Drafts in progress for content items being edited'
