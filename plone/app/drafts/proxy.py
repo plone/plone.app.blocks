@@ -124,7 +124,7 @@ class AliasAnnotations(DictMixin):
 
     def __nonzero__(self):
         return self.targetAnnotations.__nonzero__() or \
-               self.draftAnnotations.__nonzero__()
+            self.draftAnnotations.__nonzero__()
 
     def get(self, key, default=None):
 

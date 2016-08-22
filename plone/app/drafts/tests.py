@@ -576,24 +576,36 @@ class TestCurrentDraft(unittest.TestCase):
         deletedToken = {'expires': 'Wed, 31-Dec-97 23:59:59 GMT', 'max_age': 0,
                         'path': '/', 'quoted': True, 'value': 'deleted'}
 
-        self.assertEqual(deletedToken, response.cookies[
-                          'plone.app.drafts.targetKey'])
-        self.assertEqual(deletedToken, response.cookies[
-                          'plone.app.drafts.draftName'])
-        self.assertEqual(deletedToken, response.cookies[
-                          'plone.app.drafts.path'])
+        self.assertEqual(
+            deletedToken,
+            response.cookies['plone.app.drafts.targetKey'],
+        )
+        self.assertEqual(
+            deletedToken,
+            response.cookies['plone.app.drafts.draftName'],
+        )
+        self.assertEqual(
+            deletedToken,
+            response.cookies['plone.app.drafts.path'],
+        )
 
         current.path = '/test'
         current.discard()
 
         deletedToken['path'] = '/test'
 
-        self.assertEqual(deletedToken, response.cookies[
-                          'plone.app.drafts.targetKey'])
-        self.assertEqual(deletedToken, response.cookies[
-                          'plone.app.drafts.draftName'])
-        self.assertEqual(deletedToken, response.cookies[
-                          'plone.app.drafts.path'])
+        self.assertEqual(
+            deletedToken,
+            response.cookies['plone.app.drafts.targetKey'],
+        )
+        self.assertEqual(
+            deletedToken,
+            response.cookies['plone.app.drafts.draftName'],
+        )
+        self.assertEqual(
+            deletedToken,
+            response.cookies['plone.app.drafts.path'],
+        )
 
 
 class TestUtils(unittest.TestCase):
@@ -698,10 +710,14 @@ class TestUtils(unittest.TestCase):
         self.assertTrue('plone.app.drafts.targetKey' in response.cookies)
         self.assertTrue('plone.app.drafts.draftName' in response.cookies)
 
-        self.assertEqual('123', response.cookies[
-                          'plone.app.drafts.targetKey']['value'])
-        self.assertEqual(draft.__name__, response.cookies[
-                          'plone.app.drafts.draftName']['value'])
+        self.assertEqual(
+            '123',
+            response.cookies['plone.app.drafts.targetKey']['value'],
+        )
+        self.assertEqual(
+            draft.__name__,
+            response.cookies['plone.app.drafts.draftName']['value'],
+        )
 
     def test_getCurrentDraft_draft_details_set_in_storage(self):
         request = self.request
