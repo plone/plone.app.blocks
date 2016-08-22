@@ -15,14 +15,14 @@
         permission="cmf.ManagePortal"
         icon="plone.app.drafts.gif"
         />
-    
+
     <class class=".storage.Storage">
         <require
             permission="cmf.ManagePortal"
             interface=".interfaces.IDraftStorage"
             />
     </class>
-    
+
     <genericsetup:registerProfile
         name="default"
         title="Drafts support"
@@ -30,7 +30,7 @@
         description="Support for managing content drafts prior to saving"
         provides="Products.GenericSetup.interfaces.EXTENSION"
         />
-    
+
     <include zcml:condition="installed plone.behavior" file="behaviors.zcml" />
     <include zcml:condition="installed plone.app.dexterity" file="dexterity.zcml" />
 

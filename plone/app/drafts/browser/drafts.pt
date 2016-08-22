@@ -33,10 +33,10 @@
     </p>
 
     <form tal:attributes="action request/getURL" method="post">
-        
+
         <input type="hidden" name="userId" tal:attributes="value userId" />
         <input type="hidden" name="targetKey" tal:attributes="value targetKey" />
-        
+
         <div tal:repeat="draft drafts">
             <tal:block define="draftInfo python:view.draftInfo(drafts[draft])">
                 <input type="checkbox" name="draftNames:list" tal:attributes="value draft" />
@@ -45,14 +45,14 @@
                 </span>
             </tal:block>
         </div>
-        
+
         <div>&nbsp;</div>
-        
+
         <div>
             <input type="submit" name="form.button.PruneDrafts" value="Remove selected drafts" />
         </div>
     </form>
-    
+
 </tal:block>
 
 <div tal:replace="structure context/manage_page_footer" />
