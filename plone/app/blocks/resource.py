@@ -10,8 +10,6 @@ from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.interfaces import SITE_LAYOUT_FILE_NAME
 from plone.app.blocks.interfaces import SITE_LAYOUT_MANIFEST_FORMAT
 from plone.app.blocks.interfaces import SITE_LAYOUT_RESOURCE_NAME
-from plone.app.blocks.layoutbehavior import getDefaultAjaxLayout
-from plone.app.blocks.layoutbehavior import getDefaultSiteLayout
 from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.app.blocks.layoutviews import SiteLayoutView
 from plone.app.blocks.utils import resolveResource
@@ -288,9 +286,10 @@ class DefaultSiteLayout(BrowserView):
         return resolveResource(self.layout)
 
     def _getLayout(self):
+        layout_adapter = ILayoutAware(self.context)
         if self.request.form.get('ajax_load'):
-            return getDefaultAjaxLayout(self.context)
-        return getDefaultSiteLayout(self.context)
+            return layout_adapter.ajax_site_layout()
+        return layout_adapter.site_layout()
 
 
 class PageSiteLayout(DefaultSiteLayout):
@@ -306,8 +305,3 @@ class PageSiteLayout(DefaultSiteLayout):
     and always get the correct site layout for the page, taking section-
     and page-specific settings into account.
     """
-
-    def _getLayout(self):
-        if self.request.form.get('ajax_load'):
-            return getDefaultAjaxLayout(self.context)
-        return ILayoutAware(self.context).site_layout()
