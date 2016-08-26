@@ -23,6 +23,7 @@ New:
   [jensens]
 
 Fixes:
+
 - typo in README.rst
   [fgrcon]
   
