@@ -24,6 +24,9 @@ New:
 
 Fixes:
 
+- typo in README.rst
+  [fgrcon]
+  
 - A tile raising an 401 Unauthorized on traversal,
   results in a status rewriting to a 302 which results in 200 login form.
   The whole login form page then is rendered as the tile contents.
