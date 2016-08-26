@@ -89,7 +89,7 @@ Content layouts
 
 The package also registers the ``contentlayout`` ``plone.resource`` resource type,
 allowing shared content area layouts to be created easily as static HTML files served from resource directories.
-The URL to a site layout is typically something like::
+The URL to a content layout is typically something like::
 
     /++contentlayout++my.layout/content.html
 
