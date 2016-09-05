@@ -97,7 +97,7 @@ def merge(request, layoutTree):
         registry = queryUtility(IRegistry)
         if registry:
             settings = registry.forInterface(IBlocksSettings, check=False)
-            gridSystem = settings.default_grid_system or 'deco'
+            gridSystem = settings.default_grid_system or 'bs3'
 
     gridUtil = queryUtility(IGridSystem, gridSystem)
     if gridUtil is None:
