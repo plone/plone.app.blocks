@@ -12,6 +12,9 @@ Changelog
 - Update testing infrastructure.
   [gforcada]
 
+- Do not set cookie values twice
+  [vangheem]
+
 1.0 (2016-03-28)
 ----------------
 
