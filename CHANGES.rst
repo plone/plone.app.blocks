@@ -22,6 +22,9 @@ Incompatibilities:
 
 New:
 
+- No longer use sub-requests to render tiles for better performance
+  [vangheem]
+
 - Behavior shortname ``plone.layoutaware`` added.
   [jensens]
 

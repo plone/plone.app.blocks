@@ -180,8 +180,8 @@ Some cleanup is needed to cover lxml platform discrepancies...
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
         <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
-        <title>Layout title</title>
+      <meta http-equiv="Content-Type" content="text/html; charset=ASCII" />
+      <title>Layout title</title>
         <meta name="tile-name" content="tile3" />
         <meta name="tile-name" content="tile4" />
         <meta name="tile-name" content="tile1" />
@@ -190,6 +190,7 @@ Some cleanup is needed to cover lxml platform discrepancies...
         <body>
             <h1>Welcome!</h1>
             <div data-panel="panel1">
+
             <p>
                 Non-ESI tile with query string foo=bar
             </p>
