@@ -63,7 +63,7 @@ class IBlocksSettings(Interface):
         description=_(
             u'Grid system to use when one is not specified the result DOM.'
         ),
-        default='deco')
+        default='bs3')
 
 
 class ILayoutField(Interface):
