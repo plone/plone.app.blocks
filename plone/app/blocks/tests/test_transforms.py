@@ -1,33 +1,12 @@
 # -*- coding: utf-8 -*-
 from plone.app.blocks.interfaces import IBlocksLayer
-from plone.app.blocks.interfaces import IBlocksSettings
 from plone.app.blocks.interfaces import IBlocksTransformEnabled
 from plone.app.blocks.testing import BLOCKS_INTEGRATION_TESTING
-from plone.registry.interfaces import IRegistry
 from plone.transformchain.zpublisher import applyTransform
-from zope.component import queryUtility
 from zope.interface import alsoProvides
 from zope.interface import implements
 
 import unittest
-
-
-gridsystem_test_body = """\
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head><script type="text/javascript"><![CDATA[]]></script></head>
-<body>
-<div class="mosaic-grid-row" data-grid='{"type": "row"}'>
-    <div class="mosaic-grid-cell mosaic-width-full mosaic-position-leftmost"
-         data-grid='{"type": "cell", "info":{"xs": "true", "sm": "true", "lg": "true", "pos": {"x": 1, "width": 12}}}'>
-        <div class="movable mosaic-tile mosaic-IDublinCore-title-tile">
-            <div class="mosaic-tile-content"><h1 class="documentFirstHeading">some page</h1>
-            </div>
-        </div>
-    </div>
-</div>
-</body>
-</html>"""
 
 
 class TestTransformedView(object):
@@ -95,35 +74,3 @@ class TestTransforms(unittest.TestCase):
         alsoProvides(request, IBlocksLayer)
         result = applyTransform(request)
         self.assertIn('<![CDATA[]]>', ''.join(result))
-
-    def test_transform_gridsystem_default_deco(self):
-        registry = queryUtility(IRegistry)
-        settings = registry.forInterface(IBlocksSettings)
-        settings.default_grid_system = 'deco'
-
-        request = self.layer['request']
-        request.set('PUBLISHED', TestTransformedView(gridsystem_test_body))
-        request.response.setBase(request.getURL())
-        request.response.setHeader('content-type', 'text/html')
-        request.response.setBody(gridsystem_test_body)
-
-        alsoProvides(request, IBlocksLayer)
-        result = ''.join(applyTransform(request))
-        self.assertIn('cell position-0 width-12', result)
-        self.assertIn('mosaic-grid-row row', result)
-
-    def test_transform_gridsystem_default_bs3(self):
-        registry = queryUtility(IRegistry)
-        settings = registry.forInterface(IBlocksSettings)
-        settings.default_grid_system = 'bs3'
-
-        request = self.layer['request']
-        request.set('PUBLISHED', TestTransformedView(gridsystem_test_body))
-        request.response.setBase(request.getURL())
-        request.response.setHeader('content-type', 'text/html')
-        request.response.setBody(gridsystem_test_body)
-
-        alsoProvides(request, IBlocksLayer)
-        result = ''.join(applyTransform(request))
-        self.assertIn('col-md-12', result)
-        self.assertIn('mosaic-grid-row row', result)

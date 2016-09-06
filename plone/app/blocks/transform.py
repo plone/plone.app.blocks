@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from lxml import etree
 from lxml import html
-from plone.app.blocks import gridsystem
 from plone.app.blocks import panel
 from plone.app.blocks import tiles
 from plone.tiles import esi
@@ -164,33 +163,6 @@ class IncludeTiles(object):
             return None
 
         result.tree = tiles.renderTiles(self.request, result.tree)
-        return result
-
-
-@implementer(ITransform)
-class ApplyResponsiveClass(object):
-    """Turn a panel-merged page into the final composition by including tiles.
-    Assumes the input result is an lxml tree and returns an lxml tree for
-    later serialization.
-    """
-
-    order = 8700
-
-    def __init__(self, published, request):
-        self.published = published
-        self.request = request
-
-    def transformString(self, result, encoding):
-        return None
-
-    def transformUnicode(self, result, encoding):
-        return None
-
-    def transformIterable(self, result, encoding):
-        if not self.request.get('plone.app.blocks.enabled', False) or \
-                not isinstance(result, XMLSerializer):
-            return None
-        result.tree = gridsystem.merge(self.request, result.tree)
         return result
 
 
