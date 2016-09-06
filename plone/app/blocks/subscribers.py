@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from lxml.html import fromstring
 from plone.app.blocks import utils
-from plone.app.blocks.utils import getLayout
+from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.tiles.data import ANNOTATIONS_KEY_PREFIX
 from zope.annotation.interfaces import IAnnotations
 
@@ -11,7 +11,8 @@ def onLayoutEdited(obj, event):
     need to get the layout because you need to know what are
     acceptible storage values
     """
-    layout = getLayout(obj)
+    lookup = ILayoutAware(obj)
+    layout = lookup.content_layout()
 
     if not layout:
         return

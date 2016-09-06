@@ -4,10 +4,8 @@ from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
 from plone.registry.interfaces import IRegistry
 from plone.uuid.interfaces import IUUID
-from zope.component import adapter
 from zope.component import getGlobalSiteManager
 from zope.component import getUtility
-from zope.interface import implementer
 
 import pkg_resources
 import unittest
@@ -42,38 +40,21 @@ class TestLayoutBehavior(unittest.TestCase):
             iface = self.portal['f1']['d1'].__class__
 
         from plone.app.blocks.layoutbehavior import ILayoutAware
-
-        @implementer(ILayoutAware)
-        @adapter(iface)
-        class DocumentLayoutAware(object):
-
-            def __init__(self, context):
-                self.context = context
-
-            content = None
-            contentLayout = None
-            sectionSiteLayout = None
-            pageSiteLayout = None
-
-        self.behavior = DocumentLayoutAware
+        from plone.app.blocks.layoutbehavior import LayoutAwareBehavior
 
         sm = getGlobalSiteManager()
-        sm.registerAdapter(self.behavior)
+        sm.registerAdapter(LayoutAwareBehavior, [iface])
         registrations = sm.getAdapters(
             (self.portal['f1']['d1'],),
             ILayoutAware
         )
         self.assertEqual(len(list(registrations)), 1)
-
-    def tearDown(self):
-        from plone.app.blocks.layoutbehavior import ILayoutAware
-        sm = getGlobalSiteManager()
-        sm.unregisterAdapter(self.behavior)
+        self.behavior = ILayoutAware(self.portal['f1']['d1'])
         registrations = sm.getAdapters(
             (self.portal['f1']['d1'],),
             ILayoutAware
         )
-        self.assertEqual(len(list(registrations)), 0)
+        self.assertEqual(len(list(registrations)), 1)
 
     def test_content(self):
         from plone.app.blocks.layoutviews import ContentLayoutView

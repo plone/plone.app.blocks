@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 from AccessControl import getSecurityManager
-from Acquisition import aq_inner
-from Acquisition import aq_parent
 from copy import deepcopy
 from diazo import compiler
 from diazo import cssrules
@@ -10,26 +8,34 @@ from diazo import utils
 from hashlib import md5
 from lxml import etree
 from lxml import html
-from plone.app.blocks.interfaces import DEFAULT_AJAX_LAYOUT_REGISTRY_KEY
-from plone.app.blocks.interfaces import DEFAULT_CONTENT_LAYOUT_REGISTRY_KEY
-from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
-from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.memoize import ram
 from plone.memoize.volatile import DontCache
-from plone.registry.interfaces import IRegistry
 from plone.resource.utils import queryResourceDirectory
 from plone.subrequest import subrequest
 from z3c.form.interfaces import IFieldWidget
 from zExceptions import NotFound
 from zExceptions import Unauthorized
 from zope.component import getMultiAdapter
-from zope.component import getUtility
 from zope.component import queryUtility
 from zope.security.interfaces import IPermission
 from zope.site.hooks import getSite
 
 import Globals
 import logging
+import zope.deferredimport
+
+
+zope.deferredimport.deprecated(
+    'Moved in own behavior due to avoid circular imports. '
+    'Import from plone.app.blocks.layoutbehavior instead',
+    getDefaultAjaxLayout='plone.app.blocks.layoutbehavior:'
+                         'getDefaultAjaxLayout',
+    getDefaultSiteLayout='plone.app.blocks.layoutbehavior:'
+                         'getDefaultSiteLayout',
+    getLayout='plone.app.blocks.layoutbehavior:getLayout',
+    getLayoutAwareSiteLayout='plone.app.blocks.layoutbehavior:'
+                             'getLayoutAwareSiteLayout',
+)
 
 
 headXPath = etree.XPath("/html/head")
@@ -198,55 +204,6 @@ def replace_content(element, wrapper):
         element.extend(wrapper.getchildren())
 
 
-def getDefaultSiteLayout(context):
-    """Get the path to the site layout to use by default for the given content
-    object
-    """
-
-    # Note: the sectionSiteLayout on context is for pages *under* context, not
-    # necessarily context itself
-
-    parent = aq_parent(aq_inner(context))
-    while parent is not None:
-        layoutAware = ILayoutAware(parent, None)
-        if layoutAware is not None:
-            if getattr(layoutAware, 'sectionSiteLayout', None):
-                return layoutAware.sectionSiteLayout
-        parent = aq_parent(aq_inner(parent))
-
-    registry = queryUtility(IRegistry)
-    if registry is None:
-        return None
-
-    return registry.get(DEFAULT_SITE_LAYOUT_REGISTRY_KEY)
-
-
-def getDefaultAjaxLayout(context):
-    """Get the path to the ajax site layout to use by default for the given
-    content object
-    """
-
-    registry = queryUtility(IRegistry)
-    if registry is not None:
-        return registry.get(DEFAULT_AJAX_LAYOUT_REGISTRY_KEY)
-    else:
-        return getLayoutAwareSiteLayout(context)
-
-
-def getLayoutAwareSiteLayout(context):
-    """Get the path to the site layout for a page. This is generally only
-    appropriate for the view of this page. For a generic template or view, use
-    getDefaultSiteLayout(context) instead.
-    """
-
-    layoutAware = ILayoutAware(context, None)
-    if layoutAware is not None:
-        if getattr(layoutAware, 'pageSiteLayout', None):
-            return layoutAware.pageSiteLayout
-
-    return getDefaultSiteLayout(context)
-
-
 class PermissionChecker(object):
 
     def __init__(self, permissions, context):
@@ -408,35 +365,6 @@ def resolve_transform(rules_url, theme_node):
                              etree.ElementTree(deepcopy(theme_node)))
     transform = etree.XSLT(compiled)
     return transform
-
-
-def getLayout(content):
-    behavior_data = ILayoutAware(content)
-    if behavior_data.contentLayout:
-        try:
-            path = behavior_data.contentLayout
-            resolved = resolveResource(path)
-            layout = applyTilePersistent(path, resolved)
-        except (NotFound, RuntimeError):
-            layout = ''
-    else:
-        layout = behavior_data.content
-
-    if not layout:
-        registry = getUtility(IRegistry)
-        try:
-            path = registry['%s.%s' % (
-                DEFAULT_CONTENT_LAYOUT_REGISTRY_KEY,
-                content.portal_type.replace(' ', '-'))]
-        except (KeyError, AttributeError):
-            path = None
-        try:
-            path = path or registry[DEFAULT_CONTENT_LAYOUT_REGISTRY_KEY]
-            resolved = resolveResource(path)
-            layout = applyTilePersistent(path, resolved)
-        except (KeyError, NotFound, RuntimeError):
-            pass
-    return layout
 
 
 @ram.cache(lambda fun, path, resolved: md5(resolved).hexdigest())

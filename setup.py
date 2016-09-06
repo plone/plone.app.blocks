@@ -4,7 +4,7 @@ from setuptools import setup
 
 import os
 
-version = '3.1.1.dev0'
+version = '4.0.0.dev0'
 widgets_require = [
     'plone.app.widgets'
 ]
@@ -21,12 +21,19 @@ test_require = [
 def read(*path):
     return open(os.path.join(*path)).read()
 
-long_description = '%s\n%s\n%s\n%s' % (
-    read('README.rst'),
-    read('plone', 'app', 'blocks', 'tests', 'rendering.rst'),
-    read('plone', 'app', 'blocks', 'tests', 'esi.rst'),
-    read('CHANGES.rst')
-)
+long_description = '\n'.join(
+    [
+        open('README.rst').read(),
+        open(
+            os.path.join('plone', 'app', 'blocks', 'tests', 'rendering.rst')
+        ).read(),
+        open(
+            os.path.join('plone', 'app', 'blocks', 'tests', 'esi.rst')
+        ).read(),
+        open('CHANGES.rst').read(),
+    ]
+),
+
 
 setup(
     name='plone.app.blocks',

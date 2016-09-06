@@ -10,10 +10,8 @@ from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.interfaces import SITE_LAYOUT_FILE_NAME
 from plone.app.blocks.interfaces import SITE_LAYOUT_MANIFEST_FORMAT
 from plone.app.blocks.interfaces import SITE_LAYOUT_RESOURCE_NAME
+from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.app.blocks.layoutviews import SiteLayoutView
-from plone.app.blocks.utils import getDefaultAjaxLayout
-from plone.app.blocks.utils import getDefaultSiteLayout
-from plone.app.blocks.utils import getLayoutAwareSiteLayout
 from plone.app.blocks.utils import resolveResource
 from plone.memoize import view
 from plone.memoize import volatile
@@ -258,11 +256,11 @@ class DefaultSiteLayout(BrowserView):
         try:
             return self.index()
         except NotFound:
-            if ISubRequest.providedBy(self.request):
-                return SiteLayoutView(
-                    self.context, self.request.PARENT_REQUEST)()
-            else:
-                return SiteLayoutView(self.context, self.request)()
+            pass
+        request = self.request
+        if ISubRequest.providedBy(request):
+            request = request.PARENT_REQUEST
+        return SiteLayoutView(self.context, request)()
 
     @property
     @volatile.cache(cacheKey, volatile.store_on_context)
@@ -288,9 +286,10 @@ class DefaultSiteLayout(BrowserView):
         return resolveResource(self.layout)
 
     def _getLayout(self):
+        layout_adapter = ILayoutAware(self.context)
         if self.request.form.get('ajax_load'):
-            return getDefaultAjaxLayout(self.context)
-        return getDefaultSiteLayout(self.context)
+            return layout_adapter.ajax_site_layout()
+        return layout_adapter.site_layout()
 
 
 class PageSiteLayout(DefaultSiteLayout):
@@ -306,8 +305,3 @@ class PageSiteLayout(DefaultSiteLayout):
     and always get the correct site layout for the page, taking section-
     and page-specific settings into account.
     """
-
-    def _getLayout(self):
-        if self.request.form.get('ajax_load'):
-            return getDefaultAjaxLayout(self.context)
-        return getLayoutAwareSiteLayout(self.context)
