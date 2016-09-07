@@ -45,6 +45,13 @@ AUTOSAVE_BLACKLIST = [
 ]
 
 
+def isDraftable(fti):
+    return any([
+        IDraftable.__identifier__ in fti.behaviors,
+        'plone.draftable' in fti.behaviors
+    ])
+
+
 class IAddFormDrafting(IFormLayer):
     """Marker interface for requests drafting on Dexterity add form"""
 
@@ -59,7 +66,7 @@ class DefaultAddFormFieldWidgets(FieldWidgetsBase):
 
     def __init__(self, form, request, context):
         fti = queryUtility(IDexterityFTI, name=form.portal_type)
-        if IDraftable.__identifier__ in fti.behaviors:
+        if isDraftable(fti):
             current = ICurrentDraftManagement(request)
 
             if current.targetKey != '++add++{0}'.format(form.portal_type):
@@ -104,7 +111,7 @@ class DefaultEditFormFieldWidgets(FieldWidgetsBase):
 
     def __init__(self, form, request, context):
         fti = queryUtility(IDexterityFTI, name=form.portal_type)
-        if IDraftable.__identifier__ in fti.behaviors:
+        if isDraftable(fti):
             current = ICurrentDraftManagement(request)
 
             if current.targetKey is None:
@@ -145,7 +152,7 @@ def autosave(event):
 
     if IAddForm.providedBy(form):
         fti = queryUtility(IDexterityFTI, name=form.portal_type)
-        if IDraftable.__identifier__ not in fti.behaviors:
+        if not isDraftable(fti):
             return
 
         draft = getCurrentDraft(request, create=True)
@@ -160,14 +167,14 @@ def autosave(event):
 
     else:
         fti = queryUtility(IDexterityFTI, name=context.portal_type)
-        if IDraftable.__identifier__ not in fti.behaviors:
+        if not isDraftable(fti):
             return
 
         draft = getCurrentDraft(request, create=True)
         target = context
 
     fti = queryUtility(IDexterityFTI, name=target.portal_type)
-    if IDraftable.__identifier__ not in fti.behaviors:
+    if not isDraftable(fti):
         return
 
     if not getattr(form, 'extractData', None):
