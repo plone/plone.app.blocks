@@ -97,20 +97,6 @@
         name="plone.availableContentLayouts"
         />
 
-    <!-- BS3 Grid System -->
-    <utility
-        provides=".gridsystem.IGridSystem"
-        component=".gridsystem.BS3GridSystem"
-        name="bs3"
-        />
-
-    <!-- Deco Grid System -->
-    <utility
-        provides=".gridsystem.IGridSystem"
-        component=".gridsystem.DecoGridSystem"
-        name="deco"
-        />
-
     <!-- Cache invalidation when global site layout changes -->
     <subscriber
         handler=".resource.globalSiteLayoutModified"
@@ -170,19 +156,6 @@
         for=".interfaces.IBlocksTransformEnabled .interfaces.IBlocksLayer"
         name="plone.app.blocks.tiles"
         factory=".transform.IncludeTiles"
-        />
-
-    <!-- 8700: Replace css classes -->
-    <adapter
-        for="* .interfaces.IBlocksTransformEnabled"
-        name="plone.app.blocks.gridsystem"
-        factory=".transform.ApplyResponsiveClass"
-        />
-
-    <adapter
-        for=".interfaces.IBlocksTransformEnabled .interfaces.IBlocksLayer"
-        name="plone.app.blocks.gridsystem"
-        factory=".transform.ApplyResponsiveClass"
         />
 
     <!-- 8900: ESI post-processing if required -->

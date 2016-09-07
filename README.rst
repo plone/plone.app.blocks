@@ -28,14 +28,6 @@ The rendering stages are:
     Resolve tiles and place them directly into the merged layout.
     This is the fallback for views that do not opt into ``ITilePageRendered``.
 
-``plone.app.blocks.gridsystem`` (order 8700)
-    Apply responsive classes to the grid system.
-    The grid system setting is on the html tag attribute ``data-gridsystem``.
-    It defaults to "deco" which is the plone 4 sunburst theme grid system.
-    plone.app.blocks also supports the value of "bs3" which is bootstrap 3 grid system.
-    To change the grid system used, change the ``IBlocksSettings.default_grid_system`` value in the Configuration Registry.
-    If you're only using content tile transforms, you'll need to set a default grid system that matches your theme.
-
 ``plone.app.blocks.esirender`` (order 8900)
     Only executed if the request key ``plone.app.blocks.esi`` is set and its value is true,
     as would be the case if any ESI-rendered tiles are included and ESI rendering is enabled globally.

@@ -41,8 +41,6 @@ zope.deferredimport.deprecated(
 headXPath = etree.XPath("/html/head")
 layoutAttrib = 'data-layout'
 layoutXPath = etree.XPath("/html/@" + layoutAttrib)
-gridAttrib = 'data-gridsystem'
-gridXPath = etree.XPath("/html/@" + gridAttrib)
 tileAttrib = 'data-tile'
 tileRulesAttrib = 'data-rules'
 headTileXPath = etree.XPath("/html/head//*[@" + tileAttrib + "]")

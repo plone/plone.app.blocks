@@ -6,6 +6,9 @@ Changelog
 
 Incompatibilities:
 
+- Removed pluggable grid framework
+  [agitator]
+
 - Moved functions ``getDefaultAjaxLayout``, ``getDefaultSiteLayout``, ``getLayout`` and ``getLayoutAwareSiteLayout`` to ``.layoutbehavior`` in order to avoid circular imports
   (all deprecated now, see section New).
   [jensens]
