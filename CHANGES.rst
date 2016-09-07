@@ -9,10 +9,6 @@ Changelog
 - Fix code analysis errors.
   [gforcada]
 
-- Fix issue where prefixless tile add form did not trigger
-  draft synchronization
-  [datakurre]
-
 - Update testing infrastructure.
   [gforcada]
 

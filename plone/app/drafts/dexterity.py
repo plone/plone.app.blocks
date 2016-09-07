@@ -230,7 +230,7 @@ def save(event):
     if not IDrafting.providedBy(event.action.request):
         return
 
-    if event.action.name not in ('buttons.save', 'form.buttons.save'):
+    if event.action.name != 'form.buttons.save':
         return
 
     data, errors = event.action.form.extractData()
