@@ -139,7 +139,7 @@ class DefaultEditFormGroupFieldWidgets(FieldWidgetsBase):
         super(DefaultEditFormGroupFieldWidgets, self).__init__(form, request, context)  # noqa
 
 
-def autosave(event):
+def autosave(event):  # noqa
     context = getattr(event, 'object', None)
     request = getattr(context, 'REQUEST', getRequest())
     if not request.URL.endswith('/@@z3cform_validate_field'):

@@ -1131,7 +1131,7 @@ class TestDexterityIntegration(unittest.TestCase):
         # We should now have cookies with the drafts information
         cookies = browser.cookies.forURL(browser.url)
         self.assertEqual('"/plone"', cookies['plone.app.drafts.path'])
-        self.assertEqual(
+        self.assertEqual(  # noqa
             '"%2B%2Badd%2B%2BMyDocument"',
             cookies['plone.app.drafts.targetKey'],
         )
@@ -1171,7 +1171,7 @@ class TestDexterityIntegration(unittest.TestCase):
         # We should now have cookies with the drafts information
         cookies = browser.cookies.forURL(browser.url)
         self.assertEqual('"/plone"', cookies['plone.app.drafts.path'])
-        self.assertEqual(
+        self.assertEqual(  # noqa
             '"%2B%2Badd%2B%2BMyDocument"',
             cookies['plone.app.drafts.targetKey'],
         )
@@ -1218,7 +1218,7 @@ class TestDexterityIntegration(unittest.TestCase):
             '"{0}"'.format(self.folder.absolute_url_path()),
             cookies['plone.app.drafts.path']
         )
-        self.assertEqual(
+        self.assertEqual(  # noqa
             '"{}"'.format(IUUID(self.folder)),
             cookies['plone.app.drafts.targetKey'],
         )

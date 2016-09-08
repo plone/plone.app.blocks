@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-from zope import event
+from plone.app.drafts.interfaces import ICurrentDraftManagement
+from plone.app.drafts.interfaces import IDrafting
+from plone.app.drafts.lifecycle import syncDraftOnSave
 from plone.uuid.interfaces import IUUID
 from zope.globalrequest import getRequest
+from zope import event
 from zope.lifecycleevent import ObjectModifiedEvent
-from plone.app.drafts.interfaces import IDrafting
-from plone.app.drafts.interfaces import ICurrentDraftManagement
-from plone.app.drafts.lifecycle import syncDraftOnSave
-from plone.app.drafts.utils import getCurrentDraft
 
 
 def subscriber(event):
