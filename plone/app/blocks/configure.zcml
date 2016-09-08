@@ -14,6 +14,7 @@
     <include package="plone.tiles" />
     <include package="plone.subrequest" />
     <include package="plone.transformchain" />
+    <include package="plone.jsonserializer" />
 
     <include package="plone.app.registry" />
 

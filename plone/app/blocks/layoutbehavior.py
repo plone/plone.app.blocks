@@ -12,13 +12,13 @@ from plone.app.blocks.utils import resolveResource
 from plone.autoform.directives import omitted
 from plone.autoform.directives import write_permission
 from plone.autoform.interfaces import IFormFieldProvider
+from plone.jsonserializer.serializer.converters import json_compatible
+from plone.jsonserializer.deserializer.converters import schema_compatible
 from plone.memoize import view
 from plone.registry.interfaces import IRegistry
 from plone.supermodel.directives import fieldset
 from plone.supermodel import model
-from plone.tiles.data import decode as tiles_data_decode
 from plone.tiles.data import defaultTileDataStorage
-from plone.tiles.data import encode as tiles_data_encode
 from plone.tiles.interfaces import ITile
 from plone.tiles.interfaces import ITileDataStorage
 from plone.tiles.interfaces import ITileType
@@ -32,6 +32,7 @@ from zope import schema
 from zope.interface import implementer
 from zope.interface import Interface
 from zope.interface import provider
+import json
 import logging
 import zope.deferredimport
 
@@ -320,11 +321,15 @@ class LayoutAwareTileDataStorage(object):
         key, schema_ = self.resolve(key)
         for el in self.storage.tree.xpath(
                 '//*[contains(@data-tile, "{0:s}")]'.format(key)):
-            query = el.get('data-tile', '').split('?', 1)[-1]
-            request = self.request.clone()
-            request.environ['QUERY_STRING'] = query
-            request.processInputs()
-            return tiles_data_decode(request.form, schema_)
+            try:
+                data = json.loads(el.get('data-tiledata', ''))
+            except ValueError:
+                if el.get('data-tiledata'):
+                    logger.error((u'No JSON object could be decoded from '
+                                  u'data "{0:s}" for tile "{0:1}".').format(
+                        el.get('data-tiledata'), key))
+                raise KeyError(key)
+            return schema_compatible(data, schema_)
         raise KeyError(key)
 
     # IReadMapping
@@ -349,17 +354,19 @@ class LayoutAwareTileDataStorage(object):
 
     def __setitem__(self, key, value):
         key, schema_ = self.resolve(key)
-        data = tiles_data_encode(value, schema_)
+        data = json.dumps(json_compatible(value))
 
-        # Update existing value
+        # Update existing alue
         for el in self.storage.tree.xpath(
                 '//*[contains(@data-tile, "{0:s}")]'.format(key)):
-            el.attrib['data-tile'] = '{0:s}?{1:s}'.format(key, data)
+            el.attrib['data-tile'] = key
+            el.attrib['data-tiledata'] = data
             return self.sync()
 
         # Add new value
         el = etree.Element('div')
-        el.attrib['data-tile'] = '{0:s}?{1:s}'.format(key, data)
+        el.attrib['data-tile'] = key
+        el.attrib['data-tiledata'] = data
         self.storage.tree.find('body').append(el)
         self.sync()
 

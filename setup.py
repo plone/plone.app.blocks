@@ -71,6 +71,7 @@ setup(
         'plone.autoform',
         'plone.behavior>=1.1',
         'plone.dexterity',
+        'plone.jsonserializer',
         'plone.memoize',
         'plone.outputfilters',
         'plone.registry',
