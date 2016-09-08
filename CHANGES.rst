@@ -4,6 +4,10 @@ Changelog
 1.1.0 (unreleased)
 ------------------
 
+- Add support for drafted content preview for Dexterity content when request is
+  marked with IDisplayFormDrafting
+  [datakurre]
+
 - Fix not set cookie values twice
   [vangheem]
 
