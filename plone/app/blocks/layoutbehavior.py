@@ -2,6 +2,7 @@
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from lxml import etree
+from lxml import html
 from plone.app.blocks.interfaces import _
 from plone.app.blocks.interfaces import DEFAULT_AJAX_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.interfaces import DEFAULT_CONTENT_LAYOUT_REGISTRY_KEY
@@ -12,10 +13,11 @@ from plone.app.blocks.utils import resolveResource
 from plone.autoform.directives import omitted
 from plone.autoform.directives import write_permission
 from plone.autoform.interfaces import IFormFieldProvider
-from plone.jsonserializer.serializer.converters import json_compatible
 from plone.jsonserializer.deserializer.converters import schema_compatible
+from plone.jsonserializer.serializer.converters import json_compatible
 from plone.memoize import view
 from plone.registry.interfaces import IRegistry
+from plone.rfc822.interfaces import IPrimaryField
 from plone.supermodel.directives import fieldset
 from plone.supermodel import model
 from plone.tiles.data import defaultTileDataStorage
@@ -322,13 +324,27 @@ class LayoutAwareTileDataStorage(object):
         for el in self.storage.tree.xpath(
                 '//*[contains(@data-tile, "{0:s}")]'.format(key)):
             try:
-                data = json.loads(el.get('data-tiledata', ''))
+                data = json.loads(el.get('data-tiledata') or '{}')
             except ValueError:
                 if el.get('data-tiledata'):
                     logger.error((u'No JSON object could be decoded from '
                                   u'data "{0:s}" for tile "{0:1}".').format(
                         el.get('data-tiledata'), key))
                 raise KeyError(key)
+
+            # Read primary field content from el content
+            if len(el) and len(el[0]):
+                primary = u''.join([html.tostring(x) for x in el[0]])
+            elif len(el):
+                primary = el[0].text
+            else:
+                primary = None
+            if primary:
+                for name in schema_:
+                    if IPrimaryField.providedBy(schema_[name]):
+                        data[name] = primary
+                        break
+
             return schema_compatible(data, schema_)
         raise KeyError(key)
 
@@ -354,19 +370,38 @@ class LayoutAwareTileDataStorage(object):
 
     def __setitem__(self, key, value):
         key, schema_ = self.resolve(key)
-        data = json.dumps(json_compatible(value))
+        data = json_compatible(value)
 
-        # Update existing alue
+        # Store primary field as tile tag content
+        primary = None
+        for name in schema_:
+            if IPrimaryField.providedBy(schema_[name]) and data.get(name):
+                try:
+                    raw = u'<div>{0:s}</div>'.format(data.pop(name) or u'')
+                    primary = html.fromstring(raw)
+                except (etree.ParseError, TypeError):
+                    pass
+
+        # Update existing value
         for el in self.storage.tree.xpath(
                 '//*[contains(@data-tile, "{0:s}")]'.format(key)):
+            el.clear()
             el.attrib['data-tile'] = key
-            el.attrib['data-tiledata'] = data
+            if data:
+                el.attrib['data-tiledata'] = json.dumps(data)
+            elif 'data-tiledata' in el.attrib:
+                del el.attrib['data-tiledata']
+            if primary is not None:
+                el.append(primary)
             return self.sync()
 
         # Add new value
         el = etree.Element('div')
         el.attrib['data-tile'] = key
-        el.attrib['data-tiledata'] = data
+        if data:
+            el.attrib['data-tiledata'] = json.dumps(data)
+        if primary is not None:
+            el.append(primary)
         self.storage.tree.find('body').append(el)
         self.sync()
 

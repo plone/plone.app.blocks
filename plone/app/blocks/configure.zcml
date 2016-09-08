@@ -67,9 +67,10 @@
     <adapter
         for=".layoutbehavior.ILayoutBehaviorAdaptable
              * plone.tiles.interfaces.IPersistentTile"
-        factory="plone.tiles.data.defaultTileDataStorage"
+        factory="plone.tiles.data.defaultPersistentTileDataStorage"
         />
     <adapter
+        name="plone.app.blocks.layoutbehavior"
         factory=".drafting.LayoutAwareDataStorageSyncher"
         zcml:condition="installed plone.app.drafts"
         />
