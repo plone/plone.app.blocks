@@ -9,6 +9,7 @@ widgets_require = [
     'plone.app.widgets'
 ]
 test_require = [
+    'plone.app.tiles',
     'plone.app.testing',
     'plone.testing',
     'Products.BTreeFolder2',

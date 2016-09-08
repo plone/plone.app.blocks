@@ -1,16 +1,13 @@
 # -*- coding: utf-8 -*-
 from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.app.blocks.layoutbehavior import ILayoutBehaviorAdaptable
-from plone.app.blocks.layoutbehavior import LayoutAwareBehavior
 from plone.app.blocks.layoutbehavior import LayoutAwareTileDataStorage
 from plone.app.blocks.testing import BLOCKS_FUNCTIONAL_TESTING
 from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
 from plone.registry.interfaces import IRegistry
 from plone.uuid.interfaces import IUUID
-from zope.component import getGlobalSiteManager
 from zope.component import getUtility
-from zope.interface import alsoProvides
 
 import pkg_resources
 import unittest
@@ -33,8 +30,14 @@ class TestLayoutBehavior(unittest.TestCase):
         self.request = self.layer['request']
         self.registry = getUtility(IRegistry)
 
-        self.portal.portal_types['Document'].behaviors += (
-            'plone.app.blocks.layoutbehavior.ILayoutAware',)
+        # Enable layout aware behavior
+        fti = self.portal.portal_types['Document']
+        behaviors = [i for i in fti.behaviors]
+        behaviors.extend([
+            'plone.app.blocks.layoutbehavior.ILayoutAware'
+        ])
+        behaviors = tuple(set(behaviors))
+        fti._updateProperty('behaviors', behaviors)
 
         setRoles(self.portal, TEST_USER_ID, ('Manager',))
         self.portal.invokeFactory('Folder', 'f1', title=u"Folder 1")
