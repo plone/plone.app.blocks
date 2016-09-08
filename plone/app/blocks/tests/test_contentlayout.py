@@ -117,7 +117,7 @@ class TestContentLayout(unittest.TestCase):
             layout)
 
     def test_getLayout_custom(self):
-        self.behavior.customLayout = """
+        self.behavior.customContentLayout = """
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html data-layout="./@@default-site-layout">
@@ -148,7 +148,7 @@ class TestContentLayout(unittest.TestCase):
   </div>
 </body>
 </html>"""
-        self.behavior.customLayout = """
+        self.behavior.customContentLayout = """
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html data-layout="./@@default-site-layout">
@@ -177,7 +177,7 @@ class TestContentLayout(unittest.TestCase):
         self.assertTrue('Foobar inserted raw tile' in indexed_data)
 
     def test_on_save_tile_data_is_cleaned(self):
-        self.behavior.customLayout = """
+        self.behavior.customContentLayout = """
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html data-layout="./@@default-site-layout">

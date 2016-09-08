@@ -79,7 +79,7 @@ class TestPageSiteLayout(unittest.TestCase):
         self.assertTrue(u"Layout title" in rendered)
 
     def test_page_site_layout_page_override(self):
-        self.behavior.customLayout = u"<html><body>N/A</body></html>"
+        self.behavior.customContentLayout = u"<html><body>N/A</body></html>"
         self.behavior.pageSiteLayout = \
             '/++sitelayout++testlayout2/mylayout.html'
 
@@ -130,7 +130,7 @@ class TestPageSiteLayout(unittest.TestCase):
         self.assertTrue(u"My Layout 1 Title" in rendered)
 
     def test_page_site_layout_cache_invalidate_mtime(self):
-        self.behavior.customLayout = u"<html><body>N/A</body></html>"
+        self.behavior.customContentLayout = u"<html><body>N/A</body></html>"
         self.behavior.sectionSiteLayout = \
             '/++sitelayout++testlayout2/mylayout.html'
 

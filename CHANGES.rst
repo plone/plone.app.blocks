@@ -9,7 +9,7 @@ Incompatibilities:
 - Removed pluggable grid framework
   [agitator]
 
-- Moved ``ILayoutAware.content`` to ``ILayoutAware.customLayout``.
+- Moved ``ILayoutAware.content`` to ``ILayoutAware.customContentLayout``.
   Added ``ILayoutAware.content`` as layout independent, but layout
   like, tile data storage
   [datakurre]

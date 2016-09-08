@@ -63,7 +63,7 @@ class ILayoutAware(model.Schema):
         required=False
     )
 
-    customLayout = LayoutField(
+    customContentLayout = LayoutField(
         title=_(u"Custom layout"),
         description=_(u"Custom content and content layout of this page"),
         default=None,
@@ -101,7 +101,7 @@ class ILayoutAware(model.Schema):
         fields=(
             'content',
             'contentLayout',
-            'customLayout',
+            'customContentLayout',
             'pageSiteLayout',
             'sectionSiteLayout'
         )
@@ -138,7 +138,7 @@ class LayoutAwareDefault(object):
 
     content = None
     contentLayout = None
-    customLayout = None
+    customContentLayout = None
     pageSiteLayout = None
     sectionSiteLayout = None
 
@@ -207,12 +207,12 @@ class LayoutAwareBehavior(LayoutAwareDefault):
         self.context.content = value
 
     @property
-    def customLayout(self):
-        return getattr(self.context, 'customLayout', None)
+    def customContentLayout(self):
+        return getattr(self.context, 'customContentLayout', None)
 
-    @customLayout.setter
-    def customLayout(self, value):
-        self.context.customLayout = value
+    @customContentLayout.setter
+    def customContentLayout(self, value):
+        self.context.customContentLayout = value
 
     @property
     def contentLayout(self):
@@ -249,8 +249,8 @@ class LayoutAwareBehavior(LayoutAwareDefault):
                 return applyTilePersistent(path, resolved)
             except (NotFound, RuntimeError):
                 pass
-        elif self.customLayout:
-            return self.customLayout
+        elif self.customContentLayout:
+            return self.customContentLayout
 
         return super(LayoutAwareBehavior, self).content_layout()
 
