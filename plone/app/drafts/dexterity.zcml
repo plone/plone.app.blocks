@@ -6,6 +6,8 @@
   <adapter factory=".dexterity.DefaultAddFormGroupFieldWidgets" />
   <adapter factory=".dexterity.DefaultEditFormFieldWidgets" />
   <adapter factory=".dexterity.DefaultEditFormGroupFieldWidgets" />
+  <adapter factory=".dexterity.DefaultDisplayFormFieldWidgets" />
+  <adapter factory=".dexterity.DefaultDisplayFormGroupFieldWidgets" />
 
   <subscriber handler=".dexterity.capture" />
   <subscriber handler=".dexterity.cancel" />

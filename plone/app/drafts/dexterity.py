@@ -8,6 +8,7 @@ from plone.app.drafts.lifecycle import discardDraftsOnCancel
 from plone.app.drafts.lifecycle import syncDraftOnSave
 from plone.app.drafts.proxy import DraftProxy
 from plone.app.drafts.utils import getCurrentDraft
+from plone.autoform.view import WidgetsView
 from plone.dexterity.browser.add import DefaultAddForm
 from plone.dexterity.browser.edit import DefaultEditForm
 from plone.dexterity.interfaces import IDexterityContent
@@ -50,6 +51,10 @@ def isDraftable(fti):
         IDraftable.__identifier__ in fti.behaviors,
         'plone.draftable' in fti.behaviors
     ])
+
+
+class IDisplayFormDrafting(IFormLayer):
+    """Marker interface for requests drafting on Dexterity display form"""
 
 
 class IAddFormDrafting(IFormLayer):
@@ -137,6 +142,35 @@ class DefaultEditFormGroupFieldWidgets(FieldWidgetsBase):
         draft = getCurrentDraft(request)
         context = DraftProxy(draft, context)
         super(DefaultEditFormGroupFieldWidgets, self).__init__(form, request, context)  # noqa
+
+
+@adapter(WidgetsView, IDisplayFormDrafting, IDexterityContent)
+@implementer(IWidgets)
+class DefaultDisplayFormFieldWidgets(FieldWidgetsBase):
+
+    def __init__(self, form, request, context):
+        print "DefaultDisplayFormFied..."
+        fti = queryUtility(IDexterityFTI, name=context.portal_type)
+        if isDraftable(fti):
+            current = ICurrentDraftManagement(request)
+
+            if current.targetKey is not None:
+                current.mark()
+
+            if current.draft:
+                context = DraftProxy(current.draft, context)
+
+        super(DefaultDisplayFormFieldWidgets, self).__init__(form, request, context)  # noqa
+
+
+@adapter(IGroup, IDisplayFormDrafting, Interface)
+@implementer(IWidgets)
+class DefaultDisplayFormGroupFieldWidgets(FieldWidgetsBase):
+
+    def __init__(self, form, request, context):
+        draft = getCurrentDraft(request)
+        context = DraftProxy(draft, context)
+        super(DefaultDisplayFormGroupFieldWidgets, self).__init__(form, request, context)  # noqa
 
 
 def autosave(event):  # noqa
