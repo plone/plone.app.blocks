@@ -6,4 +6,4 @@ recursive-include plone *
 global-exclude *pyc
 
 exclude bootstrap.py
-exclude *.cfg
+exclude *.cfg .coveragerc
