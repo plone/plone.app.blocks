@@ -88,6 +88,13 @@
         class=".layoutviews.ContentLayoutView"
         permission="zope2.View"
         />
+    <browser:page
+        for=".layoutbehavior.ILayoutBehaviorAdaptable"
+        name="preview"
+        class=".layoutviews.ContentLayoutPreview"
+        permission="cmf.ModifyPortalContent"
+        zcml:condition="installed plone.app.drafts"
+        />
 
     <!-- Register the resource traverser -->
     <adapter

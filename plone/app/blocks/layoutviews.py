@@ -8,6 +8,7 @@ from plone.outputfilters.interfaces import IFilter
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import getAdapters
+from zope.interface import alsoProvides
 from zope.interface import implementer
 
 import os
@@ -62,6 +63,26 @@ class ContentLayoutView(DefaultView):
             f for _, f in getAdapters((self.context, self.request), IFilter)
         ]
         return apply_filters(filters, layout)
+
+
+@implementer(IBlocksTransformEnabled)
+class ContentLayoutPreview(ContentLayoutView):
+    """Default view for a layout aware page
+    """
+
+    def __call__(self):
+        from plone.app.drafts.dexterity import IDisplayFormDrafting
+        from plone.app.drafts.interfaces import ICurrentDraftManagement
+        from plone.app.drafts.proxy import DraftProxy
+        from plone.app.drafts.utils import getCurrentDraft
+
+        draft = getCurrentDraft(self.request)
+        if draft is not None:
+            ICurrentDraftManagement(self.request).mark()
+            alsoProvides(self.request, IDisplayFormDrafting)
+            self.context = DraftProxy(draft, self.context)
+
+        return super(ContentLayoutPreview, self).__call__()
 
 
 @implementer(IBlocksTransformEnabled)
