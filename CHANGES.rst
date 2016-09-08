@@ -12,9 +12,7 @@ Incompatibilities:
 - Removed pluggable grid framework
   [agitator]
 
-- Moved ``ILayoutAware.content`` to ``ILayoutAware.customContentLayout``.
-  Added ``ILayoutAware.content`` as layout independent, but layout
-  like, tile data storage
+- Moved ``ILayoutAware.content`` to ``ILayoutAware.customContentLayout``
   [datakurre]
 
 - Moved functions ``getDefaultAjaxLayout``, ``getDefaultSiteLayout``, ``getLayout`` and ``getLayoutAwareSiteLayout`` to ``.layoutbehavior`` in order to avoid circular imports
@@ -32,10 +30,14 @@ Incompatibilities:
   displayed on legacy Deco UIs
   [jensens]
 
-- Drop official Plone 4.2 support.
-  [jensens]
-
 New:
+
+- Add ``@@preview`` view for previewing currently drafted content
+  [datakurre]
+
+- Add ``ILayoutAware.content`` as layout independent, but layout
+  like, tile data storage
+  [datakurre]
 
 - Get layouts always by adapting with ``ILayoutAware``.
   This introduces a generic adapter and a behavior adapter.
