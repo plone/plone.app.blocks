@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 from lxml.html import fromstring
-from lxml.html import tostring
 from plone.app.blocks.layoutbehavior import ILayoutAware
+from plone.app.blocks.layoutbehavior import ILayoutBehaviorAdaptable
 from plone.indexer.decorator import indexer
 from plone.tiles.data import ANNOTATIONS_KEY_PREFIX
 from Products.CMFPlone.utils import safe_unicode
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapter
 from zope.interface import implementer
-
 import pkg_resources
 
 
@@ -34,7 +33,7 @@ except ImportError:
         return result
 
 
-@indexer(ILayoutAware)
+@indexer(ILayoutBehaviorAdaptable)
 def LayoutSearchableText(obj):
     text = [obj.id]
     try:
@@ -60,18 +59,28 @@ def LayoutSearchableText(obj):
                 val = data.get(field_name)
                 if isinstance(val, basestring):
                     text.append(val)
-    if not behavior_data.contentLayout and behavior_data.content:
-        dom = fromstring(behavior_data.content)
-        for el in dom.cssselect('.mosaic-text-tile .mosaic-tile-content'):
-            text.append(tostring(el))
 
-    return concat(*text)
+    try:
+        if behavior_data.content:
+            dom = fromstring(behavior_data.content)
+            text.extend(dom.xpath('//text()'))
+    except AttributeError:
+        pass
+
+    try:
+        if behavior_data.customLayout:
+            dom = fromstring(behavior_data.customLayout)
+            text.extend(dom.xpath('//text()'))
+    except AttributeError:
+        pass
+
+    return concat(*set(text))
 
 
 if HAS_DEXTERITYTEXTINDEXER:
 
     @implementer(IDynamicTextIndexExtender)
-    @adapter(ILayoutAware)
+    @adapter(ILayoutBehaviorAdaptable)
     class LayoutSearchableTextIndexExtender(object):
 
         def __init__(self, context):

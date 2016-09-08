@@ -117,7 +117,7 @@ class TestContentLayout(unittest.TestCase):
             layout)
 
     def test_getLayout_custom(self):
-        self.behavior.content = """
+        self.behavior.customContentLayout = """
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html data-layout="./@@default-site-layout">
@@ -143,6 +143,16 @@ class TestContentLayout(unittest.TestCase):
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html data-layout="./@@default-site-layout">
 <body>
+  <div data-tile="./@@plone.app.standardtiles.html/example"
+    <p>Foobar inserted text tile</p>
+  </div>
+</body>
+</html>"""
+        self.behavior.customContentLayout = """
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html data-layout="./@@default-site-layout">
+<body>
   <div class="mosaic-tile rawhtml-tile
               mosaic-plone.app.standardtiles.rawhtml-tile">
     <div class="mosaic-tile-content">
@@ -151,23 +161,23 @@ class TestContentLayout(unittest.TestCase):
   </div>
   <div class="mosaic-tile mosaic-text-tile">
     <div class="mosaic-tile-content">
-        <p>Foobar inserted text tile</p>
+      <div data-tile="./@@plone.app.standardtiles.html/example"></div>
     </div>
   </div>
 </body>
 </html>"""
-        content = self.portal['f1']['d1']
-        annotations = IAnnotations(content)
+        obj = self.portal['f1']['d1']
+        annotations = IAnnotations(obj)
         annotations[ANNOTATIONS_KEY_PREFIX + '.rawhtml-1'] = {
             'content': '<p>Foobar inserted raw tile</p>'
         }
         from plone.app.blocks.indexing import LayoutSearchableText
-        indexed_data = LayoutSearchableText(content)()
+        indexed_data = LayoutSearchableText(obj)()
         self.assertTrue('Foobar inserted text tile' in indexed_data)
         self.assertTrue('Foobar inserted raw tile' in indexed_data)
 
     def test_on_save_tile_data_is_cleaned(self):
-        self.behavior.content = """
+        self.behavior.customContentLayout = """
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html data-layout="./@@default-site-layout">
@@ -179,8 +189,8 @@ class TestContentLayout(unittest.TestCase):
 </body>
 </html>"""
 
-        content = self.portal['f1']['d1']
-        annotations = IAnnotations(content)
+        obj = self.portal['f1']['d1']
+        annotations = IAnnotations(obj)
         annotations.update({
             ANNOTATIONS_KEY_PREFIX + '.foobar-1': {
                 'foo': 'bar'
@@ -206,8 +216,8 @@ class TestContentLayout(unittest.TestCase):
         })
 
         from plone.app.blocks.subscribers import onLayoutEdited
-        onLayoutEdited(content, None)
-        annotations = IAnnotations(content)
+        onLayoutEdited(obj, None)
+        annotations = IAnnotations(obj)
         self.assertTrue(ANNOTATIONS_KEY_PREFIX + '.foobar-1' in annotations)
         self.assertTrue(ANNOTATIONS_KEY_PREFIX + '.foobar-2' in annotations)
         self.assertTrue(ANNOTATIONS_KEY_PREFIX + '.foobar-3' in annotations)

@@ -62,3 +62,27 @@ class ContentLayoutView(DefaultView):
             f for _, f in getAdapters((self.context, self.request), IFilter)
         ]
         return apply_filters(filters, layout)
+
+
+@implementer(IBlocksTransformEnabled)
+class TileLayoutView(DefaultView):
+    """Introspection view for displaying configured tiles saved in 'content'
+    """
+
+    def __call__(self):
+        """Render the contents of the "content" field coming from
+        the ILayoutAware behavior.
+
+        This result is supposed to be transformed by plone.app.blocks.
+        """
+        lookup = ILayoutAware(self.context, None)
+        layout = lookup.tile_layout() if lookup else None
+        if not layout:
+            layout = ERROR_LAYOUT
+
+        # Here we skip legacy portal_transforms and call plone.outputfilters
+        # directly by purpose
+        filters = [
+            f for _, f in getAdapters((self.context, self.request), IFilter)
+        ]
+        return apply_filters(filters, layout)

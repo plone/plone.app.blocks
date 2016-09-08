@@ -18,4 +18,12 @@
       handler=".upgrades.upgrade_rolemap"
       />
 
+  <genericsetup:upgradeStep
+      profile="plone.app.blocks:default"
+      source="3000"
+      destination="4000"
+      title="Migrate content to customContentLayout"
+      handler=".upgrades.migrate_content_to_customContentLayout"
+      />
+
 </configure>

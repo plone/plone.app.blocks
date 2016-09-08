@@ -91,7 +91,7 @@ class TestSiteLayout(unittest.TestCase):
             def __init__(self, context):
                 self.context = context
 
-            content = u"<html><body>N/A</body></html>"
+            customContentLayout = u"<html><body>N/A</body></html>"
             sectionSiteLayout = '/++sitelayout++testlayout2/mylayout.html'
             pageSiteLayout = None
 

@@ -9,6 +9,7 @@ widgets_require = [
     'plone.app.widgets'
 ]
 test_require = [
+    'plone.app.tiles',
     'plone.app.testing',
     'plone.testing',
     'Products.BTreeFolder2',
@@ -44,7 +45,6 @@ setup(
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
         'Framework :: Plone',
-        'Framework :: Plone :: 4.3',
         'Framework :: Plone :: 5.0',
         'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
         'Programming Language :: Python',
@@ -71,6 +71,7 @@ setup(
         'plone.autoform',
         'plone.behavior>=1.1',
         'plone.dexterity',
+        'plone.jsonserializer',
         'plone.memoize',
         'plone.outputfilters',
         'plone.registry',
