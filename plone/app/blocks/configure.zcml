@@ -60,8 +60,26 @@
         marker=".layoutbehavior.ILayoutBehaviorAdaptable"
         factory=".layoutbehavior.LayoutAwareBehavior"
         />
+    <adapter
+        factory=".layoutbehavior.layoutAwareTileDataStorage"
+        />
+    <adapter
+        for=".layoutbehavior.ILayoutBehaviorAdaptable
+             * plone.tiles.interfaces.IPersistentTile"
+        factory="plone.tiles.data.defaultTileDataStorage"
+        />
+    <adapter
+        factory=".drafting.LayoutAwareDataStorageSyncher"
+        zcml:condition="installed plone.app.drafts"
+        />
 
     <!-- Register the default views for the layout behavior -->
+    <browser:page
+        for=".layoutbehavior.ILayoutBehaviorAdaptable"
+        name="tile_layout_view"
+        class=".layoutviews.TileLayoutView"
+        permission="cmf.ModifyPortalContent"
+        />
     <browser:page
         for=".layoutbehavior.ILayoutBehaviorAdaptable"
         name="layout_view"

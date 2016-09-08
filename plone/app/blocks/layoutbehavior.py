@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from Acquisition import aq_inner
 from Acquisition import aq_parent
+from lxml import etree
 from plone.app.blocks.interfaces import _
 from plone.app.blocks.interfaces import DEFAULT_AJAX_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.interfaces import DEFAULT_CONTENT_LAYOUT_REGISTRY_KEY
@@ -8,21 +9,29 @@ from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.interfaces import ILayoutField
 from plone.app.blocks.utils import applyTilePersistent
 from plone.app.blocks.utils import resolveResource
+from plone.autoform.directives import omitted
 from plone.autoform.directives import write_permission
 from plone.autoform.interfaces import IFormFieldProvider
+from plone.memoize import view
 from plone.registry.interfaces import IRegistry
-from plone.supermodel import model
 from plone.supermodel.directives import fieldset
+from plone.supermodel import model
+from plone.tiles.data import decode as tiles_data_decode
+from plone.tiles.data import defaultTileDataStorage
+from plone.tiles.data import encode as tiles_data_encode
+from plone.tiles.interfaces import ITile
+from plone.tiles.interfaces import ITileDataStorage
+from plone.tiles.interfaces import ITileType
+from repoze.xmliter.utils import getHTMLSerializer
 from zExceptions import NotFound
-from zope import schema
 from zope.component import adapter
 from zope.component import getUtility
 from zope.component import queryUtility
 from zope.deprecation import deprecate
+from zope import schema
 from zope.interface import implementer
 from zope.interface import Interface
 from zope.interface import provider
-
 import logging
 import zope.deferredimport
 
@@ -46,7 +55,15 @@ class LayoutField(schema.Text):
 class ILayoutAware(model.Schema):
     """Behavior interface to make a type support layout.
     """
-    content = LayoutField(
+    omitted('content')
+    content = schema.Text(
+        title=_(u"Tile content"),
+        description=_(u"Transient tile configurations and data for this page"),
+        default=None,
+        required=False
+    )
+
+    customLayout = LayoutField(
         title=_(u"Custom layout"),
         description=_(u"Custom content and content layout of this page"),
         default=None,
@@ -83,11 +100,16 @@ class ILayoutAware(model.Schema):
         label=_('Layout'),
         fields=(
             'content',
+            'contentLayout',
+            'customLayout',
             'pageSiteLayout',
-            'sectionSiteLayout',
-            'contentLayout'
+            'sectionSiteLayout'
         )
     )
+
+    def tile_layout():
+        """returns HTML layout of tiles in 'content' storage
+        """
 
     def content_layout():
         """returns HTML layout of content
@@ -116,11 +138,15 @@ class LayoutAwareDefault(object):
 
     content = None
     contentLayout = None
+    customLayout = None
     pageSiteLayout = None
     sectionSiteLayout = None
 
     def __init__(self, context):
         self.context = context
+
+    def tile_layout(self):
+        return u''
 
     def content_layout(self):
         layout = None
@@ -172,9 +198,6 @@ class LayoutAwareDefault(object):
 @adapter(ILayoutBehaviorAdaptable)
 class LayoutAwareBehavior(LayoutAwareDefault):
 
-    def __init__(self, context):
-        self.context = context
-
     @property
     def content(self):
         return getattr(self.context, 'content', None)
@@ -182,6 +205,14 @@ class LayoutAwareBehavior(LayoutAwareDefault):
     @content.setter
     def content(self, value):
         self.context.content = value
+
+    @property
+    def customLayout(self):
+        return getattr(self.context, 'customLayout', None)
+
+    @customLayout.setter
+    def customLayout(self, value):
+        self.context.customLayout = value
 
     @property
     def contentLayout(self):
@@ -207,6 +238,9 @@ class LayoutAwareBehavior(LayoutAwareDefault):
     def sectionSiteLayout(self, value):
         self.context.sectionSiteLayout = value
 
+    def tile_layout(self):
+        return self.content or u''
+
     def content_layout(self):
         if self.contentLayout:
             try:
@@ -215,8 +249,8 @@ class LayoutAwareBehavior(LayoutAwareDefault):
                 return applyTilePersistent(path, resolved)
             except (NotFound, RuntimeError):
                 pass
-        elif self.content:
-            return self.content
+        elif self.customLayout:
+            return self.customLayout
 
         return super(LayoutAwareBehavior, self).content_layout()
 
@@ -229,6 +263,130 @@ class LayoutAwareBehavior(LayoutAwareDefault):
         return self.pageSiteLayout or \
             self.sectionSiteLayout or \
             super(LayoutAwareBehavior, self).site_layout()
+
+
+DATA_LAYOUT = u"""
+<!DOCTYPE html>
+<html lang="en" data-layout="./@@page-site-layout">
+<body data-panel="content">
+</body>
+</html>"""
+
+
+@implementer(ITileDataStorage)
+@adapter(ILayoutBehaviorAdaptable, Interface, ITile)
+def layoutAwareTileDataStorage(context, request, tile):
+    schema = getUtility(ITileType, name=tile.__name__).schema
+    if schema and tile.id is not None:
+        return LayoutAwareTileDataStorage(context, request, tile)
+    else:
+        return defaultTileDataStorage(context, request, tile)
+
+
+@implementer(ITileDataStorage)
+@adapter(ILayoutBehaviorAdaptable, Interface, ITile)
+class LayoutAwareTileDataStorage(object):
+    def __init__(self, context, request, tile=None):
+        self.context = context
+        self.request = request
+        self.tile = tile
+
+        # Parse layout
+        data_layout = (ILayoutAware(self.context).content or DATA_LAYOUT)
+        self.storage = getHTMLSerializer([data_layout.encode('utf-8')],
+                                         pretty_print=True,
+                                         encoding='utf-8')
+
+    def sync(self):
+        ILayoutAware(self.context).content = str(self.storage)
+
+    def resolve(self, key):
+        if self.tile is None:
+            name = None
+        else:
+            name = self.tile.__name__
+        try:
+            name, key = key.strip('@').split('/', 1)
+        except ValueError:
+            if name is None:
+                raise KeyError(key)
+            key = key.strip('@')
+        return ('@@{0:s}/{1:s}'.format(name, key),
+                getUtility(ITileType, name=name).schema)
+
+    # IItemMapping
+    @view.memoize
+    def __getitem__(self, key):
+        key, schema_ = self.resolve(key)
+        for el in self.storage.tree.xpath(
+                '//*[contains(@data-tile, "{0:s}")]'.format(key)):
+            query = el.get('data-tile', '').split('?', 1)[-1]
+            request = self.request.clone()
+            request.environ['QUERY_STRING'] = query
+            request.processInputs()
+            return tiles_data_decode(request.form, schema_)
+        raise KeyError(key)
+
+    # IReadMapping
+    def get(self, key, default=None):
+        try:
+            return self[key]
+        except KeyError:
+            return default
+
+    # IReadMapping
+    def __contains__(self, key):
+        return bool(self.get(key, None))
+
+    # IWriteMapping
+    def __delitem__(self, key):
+        key, schema_ = self.resolve(key)
+        for el in self.storage.tree.xpath(
+                '//*[contains(@data-tile, "{0:s}")]'.format(key)):
+            el.remove()
+            return self.sync()
+        raise KeyError(key)
+
+    def __setitem__(self, key, value):
+        key, schema_ = self.resolve(key)
+        data = tiles_data_encode(value, schema_)
+
+        # Update existing value
+        for el in self.storage.tree.xpath(
+                '//*[contains(@data-tile, "{0:s}")]'.format(key)):
+            el.attrib['data-tile'] = '{0:s}?{1:s}'.format(key, data)
+            return self.sync()
+
+        # Add new value
+        el = etree.Element('div')
+        el.attrib['data-tile'] = '{0:s}?{1:s}'.format(key, data)
+        self.storage.tree.find('body').append(el)
+        self.sync()
+
+    # IEnumerableMapping
+    def keys(self):
+        # We can only know valid keys by iterating decodeable values
+        return [x[0] for x in self.items()]
+
+    def __iter__(self):
+        for item in self.items():
+            yield item[0]
+
+    def values(self):
+        return [x[-1] for x in self.items()]
+
+    def items(self):
+        items = []
+        for el in self.strorage.tree.xpath('//*[@data-tile]'):
+            key = el.get('data-tile', '').split('?', 1)[0].strip('@')
+            try:
+                items.append((key, self[key]))
+            except KeyError:
+                continue
+        return items
+
+    def __len__(self):
+        return len(self.items())
 
 
 @deprecate(

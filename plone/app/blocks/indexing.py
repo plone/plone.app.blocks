@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from lxml.html import fromstring
-from lxml.html import tostring
 from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.indexer.decorator import indexer
 from plone.tiles.data import ANNOTATIONS_KEY_PREFIX
@@ -8,7 +7,6 @@ from Products.CMFPlone.utils import safe_unicode
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapter
 from zope.interface import implementer
-
 import pkg_resources
 
 
@@ -62,8 +60,7 @@ def LayoutSearchableText(obj):
                     text.append(val)
     if not behavior_data.contentLayout and behavior_data.content:
         dom = fromstring(behavior_data.content)
-        for el in dom.cssselect('.mosaic-text-tile .mosaic-tile-content'):
-            text.append(tostring(el))
+        text.extend(dom.xpath('//text()'))
 
     return concat(*text)
 

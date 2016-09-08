@@ -58,7 +58,7 @@ class TestLayoutBehavior(unittest.TestCase):
 
     def test_content(self):
         from plone.app.blocks.layoutviews import ContentLayoutView
-        self.behavior.content = \
+        self.behavior.customLayout = \
             u'<html><body><a href="{0:s}"></a></body></html>'.format(
                 'resolveuid/{0:s}'.format(IUUID(self.portal['f1'])))
         rendered = ContentLayoutView(self.portal['f1']['d1'], self.request)()

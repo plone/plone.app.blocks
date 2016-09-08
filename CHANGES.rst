@@ -9,6 +9,11 @@ Incompatibilities:
 - Removed pluggable grid framework
   [agitator]
 
+- Moved ``ILayoutAware.content`` to ``ILayoutAware.customLayout``.
+  Added ``ILayoutAware.content`` as layout independent, but layout
+  like, tile data storage
+  [datakurre]
+
 - Moved functions ``getDefaultAjaxLayout``, ``getDefaultSiteLayout``, ``getLayout`` and ``getLayoutAwareSiteLayout`` to ``.layoutbehavior`` in order to avoid circular imports
   (all deprecated now, see section New).
   [jensens]
