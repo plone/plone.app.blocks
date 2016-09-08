@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.1.0 (unreleased)
+1.1.0 (2016-09-09)
 ------------------
 
 - Add support for drafted content preview for Dexterity content when request is
