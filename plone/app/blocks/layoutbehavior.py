@@ -419,8 +419,8 @@ class LayoutAwareTileDataStorage(object):
 
     def items(self):
         items = []
-        for el in self.strorage.tree.xpath('//*[@data-tile]'):
-            key = el.get('data-tile', '').split('?', 1)[0].strip('@')
+        for el in self.storage.tree.xpath('//*[@data-tile]'):
+            key = el.get('data-tile').strip('@')
             try:
                 items.append((key, self[key]))
             except KeyError:

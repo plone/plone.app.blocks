@@ -28,7 +28,9 @@ class BlocksLayer(PloneSandboxLayer):
         if HAS_PLONE_APP_CONTENTTYPES:
             import plone.app.contenttypes
             self.loadZCML(package=plone.app.contenttypes)
+        import plone.app.tiles
         import plone.app.blocks
+        self.loadZCML(package=plone.app.tiles, name='demo.zcml')
         self.loadZCML(package=plone.app.blocks)
 
         # Register directory for testing
