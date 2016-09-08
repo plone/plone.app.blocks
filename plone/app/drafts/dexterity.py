@@ -149,7 +149,6 @@ class DefaultEditFormGroupFieldWidgets(FieldWidgetsBase):
 class DefaultDisplayFormFieldWidgets(FieldWidgetsBase):
 
     def __init__(self, form, request, context):
-        print "DefaultDisplayFormFied..."
         fti = queryUtility(IDexterityFTI, name=context.portal_type)
         if isDraftable(fti):
             current = ICurrentDraftManagement(request)
