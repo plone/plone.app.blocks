@@ -4,8 +4,8 @@ Changelog
 1.1.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Remove forgotten debug print
+  [datakurre]
 
 1.1.0 (2016-09-09)
 ------------------
