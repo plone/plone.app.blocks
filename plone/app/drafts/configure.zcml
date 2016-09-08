@@ -5,6 +5,8 @@
     xmlns:zcml="http://namespaces.zope.org/zcml"
     i18n_domain="plone.app.drafts">
 
+    <five:registerPackage package="." initialize=".initialize" />
+
     <include package=".browser" />
     <adapter factory=".proxy.AliasAnnotations" />
     <adapter factory=".current.DefaultCurrentDraftManagement" />

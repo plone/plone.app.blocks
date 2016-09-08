@@ -1,20 +1,22 @@
 Changelog
 =========
 
-1.0.1 (unreleased)
+1.1.0 (unreleased)
 ------------------
+
+- Fix not set cookie values twice
+  [vangheem]
+
+- Fix to always sync drafts before object modified event subscribers
+  (especially indexing) are called
+  [datakurre]
 
 - Behavior shortname ``plone.draftable`` added.
   [jensens, datakurre]
 
-- Fix code analysis errors.
+- Update testing infrastructure and fix code analysis errors.
   [gforcada]
 
-- Update testing infrastructure.
-  [gforcada]
-
-- Do not set cookie values twice
-  [vangheem]
 
 1.0 (2016-03-28)
 ----------------
