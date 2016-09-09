@@ -250,7 +250,7 @@ class LayoutAwareBehavior(LayoutAwareDefault):
                 path = self.contentLayout
                 resolved = resolveResource(path)
                 return applyTilePersistent(path, resolved)
-            except (NotFound, RuntimeError):
+            except (NotFound, RuntimeError, IOError):
                 pass
         elif self.customContentLayout:
             return self.customContentLayout
