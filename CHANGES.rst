@@ -53,6 +53,9 @@ New:
 
 Fixes:
 
+- Handle missing content layouts so they do not cause an error
+  [vangheem]
+
 - typo in README.rst
   [fgrcon]
 
