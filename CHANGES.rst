@@ -6,9 +6,6 @@ Changelog
 
 Incompatibilities:
 
-- Remove official Plone 4 support
-  [datakurre]
-
 - Removed pluggable grid framework
   [agitator]
 
