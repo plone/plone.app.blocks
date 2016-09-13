@@ -28,6 +28,9 @@ class BlocksLayer(PloneSandboxLayer):
         if HAS_PLONE_APP_CONTENTTYPES:
             import plone.app.contenttypes
             self.loadZCML(package=plone.app.contenttypes)
+        else:
+            import plone.app.dexterity
+            self.loadZCML(package=plone.app.dexterity)
         import plone.app.tiles
         import plone.app.blocks
         self.loadZCML(package=plone.app.tiles, name='demo.zcml')
@@ -83,6 +86,8 @@ class BlocksLayer(PloneSandboxLayer):
         # install plone.app.contenttypes on Plone 5
         if HAS_PLONE_APP_CONTENTTYPES:
             self.applyProfile(portal, 'plone.app.contenttypes:default')
+        else:
+            self.applyProfile(portal, 'plone.app.dexterity:default')
         # install into the Plone site
         self.applyProfile(portal, 'plone.app.blocks:default')
 

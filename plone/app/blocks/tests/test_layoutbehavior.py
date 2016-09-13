@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from plone.dexterity.fti import DexterityFTI
 from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.app.blocks.layoutbehavior import ILayoutBehaviorAdaptable
 from plone.app.blocks.layoutbehavior import LayoutAwareTileDataStorage
@@ -30,18 +31,20 @@ class TestLayoutBehavior(unittest.TestCase):
         self.request = self.layer['request']
         self.registry = getUtility(IRegistry)
 
-        # Enable layout aware behavior
-        fti = self.portal.portal_types['Document']
-        behaviors = [i for i in fti.behaviors]
-        behaviors.extend([
-            'plone.app.blocks.layoutbehavior.ILayoutAware'
-        ])
-        behaviors = tuple(set(behaviors))
-        fti._updateProperty('behaviors', behaviors)
+        fti = DexterityFTI(
+            'MyDocument',
+            global_allow=True,
+            behaviors=(
+                'plone.app.dexterity.behaviors.metadata.IBasic',
+                'plone.app.blocks.layoutbehavior.ILayoutAware'
+            )
+        )
+        self.portal.portal_types._setObject('MyDocument', fti)
 
         setRoles(self.portal, TEST_USER_ID, ('Manager',))
         self.portal.invokeFactory('Folder', 'f1', title=u"Folder 1")
-        self.portal['f1'].invokeFactory('Document', 'd1', title=u"Document 1")
+        self.portal['f1'].invokeFactory('MyDocument', 'd1',
+                                        title=u"Document 1")
         setRoles(self.portal, TEST_USER_ID, ('Member',))
 
         self.behavior = ILayoutAware(self.portal['f1']['d1'])
