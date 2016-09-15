@@ -6,55 +6,55 @@ Changelog
 
 Incompatibilities:
 
-- Removed pluggable grid framework
+- Remove grid transform, because it did not serve its purpose as as well
+  expected and required HTML-syntax not editable by humans; Instead using
+  grid framework agnostic CSS class names and building CSS grid against
+  those class names is recommended
   [agitator]
 
-- Moved ``ILayoutAware.content`` to ``ILayoutAware.customContentLayout``
+- Remove ``IOmittedField`` marker from layout behavior fields not meant to be
+  displayed on legacy Deco UIs
+  [jensens]
+
+- Rename ``ILayoutAware.content`` to ``ILayoutAware.customContentLayout``
   [datakurre]
 
-- Moved functions ``getDefaultAjaxLayout``, ``getDefaultSiteLayout``, ``getLayout`` and ``getLayoutAwareSiteLayout`` to ``.layoutbehavior`` in order to avoid circular imports
-  (all deprecated now, see section New).
+- Move functions ``getDefaultAjaxLayout``, ``getDefaultSiteLayout``,
+  ``getLayout`` and ``getLayoutAwareSiteLayout`` to ``.layoutbehavior`` in
+  order to avoid circular imports (all deprecated now, see section New).
   [jensens]
 
-- Change default grid to bs3
-  [vangheem]
-
-- Moved views from ``.layoutbehavior`` to new module ``.layoutviews`` in order to avoid circular imports.
-  Deprecated deferred imports are in place.
-  [jensens]
-
-- Drop IOmittedField marker from layout behavior fields not meant to be
-  displayed on legacy Deco UIs
+- Move views from ``.layoutbehavior`` to new module ``.layoutviews`` in order
+  to avoid circular imports.  Deprecated deferred imports are in place.
   [jensens]
 
 New:
 
-- Add ``@@preview`` view for previewing currently drafted content
+- Add ``ILayoutAware.content`` as layout independent "layout like" tile
+  configuration and data storage for all serializable tile configurations
   [datakurre]
 
-- Add ``ILayoutAware.content`` as layout independent, but layout
-  like, tile data storage
+- Add ``@@layout_preview`` view for previewing currently drafted layout aware
+  content
   [datakurre]
-
-- Get layouts always by adapting with ``ILayoutAware``.
-  This introduces a generic adapter and a behavior adapter.
-  Deprecated the formerly used functions ``getLayout``
-  ``getDefaultSiteLayout`` just calls ``ILayoutAware().site_layout`` and is deprected.
-  ``getLayout`` just calls ``ILayoutAware().content_layout`` and is deprecated.
-
-- Behavior shortname ``plone.layoutaware`` added.
-  [jensens]
 
 - ``ILayoutAware`` is now also responsible to lookup the behaviors.
+  [jensens]
+
+- Get layouts always by adapting with ``ILayoutAware``.  This introduces a
+  generic adapter and a behavior adapter.  Deprecated the formerly used functions
+  ``getLayout`` ``getDefaultSiteLayout`` just calls
+  ``ILayoutAware().site_layout`` and is deprected.  ``getLayout`` just calls
+  ``ILayoutAware().content_layout`` and is deprecated.
+  [jensens]
+
+- Behavior shortname ``plone.layoutaware`` added.
   [jensens]
 
 Fixes:
 
 - Handle missing content layouts so they do not cause an error
   [vangheem]
-
-- typo in README.rst
-  [fgrcon]
 
 - A tile raising an 401 Unauthorized on traversal,
   results in a status rewriting to a 302 which results in 200 login form.
@@ -64,8 +64,7 @@ Fixes:
   but it at least does not break design and intended behavior of tiles.
   [jensens]
 
-- Test failure in Plone 5
-  [jensens]
+Refactoring:
 
 - Housekeeping: ZCA decorators, sorted imports, line-lengths and related.
   [jensens]
