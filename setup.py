@@ -33,7 +33,7 @@ long_description = '\n'.join(
         ).read(),
         open('CHANGES.rst').read(),
     ]
-),
+)
 
 
 setup(
