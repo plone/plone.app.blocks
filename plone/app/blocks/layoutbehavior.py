@@ -111,20 +111,24 @@ class ILayoutAware(model.Schema):
     )
 
     def tile_layout():
-        """returns HTML layout of tiles in 'content' storage
+        """Returns HTML layout of tiles in 'content' storage.
+        """
+
+    def content_layout_path():
+        """Get path of content layout resource.
         """
 
     def content_layout():
-        """returns HTML layout of content
+        """Returns the content HTML layout.
         """
 
     def site_layout():
-        """returns resource of the site layout
+        """Returns resource of the site layout.
         """
 
-    def ajax_site_layout(self):
+    def ajax_site_layout():
         """Get the path to the ajax site layout to use by default for the given
-        content object
+        content object.
         """
 
 
@@ -151,20 +155,28 @@ class LayoutAwareDefault(object):
     def tile_layout(self):
         return u''
 
-    def content_layout(self):
-        layout = None
+    def content_layout_path(self):
+        """Get path of content layout resource.
+        """
         registry = getUtility(IRegistry)
+        path = None
+        content_layout_key = u'{0}.{1}'.format(
+            DEFAULT_CONTENT_LAYOUT_REGISTRY_KEY,
+            getattr(self.context, 'portal_type', '').replace(' ', '-')
+        )
+        path = registry.get(content_layout_key, None)
+        path = path or registry.get(DEFAULT_CONTENT_LAYOUT_REGISTRY_KEY, None)
+        return path
+
+    def content_layout(self):
+        """Returns the content HTML layout.
+        """
+        layout = None
+        path = self.content_layout_path()
         try:
-            path = registry['%s.%s' % (
-                DEFAULT_CONTENT_LAYOUT_REGISTRY_KEY,
-                self.context.portal_type.replace(' ', '-'))]
-        except (KeyError, AttributeError):
-            path = None
-        try:
-            path = path or registry[DEFAULT_CONTENT_LAYOUT_REGISTRY_KEY]
             resolved = resolveResource(path)
             layout = applyTilePersistent(path, resolved)
-        except (KeyError, NotFound, RuntimeError):
+        except (NotFound, RuntimeError, IOError):
             pass
         return layout
 
@@ -244,17 +256,13 @@ class LayoutAwareBehavior(LayoutAwareDefault):
     def tile_layout(self):
         return self.content or u''
 
-    def content_layout(self):
-        if self.contentLayout:
-            try:
-                path = self.contentLayout
-                resolved = resolveResource(path)
-                return applyTilePersistent(path, resolved)
-            except (NotFound, RuntimeError, IOError):
-                pass
-        elif self.customContentLayout:
-            return self.customContentLayout
+    def content_layout_path(self):
+        path = self.contentLayout
+        return path or super(LayoutAwareBehavior, self).content_layout_path()
 
+    def content_layout(self):
+        if self.customContentLayout and not self.contentLayout:
+            return self.customContentLayout
         return super(LayoutAwareBehavior, self).content_layout()
 
     def site_layout(self):
@@ -436,7 +444,7 @@ class LayoutAwareTileDataStorage(object):
 )
 def getLayoutAwareSiteLayout(content):
     lookup = ILayoutAware(content)
-    return lookup.content_layout()
+    return lookup.site_layout()
 
 
 @deprecate(
