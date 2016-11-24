@@ -1,7 +1,7 @@
 Changelog
 =========
 
-4.0.0rc2 (unreleased)
+4.0.0rc2 (2016-11-24)
 ---------------------
 
 New features:
