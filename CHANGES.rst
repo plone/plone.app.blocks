@@ -4,18 +4,10 @@ Changelog
 4.0.0rc2 (unreleased)
 ---------------------
 
-Breaking changes:
-
-- Nothing changed yet.
-
 New features:
 
 - Factor out ``ILayoutAware.content_layout_path`` method.
   [thet]
-
-Bug fixes:
-
-- Nothing changed yet.
 
 
 4.0.0rc1 (2016-09-15)
