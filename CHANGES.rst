@@ -4,6 +4,16 @@ Changelog
 4.0.0rc3 (unreleased)
 ---------------------
 
+Breaking changes:
+
+- Nothing changed yet.
+
+New features:
+
+- Nothing changed yet.
+
+Bug fixes:
+
 - Nothing changed yet.
 
 
