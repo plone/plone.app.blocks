@@ -74,12 +74,9 @@ def resolve(url, resolved=None):
         return None
     try:
         if isinstance(resolved, unicode):
-            html_parser = html.HTMLParser(encoding='utf-8')
-            return html.fromstring(
-                resolved.encode('utf-8'),
-                parser=html_parser
-            ).getroottree()
-        return html.fromstring(resolved).getroottree()
+            resolved = resolved.encode('utf-8')
+        html_parser = html.HTMLParser(encoding='utf-8')
+        return html.fromstring(resolved, parser=html_parser).getroottree()
     except etree.XMLSyntaxError as e:
         logger.error('%s: %s' % (repr(e), url))
         return None
