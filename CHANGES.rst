@@ -4,17 +4,10 @@ Changelog
 4.0.0rc3 (unreleased)
 ---------------------
 
-Breaking changes:
-
-- Nothing changed yet.
-
-New features:
-
-- Nothing changed yet.
-
 Bug fixes:
 
-- Nothing changed yet.
+- Fix issue where resources with non-ascii characters were double-encoded
+  [Asko Soukka]
 
 
 4.0.0rc2 (2016-11-24)
