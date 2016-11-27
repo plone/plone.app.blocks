@@ -1,7 +1,7 @@
 Changelog
 =========
 
-4.0.0rc3 (unreleased)
+4.0.0rc3 (2016-11-27)
 ---------------------
 
 Bug fixes:

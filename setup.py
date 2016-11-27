@@ -4,7 +4,7 @@ from setuptools import setup
 
 import os
 
-version = '4.0.0rc3.dev0'
+version = '4.0.0rc3'
 widgets_require = [
     'plone.app.widgets'
 ]
