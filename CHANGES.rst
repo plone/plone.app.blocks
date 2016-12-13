@@ -1,31 +1,7 @@
 Changelog
 =========
 
-4.0.0rc4 (unreleased)
----------------------
-
-- Nothing changed yet.
-
-
-4.0.0rc3 (2016-11-27)
----------------------
-
-Bug fixes:
-
-- Fix issue where resources with non-ascii characters were double-encoded
-  [Asko Soukka]
-
-
-4.0.0rc2 (2016-11-24)
----------------------
-
-New features:
-
-- Factor out ``ILayoutAware.content_layout_path`` method.
-  [thet]
-
-
-4.0.0rc1 (2016-09-15)
+4.0.0 (unreleased)
 ---------------------
 
 Incompatibilities:
@@ -99,6 +75,7 @@ Refactoring:
 - Update travis configuration.
   [gforcada]
 
+
 3.1.0 (2016-03-28)
 ------------------
 
@@ -127,8 +104,10 @@ New:
   'layout_view', because it was not possible to customize it with more exact
   registration
   [datakurre]
+
 - Fix the default view to report template name as 'template-layout'
   [datakurre]
+
 
 3.0.0 (2015-09-16)
 ------------------
@@ -175,12 +154,14 @@ New:
   using multiple ``[...layout]`` directive in the same manifest
   [vangheem]
 
+
 2.1.2 (2015-06-10)
 ------------------
 
 - Fix issue where grid transform did replaced class names instead of appending
   to them
   [datakurre]
+
 
 2.1.1 (2015-06-10)
 ------------------
@@ -193,6 +174,7 @@ New:
   transform (add to log syntax errors instead)
   [datakurre]
 
+
 2.1.0 (2015-05-25)
 ------------------
 
@@ -201,6 +183,7 @@ New:
   indexer behavior is enabled for the indexed content type with Layout support
   behavior
   [datakurre]
+
 
 2.0.0 (2015-04-21)
 ------------------
@@ -321,6 +304,7 @@ New:
 - Add z3c.autoinclude support
   [cdw9, calvinhp]
 
+
 1.1 (2012-12-17)
 ----------------
 
@@ -330,6 +314,7 @@ New:
 - handle not found errors while rendering tiles so layout
   isn't borked
   [vangheem]
+
 
 1.0 (2012-06-23)
 ----------------
