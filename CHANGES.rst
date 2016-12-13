@@ -4,6 +4,16 @@ Changelog
 4.0.1 (unreleased)
 ------------------
 
+Incompatibilities:
+
+- Nothing changed yet.
+
+New:
+
+- Nothing changed yet.
+
+Fixes:
+
 - Nothing changed yet.
 
 
