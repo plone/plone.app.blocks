@@ -4,17 +4,12 @@ Changelog
 4.0.1 (unreleased)
 ------------------
 
-Incompatibilities:
-
-- Nothing changed yet.
-
-New:
-
-- Nothing changed yet.
-
 Fixes:
 
-- Nothing changed yet.
+- Fix issue where tile data storage decoded HTML primary fields
+  using ASCII instead of utf-8 causing broken broken latin
+  characters in attribute values
+  [datakurre]
 
 
 4.0.0 (2016-12-13)

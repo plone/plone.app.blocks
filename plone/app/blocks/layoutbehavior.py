@@ -342,7 +342,9 @@ class LayoutAwareTileDataStorage(object):
 
             # Read primary field content from el content
             if len(el) and len(el[0]):
-                primary = u''.join([html.tostring(x) for x in el[0]])
+                primary = u''.join(
+                    [html.tostring(x, encoding='utf-8').decode('utf-8')
+                     for x in el[0]])
             elif len(el):
                 primary = el[0].text
             else:
