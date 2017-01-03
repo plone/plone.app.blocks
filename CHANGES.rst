@@ -4,7 +4,11 @@ Changelog
 4.0.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+Fixes:
+
+- Fix issue where error in diazo transform for a single tile aborted tile
+  merge as whole
+  [datakurre]
 
 
 4.0.1 (2016-12-28)
