@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from lxml import html
+from lxml.etree import XSLTApplyError
 from plone.app.blocks import PloneMessageFactory
 from plone.app.blocks import utils
 from plone.app.blocks.interfaces import IBlocksSettings
@@ -96,10 +97,14 @@ def renderTiles(request, tree):
                 tileBody = tileRoot
 
             if tileTransform is not None:
-                result = tileTransform(tileBody).getroot()
-                del tileBody[:]
-                tileBody.append(result)
-
+                try:
+                    result = tileTransform(tileBody).getroot()
+                    del tileBody[:]
+                    tileBody.append(result)
+                except XSLTApplyError:
+                    logger.exception(
+                        'Failed to transform tile {0:s} for {0:s}'.format(
+                            tileHref, baseURL))
             if tileHead is not None:
                 for tileHeadChild in tileHead:
                     headNode.append(tileHeadChild)
