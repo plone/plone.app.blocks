@@ -4,7 +4,15 @@ Changelog
 4.0.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+Fixes:
+
+- Fix issue where default layouts paths were not found if they were stored
+  unicode (TextLine) instead of str (ASCIILine or BytesLine)
+  [datakurre]
+
+- Fix issue where tiles merge failed for addresses with space, because
+  subrequest was called with quoted ('%20') paths
+  [datakurre]
 
 
 4.0.2 (2017-01-03)
