@@ -98,6 +98,8 @@ def resolveResource(url):
         _, resource_type, path = url.split('++')
         resource_name, _, path = path.partition('/')
         directory = queryResourceDirectory(resource_type, resource_name)
+        if isinstance(path, unicode):
+            path = path.encode('utf-8', 'replace')
         if directory:
             try:
                 return directory.readFile(path)
