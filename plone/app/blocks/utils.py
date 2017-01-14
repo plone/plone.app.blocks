@@ -22,6 +22,7 @@ from zope.site.hooks import getSite
 
 import Globals
 import logging
+import urllib
 import zope.deferredimport
 
 
@@ -93,6 +94,7 @@ def resolveResource(url):
     """Resolve the given URL to a unicode string. If the URL is an absolute
     path, it will be made relative to the Plone site root.
     """
+    url = urllib.unquote(url)  # subrequest does not support quoted paths
     if url.count('++') == 2:
         # it is a resource that can be resolved without a subrequest
         _, resource_type, path = url.split('++')
