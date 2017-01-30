@@ -172,7 +172,7 @@ class ESIRender(object):
     ESI to work.
     """
 
-    order = 8900
+    order = 9900
 
     def __init__(self, published, request):
         self.published = published
