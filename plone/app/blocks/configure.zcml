@@ -185,7 +185,7 @@
         factory=".transform.IncludeTiles"
         />
 
-    <!-- 8900: ESI post-processing if required -->
+    <!-- 9900: ESI post-processing if required -->
     <adapter
         for="* .interfaces.IBlocksTransformEnabled"
         name="plone.app.blocks.esirender"

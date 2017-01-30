@@ -28,7 +28,7 @@ The rendering stages are:
     Resolve tiles and place them directly into the merged layout.
     This is the fallback for views that do not opt into ``ITilePageRendered``.
 
-``plone.app.blocks.esirender`` (order 8900)
+``plone.app.blocks.esirender`` (order 9900)
     Only executed if the request key ``plone.app.blocks.esi`` is set and its value is true,
     as would be the case if any ESI-rendered tiles are included and ESI rendering is enabled globally.
     This step will serialise the response down to a string and perform some substitution to make ESI rendering work.
