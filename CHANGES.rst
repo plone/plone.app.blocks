@@ -4,8 +4,12 @@ Changelog
 4.0.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+Fixes:
 
+- Fix issue where ESIRender has been broken since plone.protect's
+  ProtectTransform was introduced, because of protect transform breaking
+  ESI-tags; Change ESIRender transform order from 8900 to 9900
+  [datakurre]
 
 4.0.3 (2017-01-15)
 ------------------
