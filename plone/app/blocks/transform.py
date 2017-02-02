@@ -27,7 +27,7 @@ class DisableParsing(object):
         self.published = published
         self.request = request
 
-    def transformString(self, result, encoding):
+    def transformBytes(self, result, encoding):
         self.request.set('plone.app.blocks.disabled', True)
         return None
 
@@ -60,7 +60,8 @@ class ParseXML(object):
         self.published = published
         self.request = request
 
-    def transformString(self, result, encoding):
+    def transformBytes(self, result, encoding):
+        result = unicode(result, encoding, 'ignore')
         return self.transformIterable([result], encoding)
 
     def transformUnicode(self, result, encoding):
@@ -107,7 +108,7 @@ class MergePanels(object):
         self.published = published
         self.request = request
 
-    def transformString(self, result, encoding):
+    def transformBytes(self, result, encoding):
         return None
 
     def transformUnicode(self, result, encoding):
@@ -151,7 +152,7 @@ class IncludeTiles(object):
         self.published = published
         self.request = request
 
-    def transformString(self, result, encoding):
+    def transformBytes(self, result, encoding):
         return None
 
     def transformUnicode(self, result, encoding):
@@ -178,7 +179,7 @@ class ESIRender(object):
         self.published = published
         self.request = request
 
-    def transformString(self, result, encoding):
+    def transformBytes(self, result, encoding):
         if self.request.getHeader(ESI_HEADER, 'false').lower() != 'true':
             return None
 
