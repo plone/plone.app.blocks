@@ -4,7 +4,11 @@ Changelog
 4.0.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+Fixes:
+
+- Fix transforms to comply with
+  plone.transformchain.interfaces.ITransform
+  [datakurre]
 
 
 4.0.4 (2017-01-30)
