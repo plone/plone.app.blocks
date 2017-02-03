@@ -183,16 +183,20 @@ class ESIRender(object):
         if self.request.getHeader(ESI_HEADER, 'false').lower() != 'true':
             return None
 
-        return esi.substituteESILinks(result)
+        return esi.substituteESILinks([result])
 
     def transformUnicode(self, result, encoding):
         if self.request.getHeader(ESI_HEADER, 'false').lower() != 'true':
             return None
 
-        return esi.substituteESILinks(result)
+        return esi.substituteESILinks([result.encode(encoding, 'ignore')])
 
     def transformIterable(self, result, encoding):
         if self.request.getHeader(ESI_HEADER, 'false').lower() != 'true':
             return None
 
-        return esi.substituteESILinks("".join(result))
+        result = ''.join(result)
+        transformed = esi.substituteESILinks(result)
+        if transformed != result:
+            self.request.response.setHeader('X-Esi', '1')
+        return transformed
