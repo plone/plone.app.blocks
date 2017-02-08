@@ -159,7 +159,6 @@ class LayoutAwareDefault(object):
         """Get path of content layout resource.
         """
         registry = getUtility(IRegistry)
-        path = None
         content_layout_key = u'{0}.{1}'.format(
             DEFAULT_CONTENT_LAYOUT_REGISTRY_KEY,
             getattr(self.context, 'portal_type', '').replace(' ', '-')
