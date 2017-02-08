@@ -6,6 +6,10 @@ Changelog
 
 Fixes:
 
+- Fix issue where page site layout could have been accidentally acquired
+  (page site layout should never be acquired)
+  [datakurre]
+
 - Fix transforms to comply with
   plone.transformchain.interfaces.ITransform
   [datakurre]
