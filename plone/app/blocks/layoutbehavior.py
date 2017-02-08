@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from lxml import etree
@@ -159,7 +160,6 @@ class LayoutAwareDefault(object):
         """Get path of content layout resource.
         """
         registry = getUtility(IRegistry)
-        path = None
         content_layout_key = u'{0}.{1}'.format(
             DEFAULT_CONTENT_LAYOUT_REGISTRY_KEY,
             getattr(self.context, 'portal_type', '').replace(' ', '-')
@@ -239,7 +239,7 @@ class LayoutAwareBehavior(LayoutAwareDefault):
 
     @property
     def pageSiteLayout(self):
-        return getattr(self.context, 'pageSiteLayout', None)
+        return getattr(aq_base(self.context), 'pageSiteLayout', None)
 
     @pageSiteLayout.setter
     def pageSiteLayout(self, value):
