@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
+from plone.app.blocks.layoutbehavior import ILayoutAware
+from plone.app.blocks.layoutbehavior import LayoutAwareBehavior
 from plone.app.blocks.testing import BLOCKS_FUNCTIONAL_TESTING
 from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
@@ -11,7 +13,6 @@ from zope.component import getUtility
 import pkg_resources
 import transaction
 import unittest
-
 
 try:
     pkg_resources.get_distribution('plone.app.contenttypes')
@@ -29,6 +30,7 @@ class TestPageSiteLayout(unittest.TestCase):
         self.portal = self.layer['portal']
         self.request = self.layer['request']
         self.registry = getUtility(IRegistry)
+
         setRoles(self.portal, TEST_USER_ID, ('Manager',))
         self.portal.invokeFactory('Folder', 'f1', title=u"Folder 1")
         self.portal['f1'].invokeFactory('Document', 'd1', title=u"Document 1")
@@ -37,15 +39,7 @@ class TestPageSiteLayout(unittest.TestCase):
         # setup default behavior
         self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
             '/++sitelayout++testlayout1/site.html'
-        if HAS_PLONE_APP_CONTENTTYPES:
-            from plone.app.contenttypes.interfaces import IDocument
-            iface = IDocument
-        else:
-            iface = self.portal['f1']['d1'].__class__
-
-        from plone.app.blocks.layoutbehavior import ILayoutAware
-        from plone.app.blocks.layoutbehavior import LayoutAwareBehavior
-
+        iface = self.portal['f1']['d1'].__class__
         sm = getGlobalSiteManager()
         sm.registerAdapter(LayoutAwareBehavior, [iface])
         registrations = sm.getAdapters(
@@ -209,3 +203,55 @@ class TestPageSiteLayout(unittest.TestCase):
         # We now get the new layout
         self.assertTrue(u"Layout title" in rendered)
         self.assertFalse(u"My Layout 1 Title" in rendered)
+
+
+class TestPageSiteLayoutAcquisition(unittest.TestCase):
+
+    layer = BLOCKS_FUNCTIONAL_TESTING
+
+    def setUp(self):
+        self.portal = self.layer['portal']
+        self.request = self.layer['request']
+        self.registry = getUtility(IRegistry)
+
+        setRoles(self.portal, TEST_USER_ID, ('Manager',))
+        self.portal.invokeFactory('Folder', 'f1', title=u"Folder 1")
+        self.portal['f1'].invokeFactory('Document', 'd1', title=u"Document 1")
+        setRoles(self.portal, TEST_USER_ID, ('Member',))
+
+        sm = getGlobalSiteManager()
+
+        # setup default behaviors
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = \
+            '/++sitelayout++testlayout1/site.html'
+
+        iface = self.portal['f1'].__class__
+        sm.registerAdapter(LayoutAwareBehavior, [iface])
+
+        iface = self.portal['f1']['d1'].__class__
+        sm.registerAdapter(LayoutAwareBehavior, [iface])
+
+        registrations = sm.getAdapters(
+            (self.portal['f1'],),
+            ILayoutAware
+        )
+        self.assertEqual(len(list(registrations)), 1)
+
+        registrations = sm.getAdapters(
+            (self.portal['f1']['d1'],),
+            ILayoutAware
+        )
+        self.assertEqual(len(list(registrations)), 1)
+
+    def test_page_site_layout_is_not_acquired(self):
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = \
+            '/++sitelayout++testlayout1/site.html'
+
+        a1 = ILayoutAware(self.portal['f1'])
+        a2 = ILayoutAware(self.portal['f1']['d1'])
+
+        self.assertEqual(a1.site_layout(), a2.site_layout())
+
+        a1.pageSiteLayout = '/++sitelayout++testlayout2/mylayout.html'
+
+        self.assertNotEqual(a1.site_layout(), a2.site_layout())
