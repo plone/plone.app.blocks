@@ -255,6 +255,21 @@ tiles should be rendered as ESI links. See `plone.tiles`_ for more details.
     </html>
     <BLANKLINE>
 
+ESI links are substituted by ``ESIRender``-transform, which should always be
+after all transforms registered ``plone.transformchain`` with DOM-manipulation
+using ``lxml``. That's because ``lxml`` does not support ESI-namespace in HTML
+and ESI substitution can only be done once ``lxml`` tree is serialized into
+publishable byte string.
+
+If ``ESIRender``-transform transforms any ESI-links, an additional HTML header
+``X-Esi`` being is set on the response. The existence of this header can be
+used to enable ESI-support in Varnish:
+
+.. code-block:: python
+
+    >>> browser.headers.get('X-Esi')
+    '1'
+
 When ESI rendering takes place, the following URLs will be called:
 
 .. code-block:: python

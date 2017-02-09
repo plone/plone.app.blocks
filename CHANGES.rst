@@ -1,10 +1,15 @@
 Changelog
 =========
 
-4.0.6 (unreleased)
+4.1.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+New Features:
+
+- ESITransforms add a new header ``X-Esi: 1`` when any ESI tiles have
+  been transformed. This allows e.g. Varnish to enable ESI only when
+  it's really required.
+  [datakurre]
 
 
 4.0.5 (2017-02-08)
