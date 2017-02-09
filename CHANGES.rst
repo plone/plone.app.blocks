@@ -1,6 +1,16 @@
 Changelog
 =========
 
+4.0.6 (unreleased)
+------------------
+
+Fixes:
+
+- Fix issue where layout related fields could have been acquired
+  (only sectionSiteLayout can be allowed to be acquired)
+  [datakurre]
+
+
 4.0.5 (2017-02-08)
 ------------------
 
