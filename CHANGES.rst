@@ -11,6 +11,10 @@ New Features:
   it's really required.
   [datakurre]
 
+
+4.0.6 (2017-02-09)
+------------------
+
 Fixes:
 
 - Fix issue where layout related fields could have been acquired
