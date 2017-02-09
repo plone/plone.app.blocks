@@ -215,7 +215,7 @@ class LayoutAwareBehavior(LayoutAwareDefault):
 
     @property
     def content(self):
-        return getattr(self.context, 'content', None)
+        return getattr(aq_base(self.context), 'content', None)
 
     @content.setter
     def content(self, value):
@@ -223,7 +223,7 @@ class LayoutAwareBehavior(LayoutAwareDefault):
 
     @property
     def customContentLayout(self):
-        return getattr(self.context, 'customContentLayout', None)
+        return getattr(aq_base(self.context), 'customContentLayout', None)
 
     @customContentLayout.setter
     def customContentLayout(self, value):
@@ -231,7 +231,7 @@ class LayoutAwareBehavior(LayoutAwareDefault):
 
     @property
     def contentLayout(self):
-        return getattr(self.context, 'contentLayout', None)
+        return getattr(aq_base(self.context), 'contentLayout', None)
 
     @contentLayout.setter
     def contentLayout(self, value):
@@ -247,6 +247,7 @@ class LayoutAwareBehavior(LayoutAwareDefault):
 
     @property
     def sectionSiteLayout(self):
+        # Section site layout can be acquired and don't need aq_base
         return getattr(self.context, 'sectionSiteLayout', None)
 
     @sectionSiteLayout.setter
