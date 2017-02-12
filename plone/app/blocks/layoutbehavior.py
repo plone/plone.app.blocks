@@ -203,10 +203,10 @@ class LayoutAwareDefault(object):
 
     def ajax_site_layout(self):
         registry = queryUtility(IRegistry)
-        if registry is not None:
-            return registry.get(DEFAULT_AJAX_LAYOUT_REGISTRY_KEY)
-        else:
-            return self.context.site_layout
+        if registry is None:
+            return None
+
+        return registry.get(DEFAULT_AJAX_LAYOUT_REGISTRY_KEY)
 
 
 @implementer(ILayoutAware)
