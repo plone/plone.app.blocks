@@ -11,6 +11,10 @@ New Features:
   it's really required.
   [datakurre]
 
+- Add to allow ``permission`` key in ``[contentlayout]``-sections of content
+  layout manifests (``manifest.cfg``)
+  [datakurre]
+
 
 4.0.6 (2017-02-09)
 ------------------
