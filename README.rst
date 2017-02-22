@@ -99,10 +99,13 @@ To create such a manifest, put a ``manifest.cfg`` file in the layout directory w
     file = some-html-file.html
     screenshot = mylayout.png
     for = Document,Folder
+    permission = cmf.ModifyPortalContent
 
 * All keys are optional.
-* The file defaults to ``content.html``.
+* Value for key ``file`` defaults to ``content.html``.
 * Single manifest may contain multiple ``[contentlayout]`` sections.
+* Values for keys ``for`` and ``permission`` are only for advisory and may not
+  be enforced.
 
 A vocabulary factory called ``plone.availableContentLayouts`` is registered to allow lookup of all registered content layouts.
 The terms in this vocabulary use the URL as a value,

@@ -19,7 +19,7 @@ SITE_LAYOUT_MANIFEST_FORMAT = ManifestFormat(
 CONTENT_LAYOUT_MANIFEST_FORMAT = ManifestFormat(
     CONTENT_LAYOUT_RESOURCE_NAME,
     keys=('title', 'description', 'file', 'screenshot',
-          'preview', 'sort_key', 'for'),
+          'preview', 'sort_key', 'for', 'permission'),
     defaults={'file': CONTENT_LAYOUT_FILE_NAME}
 )
 
