@@ -245,12 +245,12 @@ tiles should be rendered as ESI links. See `plone.tiles`_ for more details.
             <p>
                 Non-ESI tile with query string foo=bar
             </p>
-            <esi:include src="http://nohost/plone/@@test.tile3/tile4/@@esi-body?foo=bar" />
+            <esi:include src="/plone/@@test.tile3/tile4/@@esi-body?foo=bar" />
             </div>
             <p>
                 Non-ESI tile with query string
             </p>
-            <esi:include src="http://nohost/plone/@@test.tile3/tile2/@@esi-body?" />
+            <esi:include src="/plone/@@test.tile3/tile2/@@esi-body?" />
         </body>
     </html>
     <BLANKLINE>
