@@ -15,6 +15,9 @@ New Features:
   layout manifests (``manifest.cfg``)
   [datakurre]
 
+Fixes:
+
+- Fix issue when someone tries to configure tiles with accented tags
 
 4.0.6 (2017-02-09)
 ------------------
