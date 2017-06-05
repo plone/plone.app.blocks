@@ -124,6 +124,7 @@ class TestSiteLayout(unittest.TestCase):
 
         resources = getToolByName(self.portal, 'portal_resources')
         resources._setOb('sitelayout', BTreeFolder2('sitelayout'))
+
         resources['sitelayout']._setOb('testlayout3',
                                        BTreeFolder2('testlayout3'))
         resources['sitelayout']['testlayout3']._setOb(
@@ -136,27 +137,43 @@ class TestSiteLayout(unittest.TestCase):
 
         view = getMultiAdapter((self.portal, self.request,),
                                name=u'default-site-layout')
+
         rendered = view()
 
+        self.assertEqual(view.layout, '/++sitelayout++testlayout3/site.html')
         self.assertTrue(u"ZODB test" in rendered)
 
-        resources['sitelayout']['testlayout3']._delOb('site.html')
-        resources['sitelayout']['testlayout3']._setOb(
+        # Test cache is set
+        self.assertTrue(hasattr(self.portal, ATTR))
+        self.assertEqual(len(getattr(self.portal, ATTR)), 1)
+        self.assertIn('/++sitelayout++testlayout3/site.html',
+                      getattr(self.portal, ATTR).values())
+
+        resources['sitelayout']._setOb('testlayout4',
+                                       BTreeFolder2('testlayout4'))
+        resources['sitelayout']['testlayout4']._setOb(
             'site.html', File('site.html', 'site.html', StringIO(
                 '<html><head><title>Cache test</title></head></html>'))
         )
+
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = \
+            '/++sitelayout++testlayout4/site.html'
 
         view = getMultiAdapter((self.portal, self.request,),
                                name=u'default-site-layout')
         rendered = view()
 
-        self.assertFalse(u"Cache test" in rendered)  # hidden by cache
-        self.assertTrue(u"ZODB test" in rendered)
+        # Layout gets updated, because registry update invalidates cache
+        self.assertEqual(view.layout, '/++sitelayout++testlayout4/site.html')
+        self.assertTrue(u"Cache test" in rendered)
 
-        self.assertEqual('/++sitelayout++testlayout3/site.html', view.layout)
-
-        # Test cache is set
+        # Test cache has incremented
         self.assertTrue(hasattr(self.portal, ATTR))
+        self.assertEqual(len(getattr(self.portal, ATTR)), 2)
+        self.assertIn('/++sitelayout++testlayout3/site.html',
+                      getattr(self.portal, ATTR).values())
+        self.assertIn('/++sitelayout++testlayout4/site.html',
+                      getattr(self.portal, ATTR).values())
 
         # Update cache
         for key in getattr(self.portal, ATTR):
