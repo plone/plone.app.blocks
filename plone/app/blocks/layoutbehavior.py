@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
@@ -47,6 +48,12 @@ zope.deferredimport.deprecated(
     SiteLayoutView='plone.app.blocks.layoutviews:SiteLayoutView',
     ContentLayoutView='plone.app.blocks.layoutviews:ContentLayoutView',
 )
+
+# Append X-Tile-Persistent for shared content layout tile URLs to force
+# context aware persistent tile data lookup in plone.tiles.data:
+APPLY_TILE_PERSISTENT = \
+    os.environ.get('APPLY_TILE_PERSISTENT', 'true').lower() in \
+    ('true', 't', 'yes', 'y', '1')
 
 
 @implementer(ILayoutField)
@@ -175,7 +182,8 @@ class LayoutAwareDefault(object):
         path = self.content_layout_path()
         try:
             resolved = resolveResource(path)
-            layout = applyTilePersistent(path, resolved)
+            if APPLY_TILE_PERSISTENT:
+                layout = applyTilePersistent(path, resolved)
         except (NotFound, RuntimeError, IOError):
             pass
         return layout
