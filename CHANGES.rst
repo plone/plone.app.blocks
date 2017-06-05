@@ -4,7 +4,10 @@ Changelog
 4.1.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+Bug fixes:
+
+- Fix diazo tile rules cache key to require less memory by using hexdigest
+  [datakurre]
 
 
 4.1.0 (2017-08-17)
