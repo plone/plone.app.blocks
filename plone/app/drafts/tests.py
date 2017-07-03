@@ -1219,7 +1219,7 @@ class TestDexterityIntegration(unittest.TestCase):
             cookies['plone.app.drafts.path']
         )
         self.assertEqual(  # noqa
-            '"{}"'.format(IUUID(self.folder)),
+            '"{0}"'.format(IUUID(self.folder)),
             cookies['plone.app.drafts.targetKey'],
         )
         self.assertNotIn(
