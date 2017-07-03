@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from plone.app.drafts.draft import Draft
+from plone.app.drafts.interfaces import DRAFT_NAME_KEY
 from plone.app.drafts.interfaces import ICurrentDraftManagement
 from plone.app.drafts.interfaces import IDraft
 from plone.app.drafts.interfaces import IDrafting
@@ -20,6 +21,7 @@ from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
 from plone.app.testing import TEST_USER_NAME
 from plone.app.testing import TEST_USER_PASSWORD
+from plone.dexterity.utils import createContent
 from plone.protect.authenticator import createToken
 from plone.testing.z2 import Browser
 from plone.uuid.interfaces import IUUID
@@ -1178,6 +1180,19 @@ class TestDexterityIntegration(unittest.TestCase):
         self.assertNotIn(
             'plone.app.drafts.draftName',
             browser.cookies.forURL(browser.url),
+        )
+
+        # Simulate save action for creating a draft
+        storage = queryUtility(IDraftStorage)
+        draft = storage.createDraft(TEST_USER_ID, '++add++MyDocument')
+        target = createContent('MyDocument')
+        draft._draftAddFormTarget = target
+        transaction.commit()
+
+        browser.cookies.create(
+            DRAFT_NAME_KEY,
+            u'draft',
+            path='/plone'
         )
 
         # We can now fill in the required fields and save. The cookies should
