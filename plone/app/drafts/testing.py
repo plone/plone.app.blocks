@@ -114,6 +114,7 @@ class DexterityDraftingLayer(PloneSandboxLayer):
         fti.global_allow = True
         portal.portal_types._setObject('MyDocument', fti)
 
+
 DRAFTS_DX_FIXTURE = DexterityDraftingLayer()
 DRAFTS_DX_INTEGRDXION_TESTING = IntegrationTesting(
     bases=(DRAFTS_DX_FIXTURE,), name='Drafts:DX:Integration')
