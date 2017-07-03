@@ -4,8 +4,8 @@ Changelog
 1.1.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fix issue where draft sync failed because draft might have been withotu aq wrapper
+  [datakurre]
 
 1.1.1 (2016-09-09)
 ------------------
