@@ -356,6 +356,8 @@ class LayoutAwareTileDataStorage(object):
                         data[name] = primary
                         break
 
+            data['tags'] = [tag.encode('utf-8') for tag in data['tags']]
+            
             return schema_compatible(data, schema_)
         raise KeyError(key)
 
