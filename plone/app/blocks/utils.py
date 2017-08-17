@@ -353,7 +353,10 @@ def compile_theme(rules_doc, theme_doc=None, css=True,
 def cacheKey(func, rules_url, theme_node):
     if Globals.DevelopmentMode:
         raise DontCache()
-    return ':'.join([rules_url, html.tostring(theme_node)])
+    key = md5()
+    key.update(rules_url)
+    key.update(html.tostring(theme_node))
+    return key.hexdigest()
 
 
 @ram.cache(cacheKey)
