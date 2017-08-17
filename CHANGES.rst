@@ -4,6 +4,16 @@ Changelog
 4.1.2 (unreleased)
 ------------------
 
+Breaking changes:
+
+- Change persistent tile data enforcement with 'X-Tile-Persistent' be optional
+  [datakurre]
+
+New features:
+
+- No longer cache layouts on context (layout lookup has been optimized)
+  [datakurre]
+
 Bug fixes:
 
 - Fix issue where resolving layout url with ajax_load parameter caused fail
