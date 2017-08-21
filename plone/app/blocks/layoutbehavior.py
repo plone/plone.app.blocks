@@ -354,6 +354,15 @@ class LayoutAwareTileDataStorage(object):
                 for name in schema_:
                     if IPrimaryField.providedBy(schema_[name]):
                         data[name] = primary
+                        # Supports supermodel-defined RichTextValue
+                        keys = [key_ for key_ in data.keys()
+                                if key_.startswith('{0:s}-'.format(name))]
+                        if keys:
+                            data[name] = dict(
+                                [(u'data', data[name])] +
+                                [(key_.split('-', 1)[-1], data.pop(key_))
+                                 for key_ in keys]
+                            )
                         break
 
             return schema_compatible(data, schema_)
@@ -387,8 +396,13 @@ class LayoutAwareTileDataStorage(object):
         primary = None
         for name in schema_:
             if IPrimaryField.providedBy(schema_[name]) and data.get(name):
+                raw = data.pop(name) or u''
+                if isinstance(raw, dict):  # Support supermodel RichTextValue
+                    for key_ in [k for k in raw if k != 'data']:
+                        data[u'{0:s}-{1:s}'.format(name, key_)] = raw[key_]
+                    raw = raw.get('data')
                 try:
-                    raw = u'<div>{0:s}</div>'.format(data.pop(name) or u'')
+                    raw = u'<div>{0:s}</div>'.format(raw or u'')
                     primary = html.fromstring(raw)
                 except (etree.ParseError, TypeError):
                     pass
