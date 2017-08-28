@@ -83,13 +83,6 @@ def resolve(url, resolved=None):
         return None
 
 
-def subresponse_exception_handler(response, exception):
-    if isinstance(exception, Unauthorized):
-        response.setStatus = 401
-        return
-    return response.exception()
-
-
 def resolveResource(url):
     """Resolve the given URL to a unicode string. If the URL is an absolute
     path, it will be made relative to the Plone site root.
@@ -113,10 +106,6 @@ def resolveResource(url):
         url = '/'.join(site.getPhysicalPath()) + url
 
     response = subrequest(url, exception_handler=subresponse_exception_handler)
-    if response.status == 404:
-        raise NotFound(url)
-    elif response.status == 401:
-        raise Unauthorized(url)
 
     resolved = response.getBody()
 
@@ -130,7 +119,7 @@ def resolveResource(url):
         if location.startswith(site.absolute_url()):
             return resolveResource(location[len(site.absolute_url()):])
 
-    elif response.status != 200:
+    elif response.status == 500:
         raise RuntimeError(resolved)
 
     return resolved
