@@ -363,6 +363,7 @@ def cacheKey(func, rules_url, theme_node):
 
 @ram.cache(cacheKey)
 def resolve_transform(rules_url, theme_node):
+    rules_url = rules_url and rules_url.split('?')[0]  # strip cache key
     rules_doc = resolveResource(rules_url)  # may raise NotFound
     rules_doc = etree.ElementTree(etree.fromstring(rules_doc))
     compiled = compile_theme(rules_doc,
