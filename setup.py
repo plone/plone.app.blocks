@@ -11,6 +11,7 @@ widgets_require = [
 test_require = [
     'plone.app.tiles',
     'plone.app.testing',
+    'plone.app.textfield',
     'plone.testing',
     'Products.BTreeFolder2',
     'transaction',
@@ -72,7 +73,7 @@ setup(
         'plone.autoform',
         'plone.behavior>=1.1',
         'plone.dexterity',
-        'plone.jsonserializer',
+        'plone.jsonserializer>=0.9.4',
         'plone.memoize',
         'plone.outputfilters',
         'plone.registry',

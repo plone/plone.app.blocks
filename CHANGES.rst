@@ -6,6 +6,10 @@ Changelog
 
 Bug fixes:
 
+- Fix to properly store primary rich text field values through layout aware
+  tile data storage adapter
+  [datakurre]
+
 - Fix diazo tile rules cache key to require less memory by using hexdigest
   [datakurre]
 

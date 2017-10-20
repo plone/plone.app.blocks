@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from plone.app.textfield import RichText
+from plone.app.textfield import RichTextValue
 from plone.dexterity.fti import DexterityFTI
 from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.app.blocks.layoutbehavior import ILayoutBehaviorAdaptable
@@ -7,12 +9,17 @@ from plone.app.blocks.testing import BLOCKS_FUNCTIONAL_TESTING
 from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
 from plone.registry.interfaces import IRegistry
+from plone.rfc822.interfaces import IPrimaryField
+from plone.supermodel.model import Schema
+from plone.tiles.interfaces import ITileType
+from plone.tiles.type import TileType
 from plone.uuid.interfaces import IUUID
 from zope.component import getUtility
+from zope.component import provideUtility
+from zope.interface import alsoProvides
 
 import pkg_resources
 import unittest
-
 
 try:
     pkg_resources.get_distribution('plone.app.contenttypes')
@@ -95,3 +102,57 @@ data-tiledata='{"message": "Hello World!"}' />
             view,
             '<html><body><b>Transient tile Foo bar!</b></body></html>'
         )
+
+    def test_content_richtext(self):
+
+        class IRichTextTile(Schema):
+            html = RichText()
+
+        alsoProvides(IRichTextTile['html'], IPrimaryField)
+
+        provideUtility(TileType(
+            name='plone.app.blocks.richtext',
+            title='plone.app.blocks.richtext',
+            add_permission='cmf.ModifyPortalContent',
+            view_permission='zope2.View',
+            schema=IRichTextTile
+        ),
+            provides=ITileType,
+            name='plone.app.blocks.richtext')
+
+        self.behavior.content = u"""\
+<html>
+<body>
+<div data-tile="@@plone.app.blocks.richtext/demo"
+data-tiledata='{"content-type": "text/html"}'>
+<div><p>Hello World!</p></div>
+</div>
+</body>
+</html>
+"""
+        storage = LayoutAwareTileDataStorage(self.portal['f1']['d1'],
+                                             self.layer['request'])
+        data = storage['@@plone.app.blocks.richtext/demo']
+
+        self.assertIn('html', data)
+        self.assertIsInstance(data['html'], RichTextValue)
+        self.assertEqual(data['html'].output,
+                         u'<p>Hello World!</p>')
+
+        storage['@@plone.app.blocks.richtext/demo'] = {
+            'html': RichTextValue(
+                '<p>Foo bar!</p>',
+                mimeType='text/html',
+                outputMimeType='text/x-safe-html',
+                encoding='utf-8'
+            )
+        }
+
+        self.assertEqual(unicode(storage.storage).replace(u'\n', u''), u"""\
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<body>
+<div data-tile="@@plone.app.blocks.richtext/demo" data-tiledata='{"html-output-content-type": "text/x-safe-html", "html-content-type": "text/html", "html-encoding": "utf-8"}'><div><p>Foo bar!</p></div></div>
+</body>
+</html>
+""".replace(u'\n', u''))  # noqa
