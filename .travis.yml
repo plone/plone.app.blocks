@@ -25,7 +25,7 @@ script:
   - bin/code-analysis
   - bin/test
 after_success:
-  - bin/createcoverage
+  - bin/createcoverage -d 'htmlcov'
   - pip install -q coveralls
   - coveralls
 notifications:
