@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from AccessControl import getSecurityManager
+from App.config import getConfiguration
 from copy import deepcopy
 from diazo import compiler
 from diazo import cssrules
@@ -20,7 +21,6 @@ from zope.component import queryUtility
 from zope.security.interfaces import IPermission
 from zope.site.hooks import getSite
 
-import Globals
 import logging
 import urllib
 import zope.deferredimport
@@ -351,7 +351,7 @@ def compile_theme(rules_doc, theme_doc=None, css=True,
 
 
 def cacheKey(func, rules_url, theme_node):
-    if Globals.DevelopmentMode:
+    if getConfiguration().debug_mode:
         raise DontCache()
     key = md5()
     key.update(rules_url)

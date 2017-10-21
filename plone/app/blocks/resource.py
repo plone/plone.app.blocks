@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from Acquisition import aq_parent
+from App.config import getConfiguration
 from ConfigParser import SafeConfigParser
 from OFS.interfaces import ITraversable
 from plone.app.blocks.interfaces import CONTENT_LAYOUT_FILE_NAME
@@ -32,7 +33,6 @@ from zope.schema.vocabulary import SimpleTerm
 from zope.schema.vocabulary import SimpleVocabulary
 from zope.site.hooks import getSite
 
-import Globals
 import logging
 import urlparse
 
@@ -212,7 +212,7 @@ def cacheKey(method, self):
     or the content is modified
     """
 
-    if Globals.DevelopmentMode:
+    if getConfiguration().debug_mode:
         raise volatile.DontCache()
 
     catalog = getToolByName(self.context, 'portal_catalog')

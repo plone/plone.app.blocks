@@ -4,7 +4,8 @@ Changelog
 4.1.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix deprecated `import Globals`. This adds Zope 4 compatibility.
+  [petschki]
 
 
 4.1.1 (2017-10-20)
