@@ -4,6 +4,10 @@ Changelog
 4.1.2 (unreleased)
 ------------------
 
+- Fix issue where failed resource lookup into filesystem resource directory
+  raised IOError
+  [datakurre]
+
 - Fix deprecated `import Globals`. This adds Zope 4 compatibility.
   [petschki]
 
