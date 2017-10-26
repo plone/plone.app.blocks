@@ -105,7 +105,7 @@ def resolveResource(url):
         if directory:
             try:
                 return directory.readFile(path)
-            except NotFound:
+            except (NotFound, IOError):
                 pass
 
     if url.startswith('/'):
