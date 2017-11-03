@@ -24,6 +24,8 @@ def merge(request, pageTree, removePanelLinks=False, removeLayoutLink=True):
         # plone.subrequest deals with VHM requests
         baseURL = ''
     layoutHref = urljoin(baseURL, layoutHref)  # turn the link absolute
+    # Pass special ajax_load parameter forward to allow layout indirection
+    # views to select, for example, default AJAX layout instead of full layout.
     if request.form.get('ajax_load'):
         parts = list(urlparse(layoutHref))
         query = parse_qs(parts[4])

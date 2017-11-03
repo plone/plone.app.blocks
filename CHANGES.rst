@@ -4,6 +4,12 @@ Changelog
 4.1.2 (unreleased)
 ------------------
 
+Bug fixes:
+
+- Fix issue where resolving layout url with ajax_load parameter caused fail
+  on direct resolve directory lookup
+  [datakurre]
+
 - Fix issue where failed resource lookup into filesystem resource directory
   raised IOError
   [datakurre]

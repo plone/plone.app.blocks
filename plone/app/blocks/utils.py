@@ -23,6 +23,7 @@ from zope.site.hooks import getSite
 
 import logging
 import urllib
+import urlparse
 import zope.deferredimport
 
 
@@ -97,7 +98,8 @@ def resolveResource(url):
     url = urllib.unquote(url)  # subrequest does not support quoted paths
     if url.count('++') == 2:
         # it is a resource that can be resolved without a subrequest
-        _, resource_type, path = url.split('++')
+        scheme, netloc, path, params, query, fragment = urlparse.urlparse(url)
+        _, resource_type, path = path.split('++')
         resource_name, _, path = path.partition('/')
         directory = queryResourceDirectory(resource_type, resource_name)
         if isinstance(path, unicode):
