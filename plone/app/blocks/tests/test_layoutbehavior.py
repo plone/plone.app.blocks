@@ -143,7 +143,7 @@ data-tiledata='{"content-type": "text/html"}'>
             'html': RichTextValue(
                 '<p>Foo bar!</p>',
                 mimeType='text/html',
-                outputMimeType='text/x-safe-html',
+                outputMimeType='text/x-html-safe',
                 encoding='utf-8'
             )
         }
@@ -152,7 +152,7 @@ data-tiledata='{"content-type": "text/html"}'>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
 <html>
 <body>
-<div data-tile="@@plone.app.blocks.richtext/demo" data-tiledata='{"html-output-content-type": "text/x-safe-html", "html-content-type": "text/html", "html-encoding": "utf-8"}'><div><p>Foo bar!</p></div></div>
+<div data-tile="@@plone.app.blocks.richtext/demo" data-tiledata='{"html-output-content-type": "text/x-html-safe", "html-content-type": "text/html", "html-encoding": "utf-8"}'><div><p>Foo bar!</p></div></div>
 </body>
 </html>
 """.replace(u'\n', u''))  # noqa
