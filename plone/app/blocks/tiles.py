@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from lxml import html
 from lxml.etree import XSLTApplyError
+from plone.app.blocks import events
 from plone.app.blocks import PloneMessageFactory
 from plone.app.blocks import utils
 from plone.app.blocks.interfaces import IBlocksSettings
@@ -11,6 +12,7 @@ from plone.tiles.interfaces import ESI_HEADER_KEY
 from urlparse import urljoin
 from zExceptions import NotFound
 from zope.component import queryUtility
+from zope.event import notify
 from zope.i18n import translate
 
 import logging
@@ -48,6 +50,8 @@ def renderTiles(request, tree):
         tileHref = tileNode.attrib[utils.tileAttrib]
         if not tileHref.startswith('/'):
             tileHref = urljoin(baseURL, tileHref)
+
+        notify(events.BeforeTileRenderEvent(tileHref))
         try:
             tileTree = utils.resolve(tileHref)
         except RuntimeError:
@@ -62,6 +66,7 @@ def renderTiles(request, tree):
         if tileTree is not None:
             tileRoot = tileTree.getroot()
             utils.replace_with_children(tileNode, tileRoot.find('head'))
+        notify(events.AfterTileRenderEvent(tileHref))
 
     for tileNode in utils.bodyTileXPath(tree):
         tileHref = tileNode.attrib[utils.tileAttrib]
@@ -69,6 +74,8 @@ def renderTiles(request, tree):
 
         if not tileHref.startswith('/'):
             tileHref = urljoin(baseURL, tileHref)
+
+        notify(events.BeforeTileRenderEvent(tileHref))
         try:
             tileTree = utils.resolve(tileHref)
         except RuntimeError:
@@ -109,5 +116,6 @@ def renderTiles(request, tree):
                 for tileHeadChild in tileHead:
                     headNode.append(tileHeadChild)
             utils.replace_with_children(tileNode, tileBody)
+        notify(events.AfterTileRenderEvent(tileHref))
 
     return tree

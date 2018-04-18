@@ -2,6 +2,7 @@
 from plone.resource.manifest import ManifestFormat
 from zope import schema
 from zope.i18nmessageid import MessageFactory
+from zope.interface import Attribute
 from zope.interface import Interface
 
 
@@ -83,3 +84,19 @@ class ILayoutFieldDefaultValue(Interface):
 
     def __str__():
         """Return the layout as a str value"""
+
+
+class IBaseTileRenderEvent(Interface):
+    """Base class for tile render events.
+    """
+    tile_href = Attribute('URL of the rendered tile')
+
+
+class IBeforeTileRenderEvent(IBaseTileRenderEvent):
+    """Thrown before a tile is rendered.
+    """
+
+
+class IAfterTileRenderEvent(IBaseTileRenderEvent):
+    """Thrown after a tile is rendered.
+    """

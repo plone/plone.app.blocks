@@ -4,6 +4,16 @@ Changelog
 4.1.2 (unreleased)
 ------------------
 
+Breaking changes:
+
+- *add item here*
+
+New features:
+
+- Added events to notify before/after tile rendering.
+  [thet]
+
+
 Bug fixes:
 
 - Fix issue where resolving layout url with ajax_load parameter caused fail
