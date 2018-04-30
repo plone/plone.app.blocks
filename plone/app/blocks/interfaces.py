@@ -90,6 +90,7 @@ class IBaseTileRenderEvent(Interface):
     """Base class for tile render events.
     """
     tile_href = Attribute('URL of the rendered tile')
+    tile_node = Attribute('LXML.html node on which the tile is called')
 
 
 class IBeforeTileRenderEvent(IBaseTileRenderEvent):
