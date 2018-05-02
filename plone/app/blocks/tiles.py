@@ -51,7 +51,7 @@ def renderTiles(request, tree):
         if not tileHref.startswith('/'):
             tileHref = urljoin(baseURL, tileHref)
 
-        notify(events.BeforeTileRenderEvent(tileHref))
+        notify(events.BeforeTileRenderEvent(tileHref, tileNode))
         try:
             tileTree = utils.resolve(tileHref)
         except RuntimeError:
@@ -66,7 +66,7 @@ def renderTiles(request, tree):
         if tileTree is not None:
             tileRoot = tileTree.getroot()
             utils.replace_with_children(tileNode, tileRoot.find('head'))
-        notify(events.AfterTileRenderEvent(tileHref))
+        notify(events.AfterTileRenderEvent(tileHref, tileNode))
 
     for tileNode in utils.bodyTileXPath(tree):
         tileHref = tileNode.attrib[utils.tileAttrib]
@@ -75,7 +75,7 @@ def renderTiles(request, tree):
         if not tileHref.startswith('/'):
             tileHref = urljoin(baseURL, tileHref)
 
-        notify(events.BeforeTileRenderEvent(tileHref))
+        notify(events.BeforeTileRenderEvent(tileHref, tileNode))
         try:
             tileTree = utils.resolve(tileHref)
         except RuntimeError:
@@ -116,6 +116,6 @@ def renderTiles(request, tree):
                 for tileHeadChild in tileHead:
                     headNode.append(tileHeadChild)
             utils.replace_with_children(tileNode, tileBody)
-        notify(events.AfterTileRenderEvent(tileHref))
+        notify(events.AfterTileRenderEvent(tileHref, tileNode))
 
     return tree
