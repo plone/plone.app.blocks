@@ -57,11 +57,7 @@ def renderTiles(request, tree):
         except RuntimeError:
             tileTree = None
         except NotFound:
-            logger.warn(
-                'NotFound while trying to render tile: {0}'.format(
-                    tileHref
-                )
-            )
+            logger.warn('NotFound while trying to render tile: %s', tileHref)
             continue
         if tileTree is not None:
             tileRoot = tileTree.getroot()
@@ -110,12 +106,18 @@ def renderTiles(request, tree):
                     tileBody.append(result)
                 except XSLTApplyError:
                     logger.exception(
-                        'Failed to transform tile {0:s} for {0:s}'.format(
-                            tileHref, baseURL))
+                        'Failed to transform tile %s for %s',
+                        tileHref,
+                        baseURL
+                    )
             if tileHead is not None:
                 for tileHeadChild in tileHead:
                     headNode.append(tileHeadChild)
             utils.replace_with_children(tileNode, tileBody)
         notify(events.AfterTileRenderEvent(tileHref, tileNode))
+
+    if utils.headTileXPath(tree) or utils.bodyTileXPath(tree):
+        # Recursively render tiles, as long as they are referenced
+        tree = renderTiles(request, tree)
 
     return tree

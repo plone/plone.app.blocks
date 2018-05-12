@@ -10,6 +10,10 @@ Breaking changes:
 
 New features:
 
+- Allow rendering of subtiles.
+  Now it's possible to reference and resolve tiles in tiles.
+  [thet]
+
 - Added events to notify before/after tile rendering.
   [thet]
 
