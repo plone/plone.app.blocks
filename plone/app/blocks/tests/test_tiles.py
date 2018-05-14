@@ -43,6 +43,20 @@ class TestTile(Tile):
                   url=self.request.getURL())
 
 
+class TestTile2(Tile):
+
+    def __call__(self):
+        return """\
+<html>
+<body>
+  <p>
+    I'm a tile calling another tile as subtile.
+  </p>
+  <div data-tile="./@@test.tile1/subtile"/>
+</body>
+</html>"""
+
+
 @implementer(ITestTile)
 class TestTileBroken(TestTile):
 
@@ -75,6 +89,16 @@ class TestTilesLayer(PloneSandboxLayer):
       />
 
   <plone:tile
+      name="test.tile2"
+      title="Test Tile 2"
+      description="Tile calling tile1 as subtile"
+      add_permission="cmf.ModifyPortalContent"
+      class="plone.app.blocks.tests.test_tiles.TestTile2"
+      permission="zope2.View"
+      for="*"
+      />
+
+  <plone:tile
       name="test.tile1.broken"
       title="Broken Test Tile"
       description=""
@@ -88,14 +112,14 @@ class TestTilesLayer(PloneSandboxLayer):
 </configure>
 """, context=configurationContext)
 
-BLOCKS_TILES_FIXTURE = TestTilesLayer()
 
+BLOCKS_TILES_FIXTURE = TestTilesLayer()
 BLOCKS_TILES_INTEGRATION_TESTING = IntegrationTesting(
     bases=(BLOCKS_TILES_FIXTURE,), name="Blocks:Tiles:Integration")
 
 
 testLayout1 = """\
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html data-layout="./@@default-site-layout">
 <head></head>
 <body>
@@ -114,11 +138,11 @@ testLayout1 = """\
   </div>
 </body>
 </html>
-"""
+"""  # noqa
 
 
 testLayout2 = """\
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html data-layout="./@@default-site-layout">
 <head></head>
 <body>
@@ -134,6 +158,20 @@ testLayout2 = """\
   <div data-panel="panel4">
     Page panel 4 (ignored)
     <div id="page-tile4" data-tile="./@@test.tile1/tile4">Page tile 4 placeholder</div>
+  </div>
+</body>
+</html>
+"""  # noqa
+
+
+testLayout3 = """\
+<!DOCTYPE html>
+<html data-layout="./@@default-site-layout">
+<head></head>
+<body>
+  <h1>Welcome!</h1>
+  <div data-panel="panel1">
+    <div data-tile="./@@test.tile2"/>
   </div>
 </body>
 </html>
@@ -164,3 +202,14 @@ class TestRenderTiles(unittest.TestCase):
         self.assertNotIn('This is a demo tile with id tile3', result)
         self.assertIn('There was an error while rendering this tile', result)
         self.assertIn('This is a demo tile with id tile4', result)
+
+    def testRenderSubTile(self):
+        serializer = getHTMLSerializer([testLayout3])
+        request = self.layer['request']
+        tree = serializer.tree
+        renderTiles(request, tree)
+        result = serializer.serialize()
+        # The incomplete @@test.tile2 is calling @@test.tile1 and both are
+        # resolved.
+        self.assertIn("I'm a tile calling another tile as subtile.", result)
+        self.assertIn("This is a demo tile with id subtile", result)
