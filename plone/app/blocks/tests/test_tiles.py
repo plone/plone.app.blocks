@@ -237,7 +237,7 @@ class TestRenderTiles(unittest.TestCase):
         self.assertIn('There was an error while rendering this tile', result)
         self.assertIn('This is a demo tile with id tile4', result)
 
-    def testRenderSubTile(self):
+    def testRenderSubTiles(self):
         """Test if subtiles - tiles referenced in tiles - are resolved.
         """
         serializer = getHTMLSerializer([testLayout3])
@@ -249,7 +249,7 @@ class TestRenderTiles(unittest.TestCase):
         self.assertIn("I'm a tile calling another tile as subtile.", result)
         self.assertIn("This is a demo tile with id subtile", result)
 
-    def testRenderStructurelessTile(self):
+    def testRenderStructurelessTiles(self):
         """Test if tiles without a html/head/body structure are also rendered.
         """
         serializer = getHTMLSerializer([testLayout3])
@@ -261,7 +261,7 @@ class TestRenderTiles(unittest.TestCase):
         self.assertIn("structureless in head", result)
         self.assertIn("structureless in body", result)
 
-    def testRenderStructurelessTile(self):
+    def testNonExistentAndBrokenTiiles(self):
         """Test if non-existent or broken tiles do not end in an recursive loop.
         """
         serializer = getHTMLSerializer([testLayout4])
