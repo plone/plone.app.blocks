@@ -197,6 +197,20 @@ testLayout3 = """\
 </html>
 """
 
+testLayout4 = """\
+<!DOCTYPE html>
+<html>
+<head>
+  <div data-tile="./@@test.tile1.broken"/>
+  <div data-tile="./@@tiledoesnotexist"/>
+</head>
+<body>
+  <h1>hi there!</h1>
+  <div data-tile="./@@tiledoesnotexist"/>
+</body>
+</html>
+"""
+
 
 class TestRenderTiles(unittest.TestCase):
 
@@ -246,3 +260,14 @@ class TestRenderTiles(unittest.TestCase):
 
         self.assertIn("structureless in head", result)
         self.assertIn("structureless in body", result)
+
+    def testRenderStructurelessTile(self):
+        """Test if non-existent or broken tiles do not end in an recursive loop.
+        """
+        serializer = getHTMLSerializer([testLayout4])
+        request = self.layer['request']
+        tree = serializer.tree
+        renderTiles(request, tree)
+        result = serializer.serialize()
+
+        self.assertIn("hi there!", result)

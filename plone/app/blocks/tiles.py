@@ -60,6 +60,10 @@ def renderTiles(request, tree):
             tileTree = None
         except NotFound:
             logger.warn('NotFound while trying to render tile: %s', tileHref)
+
+        if tileTree is None:
+            utils.remove_element(tileNode)
+            notify(events.AfterTileRenderEvent(tileHref, tileNode))
             continue
 
         if tileTree is not None:
@@ -85,6 +89,11 @@ def renderTiles(request, tree):
         except RuntimeError:
             tileTree = errorTile(request)
         except NotFound:
+            logger.warn('NotFound while trying to render tile: %s', tileHref)
+
+        if tileTree is None:
+            utils.remove_element(tileNode)
+            notify(events.AfterTileRenderEvent(tileHref, tileNode))
             continue
 
         tileTransform = None
