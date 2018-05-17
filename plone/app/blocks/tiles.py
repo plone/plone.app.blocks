@@ -52,16 +52,26 @@ def renderTiles(request, tree):
             tileHref = urljoin(baseURL, tileHref)
 
         notify(events.BeforeTileRenderEvent(tileHref, tileNode))
+
+        tileTree = None
         try:
             tileTree = utils.resolve(tileHref)
         except RuntimeError:
             tileTree = None
         except NotFound:
             logger.warn('NotFound while trying to render tile: %s', tileHref)
+
+        if tileTree is None:
+            utils.remove_element(tileNode)
+            notify(events.AfterTileRenderEvent(tileHref, tileNode))
             continue
+
         if tileTree is not None:
             tileRoot = tileTree.getroot()
-            utils.replace_with_children(tileNode, tileRoot.find('head'))
+            tileHead = tileRoot.find('head') or tileRoot
+
+            utils.replace_with_children(tileNode, tileHead)
+
         notify(events.AfterTileRenderEvent(tileHref, tileNode))
 
     for tileNode in utils.bodyTileXPath(tree):
@@ -72,13 +82,21 @@ def renderTiles(request, tree):
             tileHref = urljoin(baseURL, tileHref)
 
         notify(events.BeforeTileRenderEvent(tileHref, tileNode))
+
+        tileTree = None
         try:
             tileTree = utils.resolve(tileHref)
         except RuntimeError:
             tileTree = errorTile(request)
         except NotFound:
+            logger.warn('NotFound while trying to render tile: %s', tileHref)
+
+        if tileTree is None:
+            utils.remove_element(tileNode)
+            notify(events.AfterTileRenderEvent(tileHref, tileNode))
             continue
 
+        tileTransform = None
         if tileRulesHref:
             if not tileRulesHref.startswith('/'):
                 tileRulesHref = urljoin(baseURL, tileRulesHref)
@@ -87,12 +105,9 @@ def renderTiles(request, tree):
             except NotFound:
                 tileTransform = None
             del tileNode.attrib[utils.tileRulesAttrib]
-        else:
-            tileTransform = None
 
         if tileTree is not None:
             tileRoot = tileTree.getroot()
-
             tileHead = tileRoot.find('head')
             tileBody = tileRoot.find('body')
 
@@ -110,10 +125,13 @@ def renderTiles(request, tree):
                         tileHref,
                         baseURL
                     )
+
             if tileHead is not None:
                 for tileHeadChild in tileHead:
                     headNode.append(tileHeadChild)
+
             utils.replace_with_children(tileNode, tileBody)
+
         notify(events.AfterTileRenderEvent(tileHref, tileNode))
 
     if utils.headTileXPath(tree) or utils.bodyTileXPath(tree):

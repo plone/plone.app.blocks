@@ -205,6 +205,11 @@ def replace_content(element, wrapper):
         element.extend(wrapper.getchildren())
 
 
+def remove_element(element):
+    parent = element.getparent()
+    parent.remove(element)
+
+
 class PermissionChecker(object):
 
     def __init__(self, permissions, context):

@@ -57,8 +57,16 @@ class TestTile2(Tile):
 </html>"""
 
 
+class TestTile3(Tile):
+
+    def __call__(self):
+        return """\
+<title>structureless in %s</title>
+""" % self.request.form.get('title', '')
+
+
 @implementer(ITestTile)
-class TestTileBroken(TestTile):
+class TestTileBroken(Tile):
 
     def __call__(self):
         raise Exception("This tile is broken.")
@@ -94,6 +102,15 @@ class TestTilesLayer(PloneSandboxLayer):
       description="Tile calling tile1 as subtile"
       add_permission="cmf.ModifyPortalContent"
       class="plone.app.blocks.tests.test_tiles.TestTile2"
+      permission="zope2.View"
+      for="*"
+      />
+
+  <plone:tile
+      name="test.tile3"
+      title="Test Tile 3"
+      add_permission="cmf.ModifyPortalContent"
+      class="plone.app.blocks.tests.test_tiles.TestTile3"
       permission="zope2.View"
       for="*"
       />
@@ -166,13 +183,30 @@ testLayout2 = """\
 
 testLayout3 = """\
 <!DOCTYPE html>
-<html data-layout="./@@default-site-layout">
-<head></head>
+<html>
+<head>
+  <div data-tile="./@@test.tile3?title=head"/>
+</head>
 <body>
   <h1>Welcome!</h1>
   <div data-panel="panel1">
     <div data-tile="./@@test.tile2"/>
   </div>
+  <div data-tile="./@@test.tile3?title=body"/>
+</body>
+</html>
+"""
+
+testLayout4 = """\
+<!DOCTYPE html>
+<html>
+<head>
+  <div data-tile="./@@test.tile1.broken"/>
+  <div data-tile="./@@tiledoesnotexist"/>
+</head>
+<body>
+  <h1>hi there!</h1>
+  <div data-tile="./@@tiledoesnotexist"/>
 </body>
 </html>
 """
@@ -203,13 +237,37 @@ class TestRenderTiles(unittest.TestCase):
         self.assertIn('There was an error while rendering this tile', result)
         self.assertIn('This is a demo tile with id tile4', result)
 
-    def testRenderSubTile(self):
+    def testRenderSubTiles(self):
+        """Test if subtiles - tiles referenced in tiles - are resolved.
+        """
         serializer = getHTMLSerializer([testLayout3])
         request = self.layer['request']
         tree = serializer.tree
         renderTiles(request, tree)
         result = serializer.serialize()
-        # The incomplete @@test.tile2 is calling @@test.tile1 and both are
-        # resolved.
+
         self.assertIn("I'm a tile calling another tile as subtile.", result)
         self.assertIn("This is a demo tile with id subtile", result)
+
+    def testRenderStructurelessTiles(self):
+        """Test if tiles without a html/head/body structure are also rendered.
+        """
+        serializer = getHTMLSerializer([testLayout3])
+        request = self.layer['request']
+        tree = serializer.tree
+        renderTiles(request, tree)
+        result = serializer.serialize()
+
+        self.assertIn("structureless in head", result)
+        self.assertIn("structureless in body", result)
+
+    def testNonExistentAndBrokenTiiles(self):
+        """Test if non-existent or broken tiles do not end in an recursive loop.
+        """
+        serializer = getHTMLSerializer([testLayout4])
+        request = self.layer['request']
+        tree = serializer.tree
+        renderTiles(request, tree)
+        result = serializer.serialize()
+
+        self.assertIn("hi there!", result)

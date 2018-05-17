@@ -20,6 +20,9 @@ New features:
 
 Bug fixes:
 
+- Allow head tiles without a html/head structure.
+  [thet]
+
 - Fix issue where resolving layout url with ajax_load parameter caused fail
   on direct resolve directory lookup
   [datakurre]
