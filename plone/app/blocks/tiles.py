@@ -68,7 +68,9 @@ def renderTiles(request, tree):
 
         if tileTree is not None:
             tileRoot = tileTree.getroot()
-            tileHead = tileRoot.find('head') or tileRoot
+            tileHead = tileRoot.find('head')
+            if tileHead is None and tileRoot.find('body') is None:
+                tileHead = tileRoot
 
             utils.replace_with_children(tileNode, tileHead)
 
