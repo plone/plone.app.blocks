@@ -1,6 +1,16 @@
 Changelog
 =========
 
+4.1.2 (unreleased)
+------------------
+
+Bug fixes:
+
+- remove `pretty_print` when loading the tile data.
+  This fixes `forced_root_block` problems in TinyMCE (#63)
+  [petschki]
+
+
 4.1.1 (2017-10-20)
 ------------------
 

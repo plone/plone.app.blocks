@@ -306,7 +306,6 @@ class LayoutAwareTileDataStorage(object):
         # Parse layout
         data_layout = (ILayoutAware(self.context).content or DATA_LAYOUT)
         self.storage = getHTMLSerializer([data_layout.encode('utf-8')],
-                                         pretty_print=True,
                                          encoding='utf-8')
 
     def sync(self):
