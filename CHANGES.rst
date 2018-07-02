@@ -4,6 +4,16 @@ Changelog
 4.2.1 (unreleased)
 ------------------
 
+Breaking chnages:
+
+- Nothing changed yet.
+
+Bug fixes:
+
+- Nothing changed yet.
+
+New features:
+
 - Nothing changed yet.
 
 
