@@ -20,6 +20,10 @@ New features:
 
 Bug fixes:
 
+- remove `pretty_print` when loading the tile data.
+  This fixes `forced_root_block` problems in TinyMCE (#63)
+  [petschki]
+
 - Allow head tiles without a html/head structure.
   [thet]
 
