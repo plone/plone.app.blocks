@@ -4,10 +4,6 @@ Changelog
 4.2.0 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
 New features:
 
 - Allow rendering of subtiles.
@@ -17,12 +13,7 @@ New features:
 - Added events to notify before/after tile rendering.
   [thet]
 
-
 Bug fixes:
-
-- remove `pretty_print` when loading the tile data.
-  This fixes `forced_root_block` problems in TinyMCE (#63)
-  [petschki]
 
 - Allow head tiles without a html/head structure.
   [thet]
@@ -36,6 +27,16 @@ Bug fixes:
   [datakurre]
 
 - Fix deprecated `import Globals`. This adds Zope 4 compatibility.
+  [petschki]
+
+
+4.1.2 (2018-07-02)
+------------------
+
+Bug fixes:
+
+- remove `pretty_print` when loading the tile data.
+  This fixes `forced_root_block` problems in TinyMCE (#63)
   [petschki]
 
 
