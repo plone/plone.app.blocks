@@ -78,7 +78,7 @@ setup(
         'plone.outputfilters',
         'plone.registry',
         'plone.resource',
-        'plone.subrequest',
+        'plone.subrequest >= 1.7.0',
         'plone.supermodel',
         'plone.tiles',
         'plone.transformchain',
