@@ -10,7 +10,9 @@ Breaking chnages:
 
 Bug fixes:
 
-- Nothing changed yet.
+- Enforce usage of plone.subrequest >= 1.7.0;
+  this avoids ``TypeError`` on package upgrades (refs. `#62 <https://github.com/plone/plone.app.blocks/issues/62>`_).
+  [hvelarde]
 
 New features:
 
