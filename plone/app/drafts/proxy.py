@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from Acquisition import aq_base
 from plone.app.drafts.interfaces import IDraftProxy
-from UserDict import DictMixin
+from collections import MutableMapping
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapter
 from zope.interface import implementedBy
@@ -109,7 +109,7 @@ class DraftProxy(object):
 
 @adapter(IDraftProxy)
 @implementer(IAnnotations)
-class AliasAnnotations(DictMixin):
+class AliasAnnotations(MutableMapping):
     """Layer draft annotations atop target annotations
     """
 
