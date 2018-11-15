@@ -4,7 +4,8 @@ Changelog
 1.1.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Python 3 compatible
+  [vangheem]
 
 
 1.1.2 (2017-07-03)

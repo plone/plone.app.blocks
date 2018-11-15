@@ -42,14 +42,14 @@ except ImportError:
 
 
 AUTOSAVE_BLACKLIST = [
-    'IShortName.id'
+    'IShortName.id',
 ]
 
 
 def isDraftable(fti):
     return any([
         IDraftable.__identifier__ in fti.behaviors,
-        'plone.draftable' in fti.behaviors
+        'plone.draftable' in fti.behaviors,
     ])
 
 

@@ -111,7 +111,7 @@ class DefaultCurrentDraftManagement(object):
             self.request.response.setCookie(
                 TARGET_KEY,
                 self.targetKey,
-                path=path
+                path=path,
             )
 
         if self.draftName is not None and \
@@ -119,7 +119,7 @@ class DefaultCurrentDraftManagement(object):
             self.request.response.setCookie(
                 DRAFT_NAME_KEY,
                 self.draftName,
-                path=path
+                path=path,
             )
 
         # Save userId, because it may be needed to access draft during traverse

@@ -109,7 +109,7 @@ class DexterityDraftingLayer(PloneSandboxLayer):
         fti = DexterityFTI('MyDocument')
         fti.behaviors = (
             'plone.app.dexterity.behaviors.metadata.IDublinCore',
-            'plone.app.drafts.interfaces.IDraftable'
+            'plone.app.drafts.interfaces.IDraftable',
         )
         fti.global_allow = True
         portal.portal_types._setObject('MyDocument', fti)

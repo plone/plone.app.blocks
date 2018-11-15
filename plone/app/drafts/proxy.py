@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
+from collections import MutableMapping
+
 from Acquisition import aq_base
 from plone.app.drafts.interfaces import IDraftProxy
-from collections import MutableMapping
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapter
-from zope.interface import implementedBy
-from zope.interface import implementer
-from zope.interface import providedBy
-from zope.interface.declarations import getObjectSpecification
-from zope.interface.declarations import ObjectSpecificationDescriptor
-
+from zope.interface import implementedBy, implementer, providedBy
+from zope.interface.declarations import (ObjectSpecificationDescriptor,
+                                         getObjectSpecification)
 
 _marker = object()
 

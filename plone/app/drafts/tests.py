@@ -266,7 +266,7 @@ class TestDraftProxy(unittest.TestCase):
 
         self.assertEqual(
             set(['someAttribute', 'title', 'description']),
-            draft._proxyDeleted
+            draft._proxyDeleted,
         )
 
         self.assertFalse(hasattr(draft, 'someAttribute'))
@@ -805,7 +805,7 @@ class TestArchetypesIntegration(unittest.TestCase):
         )
         self.assertNotIn(
             'plone.app.drafts.draftName',
-            browser.cookies.forURL(browser.url)
+            browser.cookies.forURL(browser.url),
         )
 
         # We can now cancel the edit. The cookies should expire.
@@ -895,7 +895,7 @@ class TestArchetypesIntegration(unittest.TestCase):
         path = '"{0}/portal_factory/Document/document.2010-02-04.2866363923"'
         self.assertEqual(
             path.format(self.folder.absolute_url_path()),
-            cookies['plone.app.drafts.path']
+            cookies['plone.app.drafts.path'],
         )
         self.assertEqual(
             '"{0}%3ADocument"'.format(uuid),
@@ -1192,7 +1192,7 @@ class TestDexterityIntegration(unittest.TestCase):
         browser.cookies.create(
             DRAFT_NAME_KEY,
             u'draft',
-            path='/plone'
+            path='/plone',
         )
 
         # We can now fill in the required fields and save. The cookies should
@@ -1231,7 +1231,7 @@ class TestDexterityIntegration(unittest.TestCase):
         cookies = browser.cookies.forURL(browser.url)
         self.assertEqual(
             '"{0}"'.format(self.folder.absolute_url_path()),
-            cookies['plone.app.drafts.path']
+            cookies['plone.app.drafts.path'],
         )
         self.assertEqual(  # noqa
             '"{0}"'.format(IUUID(self.folder)),
