@@ -146,6 +146,15 @@ class AliasAnnotations(MutableMapping):
             raise KeyError(key)
         return value
 
+    def __iter__(self):
+        # adhere to MutableMapping interface
+        for val in self.draftAnnotations.values():
+            yield val
+
+    def __len__(self):
+        # adhere to MutableMapping interface
+        return len(self.draftAnnotations)
+
     def keys(self):
         deleted = getattr(self.draft, '_proxyAnnotationsDeleted', set())
         keys = set(self.draftAnnotations.keys())
