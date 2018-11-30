@@ -1,9 +1,22 @@
 language: python
 python: 2.7
 sudo: false
-env:
-  - PLONE_VERSION=4.x
-  - PLONE_VERSION=5.x
+matrix:
+  include:
+    - python: "2.7"
+      env: PLONE_VERSION=4.3.x
+    - python: "2.7"
+      env: PLONE_VERSION=5.0.x
+    - python: "2.7"
+      env: PLONE_VERSION=5.1.x
+    - python: "2.7"
+      env: PLONE_VERSION=5.2.x
+    - python: "3.6"
+      env: PLONE_VERSION=5.2.x
+    - python: "3.7"
+      env: PLONE_VERSION=5.2.x
+      dist: xenial
+      sudo: true
 cache:
   pip: true
   directories:
@@ -17,7 +30,7 @@ before_install:
   - echo "download-cache = $HOME/buildout-cache/downloads" >> $HOME/.buildout/default.cfg
   - echo "eggs-directory = $HOME/buildout-cache/eggs" >> $HOME/.buildout/default.cfg
   - pip install zc.buildout
-  - sed -ie "s#test-4.x.cfg#test-$PLONE_VERSION.cfg#" buildout.cfg
+  - sed -ie "s#test-x.x.x.cfg#test-$PLONE_VERSION.cfg#" buildout.cfg
 install:
   - buildout -N -t 3 annotate
   - buildout -N -t 3
