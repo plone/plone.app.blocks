@@ -22,7 +22,7 @@ from plone.resource.traversal import ResourceTraverser
 from plone.resource.utils import iterDirectoriesOfType
 from plone.subrequest import ISubRequest
 from six.moves.configparser import ConfigParser
-from six.moves.urllib.parse import urlparse
+from six.moves.urllib import parse
 from zExceptions import NotFound
 from zope.annotation import IAnnotations
 from zope.component import adapter
@@ -277,7 +277,7 @@ class DefaultSiteLayout(BrowserView):
 
         path = layout
         if pathContext is not None:
-            path = urlparse.urljoin(pathContext.absolute_url_path(), layout)
+            path = parse.urljoin(pathContext.absolute_url_path(), layout)
 
         return path
 

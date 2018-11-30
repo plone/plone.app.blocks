@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
 from plone.app.blocks import utils
-from urllib import urlencode
-from urlparse import parse_qs
-from urlparse import urljoin
-from urlparse import urlparse
-from urlparse import urlunparse
+from six.moves.urllib import parse
 
 
 def merge(request, pageTree, removePanelLinks=False, removeLayoutLink=True):
@@ -23,15 +19,15 @@ def merge(request, pageTree, removePanelLinks=False, removeLayoutLink=True):
     if request.getVirtualRoot():
         # plone.subrequest deals with VHM requests
         baseURL = ''
-    layoutHref = urljoin(baseURL, layoutHref)  # turn the link absolute
+    layoutHref = parse.urljoin(baseURL, layoutHref)  # noqa: turn the link absolute
     # Pass special ajax_load parameter forward to allow layout indirection
     # views to select, for example, default AJAX layout instead of full layout.
     if request.form.get('ajax_load'):
-        parts = list(urlparse(layoutHref))
-        query = parse_qs(parts[4])
+        parts = list(parse.urlparse(layoutHref))
+        query = parse.parse_qs(parts[4])
         query['ajax_load'] = request.form.get('ajax_load')
-        parts[4] = urlencode(query)
-        layoutHref = urlunparse(parts)
+        parts[4] = parse.urlencode(query)
+        layoutHref = parse.urlunparse(parts)
     layoutTree = utils.resolve(layoutHref)
     if layoutTree is None:
         return None

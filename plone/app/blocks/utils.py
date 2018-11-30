@@ -13,8 +13,7 @@ from plone.memoize import ram
 from plone.memoize.volatile import DontCache
 from plone.resource.utils import queryResourceDirectory
 from plone.subrequest import subrequest
-from six.moves import urllib
-from six.moves.urllib.parse import urlparse
+from six.moves.urllib import parse
 from z3c.form.interfaces import IFieldWidget
 from zExceptions import NotFound
 from zExceptions import Unauthorized
@@ -96,10 +95,10 @@ def resolveResource(url):
     """Resolve the given URL to a unicode string. If the URL is an absolute
     path, it will be made relative to the Plone site root.
     """
-    url = urllib.unquote(url)  # subrequest does not support quoted paths
+    url = parse.unquote(url)  # subrequest does not support quoted paths
     if url.count('++') == 2:
         # it is a resource that can be resolved without a subrequest
-        scheme, netloc, path, params, query, fragment = urlparse(url)
+        scheme, netloc, path, params, query, fragment = parse.urlparse(url)
         _, resource_type, path = path.split('++')
         resource_name, _, path = path.partition('/')
         directory = queryResourceDirectory(resource_type, resource_name)
