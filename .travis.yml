@@ -1,6 +1,10 @@
 language: python
-python: 2.7
+python:
+  - "2.7"
+  - "3.6"
+  - "3.7"
 sudo: false
+env:
 matrix:
   include:
     - python: "2.7"
@@ -17,12 +21,11 @@ matrix:
       env: PLONE_VERSION=5.2.x
       dist: xenial
       sudo: true
+  fast_finish: true
 cache:
   pip: true
   directories:
     - $HOME/buildout-cache
-matrix:
-  fast_finish: true
 before_install:
   - mkdir -p $HOME/buildout-cache/{eggs,downloads}
   - mkdir $HOME/.buildout
