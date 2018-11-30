@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from Products.CMFPlone.utils import safe_unicode
 from plone.app.textfield import RichText
 from plone.app.textfield import RichTextValue
 from plone.dexterity.fti import DexterityFTI
@@ -149,7 +148,7 @@ data-tiledata='{"content-type": "text/html"}'>
             )
         }
 
-        self.assertEqual(safe_unicode(storage.storage).replace(u'\n', u''), u"""\
+        self.assertEqual(str(storage.storage).replace(u'\n', u''), u"""\
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
 <html>
 <body>

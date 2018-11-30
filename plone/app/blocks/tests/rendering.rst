@@ -118,7 +118,7 @@ See ``plone.resource`` for more details.
 
     >>> from Products.CMFCore.utils import getToolByName
     >>> from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2
-    >>> from StringIO import StringIO
+    >>> from six import StringIO
     >>> from OFS.Image import File
 
     >>> resources = getToolByName(portal, 'portal_resources')
@@ -134,7 +134,7 @@ Let's render it on its own to verify that.
 .. code-block:: python
 
     >>> browser.open(portal.absolute_url() + '/++sitelayout++mylayout/site.html')
-    >>> print browser.contents
+    >>> print(browser.contents)
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html>
         <head>
@@ -216,13 +216,13 @@ In real life, these could be registered using the standard ``<browser:page />`` 
 .. code-block:: python
 
     >>> from zope.publisher.browser import BrowserView
-    >>> from zope.interface import Interface, implements
+    >>> from zope.interface import Interface, implementer
     >>> from zope import schema
     >>> from plone.tiles import Tile
     >>> from plone.app.blocks.interfaces import IBlocksTransformEnabled
 
-    >>> class Page(BrowserView):
-    ...     implements(IBlocksTransformEnabled)
+    >>> @implementer(IBlocksTransformEnabled)
+    ... class Page(BrowserView):
     ...     __name__ = 'test-page'
     ...     def __call__(self):
     ...         return pageHTML
@@ -272,7 +272,7 @@ We register these views and tiles in the same way the ZCML handlers for ``<brows
 .. code-block:: python
 
     >>> from plone.tiles.type import TileType
-    >>> from Products.Five.security import protectClass
+    >>> from AccessControl.security import protectClass
     >>> from App.class_init import InitializeClass
     >>> from zope.component import provideAdapter, provideUtility
     >>> from zope.interface import Interface
@@ -314,7 +314,7 @@ We make sure that Zope is in "development mode" to get pretty-printed output.
 .. code-block:: python
 
     >>> browser.open(portal.absolute_url() + '/@@test-page')
-    >>> print browser.contents.replace('<head><meta', '<head>\n\t<meta')
+    >>> print(browser.contents.replace('<head><meta', '<head>\n\t<meta'))
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>

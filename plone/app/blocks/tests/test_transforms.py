@@ -4,13 +4,13 @@ from plone.app.blocks.interfaces import IBlocksTransformEnabled
 from plone.app.blocks.testing import BLOCKS_INTEGRATION_TESTING
 from plone.transformchain.zpublisher import applyTransform
 from zope.interface import alsoProvides
-from zope.interface import implements
+from zope.interface import implementer
 
 import unittest
 
 
+@implementer(IBlocksTransformEnabled)
 class TestTransformedView(object):
-    implements(IBlocksTransformEnabled)
 
     def __init__(self, ret_body):
         self.__call__ = lambda b=ret_body: b
@@ -26,8 +26,8 @@ class TestTransforms(unittest.TestCase):
         being dropped
         """
 
+        @implementer(IBlocksTransformEnabled)
         class TransformedView(object):
-            implements(IBlocksTransformEnabled)
 
             def __init__(self, ret_body):
                 self.__call__ = lambda b=ret_body: b
@@ -53,8 +53,8 @@ class TestTransforms(unittest.TestCase):
         quoted (and therefore broken) <![CDATA[...]]> block
         """
 
+        @implementer(IBlocksTransformEnabled)
         class TransformedView(object):
-            implements(IBlocksTransformEnabled)
 
             def __init__(self, ret_body):
                 self.__call__ = lambda b=ret_body: b
