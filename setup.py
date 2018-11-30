@@ -87,6 +87,7 @@ setup(
         'Products.CMFPlone >= 4.3',
         'repoze.xmliter',
         'setuptools',
+        'six',
         'z3c.form',
         'zope.annotation',
         'zope.component',

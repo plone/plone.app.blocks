@@ -1,7 +1,7 @@
 Changelog
 =========
 
-4.2.1 (unreleased)
+4.3.0 (unreleased)
 ------------------
 
 Breaking chnages:
@@ -16,8 +16,8 @@ Bug fixes:
 
 New features:
 
-- Nothing changed yet.
-
+- python3 compatibility
+  [petschki]
 
 4.2.0 (2018-07-02)
 ------------------

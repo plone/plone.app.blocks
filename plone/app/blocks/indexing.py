@@ -8,8 +8,9 @@ from Products.CMFPlone.utils import safe_unicode
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapter
 from zope.interface import implementer
-import pkg_resources
 
+import pkg_resources
+import six
 
 try:
     pkg_resources.get_distribution('collective.dexteritytextindexer')
@@ -26,7 +27,7 @@ except ImportError:
     def concat(*args):
         result = ''
         for value in args:
-            if isinstance(value, unicode):
+            if isinstance(value, six.text_type):
                 value = value.encode('utf-8', 'replace')
             if value:
                 result = ' '.join((result, value))
@@ -57,7 +58,7 @@ def LayoutSearchableText(obj):
             data = annotations[key]
             for field_name in ('title', 'label', 'content'):
                 val = data.get(field_name)
-                if isinstance(val, basestring):
+                if isinstance(val, six.string_types):
                     text.append(val)
 
     try:

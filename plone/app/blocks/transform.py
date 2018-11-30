@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from Products.CMFPlone.utils import safe_unicode
 from lxml import etree
 from lxml import html
 from plone.app.blocks import panel
@@ -61,7 +62,7 @@ class ParseXML(object):
         self.request = request
 
     def transformBytes(self, result, encoding):
-        result = unicode(result, encoding, 'ignore')
+        result = safe_unicode(result, encoding)
         return self.transformIterable([result], encoding)
 
     def transformUnicode(self, result, encoding):

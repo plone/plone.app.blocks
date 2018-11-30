@@ -13,6 +13,8 @@ from plone.memoize import ram
 from plone.memoize.volatile import DontCache
 from plone.resource.utils import queryResourceDirectory
 from plone.subrequest import subrequest
+from six.moves import urllib
+from six.moves.urllib.parse import urlparse
 from z3c.form.interfaces import IFieldWidget
 from zExceptions import NotFound
 from zExceptions import Unauthorized
@@ -22,8 +24,7 @@ from zope.security.interfaces import IPermission
 from zope.site.hooks import getSite
 
 import logging
-import urllib
-import urlparse
+import six
 import zope.deferredimport
 
 
@@ -75,7 +76,7 @@ def resolve(url, resolved=None):
     if not resolved.strip():
         return None
     try:
-        if isinstance(resolved, unicode):
+        if isinstance(resolved, six.text_type):
             resolved = resolved.encode('utf-8')
         html_parser = html.HTMLParser(encoding='utf-8')
         return html.fromstring(resolved, parser=html_parser).getroottree()
@@ -98,11 +99,11 @@ def resolveResource(url):
     url = urllib.unquote(url)  # subrequest does not support quoted paths
     if url.count('++') == 2:
         # it is a resource that can be resolved without a subrequest
-        scheme, netloc, path, params, query, fragment = urlparse.urlparse(url)
+        scheme, netloc, path, params, query, fragment = urlparse(url)
         _, resource_type, path = path.split('++')
         resource_name, _, path = path.partition('/')
         directory = queryResourceDirectory(resource_type, resource_name)
-        if isinstance(path, unicode):
+        if isinstance(path, six.text_type):
             path = path.encode('utf-8', 'replace')
         if directory:
             try:
@@ -142,7 +143,7 @@ def xpath1(xpath, node, strict=True):
     """Return a single node matched by the given etree.XPath object.
     """
 
-    if isinstance(xpath, basestring):
+    if isinstance(xpath, six.string_types):
         xpath = etree.XPath(xpath)
 
     result = xpath(node)
@@ -240,7 +241,7 @@ def _getWidgetName(field, widgets, request):
         factory = widgets[field.__name__]
     else:
         factory = getMultiAdapter((field, request), IFieldWidget)
-    if isinstance(factory, basestring):
+    if isinstance(factory, six.string_types):
         return factory
     if not isinstance(factory, type):
         factory = factory.__class__
@@ -249,7 +250,7 @@ def _getWidgetName(field, widgets, request):
 
 def isVisible(name, omitted):
     value = omitted.get(name, False)
-    if isinstance(value, basestring):
+    if isinstance(value, six.string_types):
         return value == 'false'
     else:
         return not bool(value)

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from Acquisition import aq_parent
 from App.config import getConfiguration
-from ConfigParser import SafeConfigParser
 from OFS.interfaces import ITraversable
+from Products.CMFCore.utils import getToolByName
 from plone.app.blocks.interfaces import CONTENT_LAYOUT_FILE_NAME
 from plone.app.blocks.interfaces import CONTENT_LAYOUT_MANIFEST_FORMAT
 from plone.app.blocks.interfaces import CONTENT_LAYOUT_RESOURCE_NAME
@@ -21,7 +21,8 @@ from plone.resource.manifest import MANIFEST_FILENAME
 from plone.resource.traversal import ResourceTraverser
 from plone.resource.utils import iterDirectoriesOfType
 from plone.subrequest import ISubRequest
-from Products.CMFCore.utils import getToolByName
+from six.moves.configparser import ConfigParser
+from six.moves.urllib.parse import urlparse
 from zExceptions import NotFound
 from zope.annotation import IAnnotations
 from zope.component import adapter
@@ -34,7 +35,6 @@ from zope.schema.vocabulary import SimpleVocabulary
 from zope.site.hooks import getSite
 
 import logging
-import urlparse
 
 
 logger = logging.getLogger('plone.app.blocks')
@@ -80,7 +80,7 @@ class multidict(dict):
 
 
 def getLayoutsFromManifest(fp, _format, directory_name):
-    parser = SafeConfigParser(None, multidict)
+    parser = ConfigParser(None, multidict)
     parser.readfp(fp)
 
     layouts = {}
