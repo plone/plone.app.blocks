@@ -762,7 +762,7 @@ class TestUtils(unittest.TestCase):
         self.assertFalse('plone.app.drafts.draftName' in response.cookies)
 
 
-if HAS_ATCONTENTTYPES:
+if HAS_ATCONTENTTYPES:  # noqa: C901
 
     class TestArchetypesIntegration(unittest.TestCase):
 
@@ -789,7 +789,8 @@ if HAS_ATCONTENTTYPES:
             browser.getControl(name='__ac_password').value = TEST_USER_PASSWORD
             browser.getControl('Log in').click()
 
-            # Enter the add screen for a temporary portal_factory-managed object
+            # Enter the add screen for a temporary
+            # portal_factory-managed object
             browser.open(
                 '{}/portal_factory/Document/document.2010-02-04.2866363923/edit?_authenticator={}'.format(  # noqa
                     self.portal.absolute_url(),
@@ -798,7 +799,7 @@ if HAS_ATCONTENTTYPES:
             # We should now have cookies with the drafts information
             cookies = browser.cookies.forURL(browser.url)
             self.assertEqual(
-                '"/plone/portal_factory/Document/document.2010-02-04.2866363923"',
+                '"/plone/portal_factory/Document/document.2010-02-04.2866363923"',  # noqa
                 cookies['plone.app.drafts.path'],
             )
             self.assertEqual(
@@ -835,7 +836,8 @@ if HAS_ATCONTENTTYPES:
             browser.getControl(name='__ac_password').value = TEST_USER_PASSWORD
             browser.getControl('Log in').click()
 
-            # Enter the add screen for a temporary portal_factory-managed object
+            # Enter the add screen for a temporary
+            # portal_factory-managed object
             browser.open(
                 '{}/portal_factory/Document/document.2010-02-04.2866363923/edit?_authenticator={}'.format(  # noqa
                     self.portal.absolute_url(),
@@ -844,7 +846,7 @@ if HAS_ATCONTENTTYPES:
             # We should now have cookies with the drafts information
             cookies = browser.cookies.forURL(browser.url)
             self.assertEqual(
-                '"/plone/portal_factory/Document/document.2010-02-04.2866363923"',
+                '"/plone/portal_factory/Document/document.2010-02-04.2866363923"',  # noqa
                 cookies['plone.app.drafts.path'],
             )
             self.assertEqual(
@@ -856,8 +858,8 @@ if HAS_ATCONTENTTYPES:
                 browser.cookies.forURL(browser.url),
             )
 
-            # We can now fill in the required fields and save. The cookies should
-            # expire.
+            # We can now fill in the required fields and save.
+            # The cookies should expire.
 
             browser.getControl(name='title').value = u'New document'
             browser.getControl(name='form.button.save').click()
@@ -886,7 +888,8 @@ if HAS_ATCONTENTTYPES:
             browser.getControl(name='__ac_password').value = TEST_USER_PASSWORD
             browser.getControl('Log in').click()
 
-            # Enter the add screen for a temporary portal_factory-managed object
+            # Enter the add screen for a temporary
+            # portal_factory-managed object
             browser.open(
                 '{}/portal_factory/Document/document.2010-02-04.2866363923/edit?_authenticator={}'.format(  # noqa
                     self.folder.absolute_url(),
@@ -894,7 +897,7 @@ if HAS_ATCONTENTTYPES:
 
             # We should now have cookies with the drafts information
             cookies = browser.cookies.forURL(browser.url)
-            path = '"{0}/portal_factory/Document/document.2010-02-04.2866363923"'
+            path = '"{0}/portal_factory/Document/document.2010-02-04.2866363923"'  # noqa
             self.assertEqual(
                 path.format(self.folder.absolute_url_path()),
                 cookies['plone.app.drafts.path'],
@@ -983,7 +986,8 @@ if HAS_ATCONTENTTYPES:
 
             uuid = IUUID(self.folder['d1'])
 
-            # Create a single draft for this object - we expect this to be used now
+            # Create a single draft for this object -
+            # we expect this to be used now
             storage = getUtility(IDraftStorage)
             draft = storage.createDraft(TEST_USER_ID, str(uuid))
 
@@ -1053,7 +1057,8 @@ if HAS_ATCONTENTTYPES:
 
             uuid = IUUID(self.folder['d1'])
 
-            # Create two drafts for this object - we don't expect either to be used
+            # Create two drafts for this object -
+            # we don't expect either to be used
             storage = getUtility(IDraftStorage)
             storage.createDraft(TEST_USER_ID, str(uuid))
             storage.createDraft(TEST_USER_ID, str(uuid))
