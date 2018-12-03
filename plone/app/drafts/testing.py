@@ -64,7 +64,8 @@ class ArchetypesDraftingLayer(PloneSandboxLayer):
             z2.installProduct(app, 'plone.app.blob')
         import plone.app.drafts
         self.loadZCML(package=plone.app.drafts)
-        self.loadZCML(package=plone.app.drafts, name='archetypes.zcml')
+        if HAS_PLONE_APP_CONTENTTYPES and HAS_ATCONTENTTYPES:
+            self.loadZCML(package=plone.app.drafts, name='archetypes.zcml')
 
     def setUpPloneSite(self, portal):
         # install plone.app.contenttypes on Plone 5
