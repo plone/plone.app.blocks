@@ -9,7 +9,7 @@ widgets_require = [
     'plone.app.widgets'
 ]
 test_require = [
-    'plone.app.tiles',
+    'plone.app.tiles >= 3.1.0',
     'plone.app.testing',
     'plone.app.textfield',
     'plone.testing',
