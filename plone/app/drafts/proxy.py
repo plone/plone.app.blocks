@@ -122,9 +122,9 @@ class AliasAnnotations(MutableMapping):
         self.draftAnnotations = IAnnotations(self.draft)
         self.targetAnnotations = IAnnotations(self.target)
 
-    def __nonzero__(self):
-        return self.targetAnnotations.__nonzero__() or \
-            self.draftAnnotations.__nonzero__()
+    def __bool__(self):
+        return self.targetAnnotations.__bool__() or \
+            self.draftAnnotations.__bool__()
 
     def get(self, key, default=None):
 

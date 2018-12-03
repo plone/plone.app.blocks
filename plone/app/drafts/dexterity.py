@@ -218,7 +218,7 @@ def autosave(event):  # noqa
         content = DraftProxy(draft, target)
 
         # Drop known non-draftable values
-        map(data.pop, [key for key in AUTOSAVE_BLACKLIST if key in data])
+        data = dict([(k, v) for k, v in data.items() if k not in AUTOSAVE_BLACKLIST])  # noqa
 
         # Values are applied within savepoint to allow revert of any
         # unexpected side-effects from setting field values
