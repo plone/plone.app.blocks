@@ -4,7 +4,7 @@ Changelog
 4.3.0 (unreleased)
 ------------------
 
-Breaking chnages:
+Breaking changes:
 
 - Nothing changed yet.
 
