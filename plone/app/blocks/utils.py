@@ -75,8 +75,6 @@ def resolve(url, resolved=None):
     if not resolved.strip():
         return None
     try:
-        if isinstance(resolved, six.text_type):
-            resolved = resolved.encode('utf-8')
         html_parser = html.HTMLParser(encoding='utf-8')
         return html.fromstring(resolved, parser=html_parser).getroottree()
     except etree.XMLSyntaxError as e:
@@ -102,8 +100,6 @@ def resolveResource(url):
         _, resource_type, path = path.split('++')
         resource_name, _, path = path.partition('/')
         directory = queryResourceDirectory(resource_type, resource_name)
-        if isinstance(path, six.text_type):
-            path = path.encode('utf-8', 'replace')
         if directory:
             try:
                 return directory.readFile(path)
@@ -392,4 +388,4 @@ def applyTilePersistent(path, resolved):
             else:
                 url += '?X-Tile-Persistent=yes'
         node.attrib[tileAttrib] = url
-    return html.tostring(tree)
+    return html.tostring(tree, encoding='unicode')
