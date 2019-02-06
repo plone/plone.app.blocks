@@ -85,7 +85,7 @@ class TestContentLayout(unittest.TestCase):
             'My content layout 2')
 
     def test_content_layout(self):
-        from plone.app.blocks.layoutbehavior import ContentLayoutView
+        from plone.app.blocks.layoutviews import ContentLayoutView
         from plone.app.blocks.utils import bodyTileXPath
         from plone.app.blocks.utils import tileAttrib
         self.behavior.contentLayout = \
@@ -101,7 +101,7 @@ class TestContentLayout(unittest.TestCase):
             tiles)
 
     def test_error_layout(self):
-        from plone.app.blocks.layoutbehavior import ContentLayoutView
+        from plone.app.blocks.layoutviews import ContentLayoutView
         self.behavior.contentLayout = \
             '/++sitelayout++missing/missing.html'
         rendered = ContentLayoutView(self.portal['f1']['d1'], self.request)()

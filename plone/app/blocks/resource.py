@@ -35,7 +35,7 @@ from zope.schema.vocabulary import SimpleVocabulary
 from zope.site.hooks import getSite
 
 import logging
-
+import six
 
 logger = logging.getLogger('plone.app.blocks')
 
@@ -80,8 +80,16 @@ class multidict(dict):
 
 
 def getLayoutsFromManifest(fp, _format, directory_name):
-    parser = ConfigParser(None, multidict)
-    parser.readfp(fp)
+    # support multiple sections with the same name in manifest.cfg
+    parser = ConfigParser(dict_type=multidict, strict=False)
+
+    if six.PY2:
+        parser.readfp(fp)
+    else:
+        data = fp.read()
+        if isinstance(data, six.binary_type):
+            data = data.decode()
+        parser.read_string(data)
 
     layouts = {}
     for section in parser.sections():
@@ -115,14 +123,12 @@ def getLayoutsFromDirectory(directory, _format):
     layouts = {}
     name = directory.__name__
     if directory.isFile(MANIFEST_FILENAME):
-        manifest = directory.openFile(MANIFEST_FILENAME)
-        try:
-            layouts.update(getLayoutsFromManifest(manifest, _format, name))
-        except:
-            logger.exception(
-                "Unable to read manifest for theme directory %s", name)
-        finally:
-            manifest.close()
+        with directory.openFile(MANIFEST_FILENAME) as mfp:
+            try:
+                layouts.update(getLayoutsFromManifest(mfp, _format, name))
+            except:
+                logger.exception(
+                    "Unable to read manifest for theme directory %s", name)
     else:
         # can provide default file for it with no manifest
         filename = _format.defaults.get('file', '')
