@@ -60,7 +60,7 @@ Next, we initialize and register the browser views as ZCML handlers would::
 If we now render the page calling it with the portal object itself as context,
 the default title of the portal object, ``Plone site`` will be used::
 
-    >>> from plone.testing.z2 import Browser
+    >>> from plone.testing.zope import Browser
     >>> app = layer['app']
     >>> browser = Browser(app)
     >>> browser.handleErrors = False

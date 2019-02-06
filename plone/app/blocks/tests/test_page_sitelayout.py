@@ -60,7 +60,7 @@ class TestPageSiteLayout(unittest.TestCase):
                                name=u'page-site-layout')
         self.assertRaises(NotFound, view.index)
 
-        from plone.app.blocks.layoutbehavior import SiteLayoutView
+        from plone.app.blocks.layoutviews import SiteLayoutView
         default_view = SiteLayoutView(self.portal['f1']['d1'], self.request)
         self.assertEqual(view().split(), default_view().split())
 

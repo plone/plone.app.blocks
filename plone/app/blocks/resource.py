@@ -81,14 +81,15 @@ class multidict(dict):
 
 def getLayoutsFromManifest(fp, _format, directory_name):
     # support multiple sections with the same name in manifest.cfg
-    parser = ConfigParser(dict_type=multidict, strict=False)
 
     if six.PY2:
+        parser = ConfigParser(None, multidict)
         parser.readfp(fp)
     else:
         data = fp.read()
         if isinstance(data, six.binary_type):
             data = data.decode()
+        parser = ConfigParser(dict_type=multidict, strict=False)
         parser.read_string(data)
 
     layouts = {}

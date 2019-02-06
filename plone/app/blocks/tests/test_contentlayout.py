@@ -108,7 +108,7 @@ class TestContentLayout(unittest.TestCase):
         self.assertIn('Could not find layout for content', rendered)
 
     def test_getLayout(self):
-        from plone.app.blocks.utils import getLayout
+        from plone.app.blocks.layoutbehavior import getLayout
         self.behavior.contentLayout = \
             '/++contentlayout++testlayout1/content.html'
         layout = getLayout(self.portal['f1']['d1'])
@@ -130,7 +130,7 @@ class TestContentLayout(unittest.TestCase):
     </div>
   </body>
 </html>"""  # noqa
-        from plone.app.blocks.utils import getLayout
+        from plone.app.blocks.layoutbehavior import getLayout
         layout = getLayout(self.portal['f1']['d1'])
         self.assertIn(
             './@@test.tile1/tile99?magicNumber:int=3',
