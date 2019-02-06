@@ -124,12 +124,14 @@ def getLayoutsFromDirectory(directory, _format):
     layouts = {}
     name = directory.__name__
     if directory.isFile(MANIFEST_FILENAME):
-        with directory.openFile(MANIFEST_FILENAME) as mfp:
-            try:
-                layouts.update(getLayoutsFromManifest(mfp, _format, name))
-            except:
-                logger.exception(
-                    "Unable to read manifest for theme directory %s", name)
+        manifest = directory.openFile(MANIFEST_FILENAME)
+        try:
+            layouts.update(getLayoutsFromManifest(manifest, _format, name))
+        except:
+            logger.exception(
+                "Unable to read manifest for theme directory %s", name)
+        finally:
+            manifest.close()
     else:
         # can provide default file for it with no manifest
         filename = _format.defaults.get('file', '')
