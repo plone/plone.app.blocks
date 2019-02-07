@@ -175,7 +175,7 @@ By using one of these views to reference the layout of a given page, we can mana
     >>> from zope.component import getUtility
     >>> from plone.registry.interfaces import IRegistry
     >>> registry = getUtility(IRegistry)
-    >>> registry['plone.defaultSiteLayout'] = '/++sitelayout++mylayout/site.html'
+    >>> registry['plone.defaultSiteLayout'] = b'/++sitelayout++mylayout/site.html'
     >>> transaction.commit()
 
 Creating a page layout and tiles

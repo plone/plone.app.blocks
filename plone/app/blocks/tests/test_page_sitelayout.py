@@ -1,25 +1,18 @@
 # -*- coding: utf-8 -*-
+import transaction
+import unittest
+
 from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.app.blocks.layoutbehavior import LayoutAwareBehavior
 from plone.app.blocks.testing import BLOCKS_FUNCTIONAL_TESTING
-from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
+from plone.app.testing import setRoles
 from plone.registry.interfaces import IRegistry
 from zExceptions import NotFound
 from zope.component import getGlobalSiteManager
 from zope.component import getMultiAdapter
 from zope.component import getUtility
-import pkg_resources
-import transaction
-import unittest
-
-try:
-    pkg_resources.get_distribution('plone.app.contenttypes')
-except pkg_resources.DistributionNotFound:
-    HAS_PLONE_APP_CONTENTTYPES = False
-else:
-    HAS_PLONE_APP_CONTENTTYPES = True
 
 
 class TestPageSiteLayout(unittest.TestCase):
@@ -38,7 +31,7 @@ class TestPageSiteLayout(unittest.TestCase):
 
         # setup default behavior
         self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
-            '/++sitelayout++testlayout1/site.html'
+            b'/++sitelayout++testlayout1/site.html'
         iface = self.portal['f1']['d1'].__class__
         sm = getGlobalSiteManager()
         sm.registerAdapter(LayoutAwareBehavior, [iface])
@@ -66,7 +59,7 @@ class TestPageSiteLayout(unittest.TestCase):
 
     def test_page_site_layout_default(self):
         self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
-            '/++sitelayout++testlayout1/site.html'
+            b'/++sitelayout++testlayout1/site.html'
         view = getMultiAdapter((self.portal['f1']['d1'], self.request,),
                                name=u'page-site-layout')
         rendered = view()
@@ -190,7 +183,7 @@ class TestPageSiteLayout(unittest.TestCase):
 
         # Trigger invalidation by modifying the global registry key
         self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] =\
-            '/++sitelayout++testlayout2/mylayout.html'
+            b'/++sitelayout++testlayout2/mylayout.html'
 
         # Change the section value
         self.behavior.sectionSiteLayout = \
@@ -223,7 +216,7 @@ class TestPageSiteLayoutAcquisition(unittest.TestCase):
 
         # setup default behaviors
         self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = \
-            '/++sitelayout++testlayout1/site.html'
+            b'/++sitelayout++testlayout1/site.html'
 
         iface = self.portal['f1'].__class__
         sm.registerAdapter(LayoutAwareBehavior, [iface])
@@ -245,7 +238,7 @@ class TestPageSiteLayoutAcquisition(unittest.TestCase):
 
     def test_page_site_layout_is_not_acquired(self):
         self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = \
-            '/++sitelayout++testlayout1/site.html'
+            b'/++sitelayout++testlayout1/site.html'
 
         a1 = ILayoutAware(self.portal['f1'])
         a2 = ILayoutAware(self.portal['f1']['d1'])

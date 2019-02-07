@@ -12,6 +12,7 @@ from repoze.xmliter.utils import getHTMLSerializer
 from zope.interface import implementer
 
 import re
+import six
 
 
 @implementer(ITransform)
@@ -85,15 +86,20 @@ class ParseXML(object):
         try:
             # Fix layouts with CR[+LF] line endings not to lose their heads
             # (this has been seen with downloaded themes with CR[+LF] endings)
-            iterable = [re.sub('&#13;', '\n', re.sub('&#13;\n', '\n', item))
-                        for item in result if item]
+            iterable = [
+                re.sub('&#13;', '\n', re.sub('&#13;\n', '\n', safe_unicode(item)))  # noqa
+                for item in result if item]
             result = getHTMLSerializer(
                 iterable, pretty_print=self.pretty_print, encoding=encoding)
             # Fix XHTML layouts with where etree.tostring breaks <![CDATA[
             if any(['<![CDATA[' in item for item in iterable]):
                 result.serializer = html.tostring
             self.request['plone.app.blocks.enabled'] = True
-            return result
+            if six.PY2:
+                return result
+            # iterating over repoze.xmliter objects always returns list of
+            # bytes ... return unicode serialized data instead
+            return str(result)
         except (AttributeError, TypeError, etree.ParseError):
             return None
 

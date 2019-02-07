@@ -284,6 +284,9 @@ class DefaultSiteLayout(BrowserView):
             if pathContext is None:
                 break
 
+        if isinstance(layout, six.binary_type):
+            layout = layout.decode()
+
         path = layout
         if pathContext is not None:
             path = parse.urljoin(pathContext.absolute_url_path(), layout)

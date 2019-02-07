@@ -91,7 +91,8 @@ def renderTiles(request, tree):
         except RuntimeError:
             tileTree = errorTile(request)
         except NotFound:
-            logger.warn('NotFound while trying to render tile: %s', tileHref)
+            logger.warning(
+                'NotFound while trying to render tile: %s', tileHref)
 
         if tileTree is None:
             utils.remove_element(tileNode)

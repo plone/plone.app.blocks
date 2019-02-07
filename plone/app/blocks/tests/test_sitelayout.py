@@ -9,7 +9,6 @@ from plone.app.testing import TEST_USER_ID
 from plone.app.testing import setRoles
 from plone.memoize.volatile import ATTR
 from plone.registry.interfaces import IRegistry
-from six import StringIO
 from zExceptions import NotFound
 from zope.component import adapter
 from zope.component import getMultiAdapter
@@ -17,6 +16,7 @@ from zope.component import getSiteManager
 from zope.component import getUtility
 from zope.interface import implementer
 
+import six
 import transaction
 import unittest
 
@@ -55,7 +55,7 @@ class TestSiteLayout(unittest.TestCase):
             delattr(self.portal, ATTR)
 
         self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = \
-            '/++sitelayout++testlayout1/site.html'
+            b'/++sitelayout++testlayout1/site.html'
 
         view = getMultiAdapter((self.portal, self.request,),
                                name=u'default-site-layout')
@@ -73,14 +73,14 @@ class TestSiteLayout(unittest.TestCase):
         rendered = view()
 
         # Should render main_template with template-layout in body class
-        rendered_tree = etree.parse(StringIO(rendered), etree.HTMLParser())
+        rendered_tree = etree.parse(six.StringIO(rendered), etree.HTMLParser())
         xpath_body = etree.XPath('/html/body')
         body_tag = xpath_body(rendered_tree)[0]
         self.assertIn(u'template-layout', body_tag.attrib['class'])
 
     def test_default_site_layout_section_override(self):
         self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = \
-            '/++sitelayout++testlayout1/site.html'
+            b'/++sitelayout++testlayout1/site.html'
 
         from plone.app.blocks.layoutbehavior import ILayoutAware
 
@@ -108,7 +108,7 @@ class TestSiteLayout(unittest.TestCase):
 
     def test_default_site_layout_section_no_override(self):
         self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = \
-            '/++sitelayout++testlayout1/site.html'
+            b'/++sitelayout++testlayout1/site.html'
 
         view = getMultiAdapter((self.portal['f1']['d1'], self.request,),
                                name=u'default-site-layout')
@@ -127,12 +127,13 @@ class TestSiteLayout(unittest.TestCase):
         resources['sitelayout']._setOb('testlayout3',
                                        BTreeFolder2('testlayout3'))
         resources['sitelayout']['testlayout3']._setOb(
-            'site.html', File('site.html', 'site.html', StringIO(
-                '<html><head><title>ZODB test</title></head></html>'))
+            'site.html', File(
+                'site.html', 'site.html',
+                b'<html><head><title>ZODB test</title></head></html>')
         )
 
         self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = \
-            '/++sitelayout++testlayout3/site.html'
+            b'/++sitelayout++testlayout3/site.html'
 
         view = getMultiAdapter((self.portal, self.request,),
                                name=u'default-site-layout')
@@ -142,8 +143,9 @@ class TestSiteLayout(unittest.TestCase):
 
         resources['sitelayout']['testlayout3']._delOb('site.html')
         resources['sitelayout']['testlayout3']._setOb(
-            'site.html', File('site.html', 'site.html', StringIO(
-                '<html><head><title>Cache test</title></head></html>'))
+            'site.html', File(
+                'site.html', 'site.html',
+                b'<html><head><title>Cache test</title></head></html>')
         )
 
         view = getMultiAdapter((self.portal, self.request,),
@@ -174,12 +176,13 @@ class TestSiteLayout(unittest.TestCase):
         resources['sitelayout']._setOb('testlayout3',
                                        BTreeFolder2('testlayout3'))
         resources['sitelayout']['testlayout3']._setOb(
-            'site.html', File('site.html', 'site.html', StringIO(
-                '<html><head><title>ZODB test</title></head></html>'))
+            'site.html', File(
+                'site.html', 'site.html',
+                b'<html><head><title>ZODB test</title></head></html>')
         )
 
         self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = \
-            '/++sitelayout++testlayout3/site.html'
+            b'/++sitelayout++testlayout3/site.html'
 
         view = getMultiAdapter((self.portal, self.request,),
                                name=u'default-site-layout')
@@ -194,8 +197,9 @@ class TestSiteLayout(unittest.TestCase):
         # Modify the site layout
         resources['sitelayout']['testlayout3']._delOb('site.html')
         resources['sitelayout']['testlayout3']._setOb(
-            'site.html', File('site.html', 'site.html', StringIO(
-                '<html><head><title>Cache test</title></head></html>'))
+            'site.html', File(
+                'site.html', 'site.html',
+                b'<html><head><title>Cache test</title></head></html>')
         )
 
         view = getMultiAdapter((self.portal, self.request,),
@@ -211,7 +215,7 @@ class TestSiteLayout(unittest.TestCase):
             delattr(self.portal, ATTR)
 
         self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = \
-            '/++sitelayout++testlayout1/site.html'
+            b'/++sitelayout++testlayout1/site.html'
 
         view = getMultiAdapter((self.portal, self.request,),
                                name=u'default-site-layout')
@@ -221,7 +225,7 @@ class TestSiteLayout(unittest.TestCase):
 
         # Trigger invalidation by modifying the global site layout selection
         self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = \
-            '/++sitelayout++testlayout2/mylayout.html'
+            b'/++sitelayout++testlayout2/mylayout.html'
 
         view = getMultiAdapter((self.portal, self.request,),
                                name=u'default-site-layout')

@@ -1,14 +1,19 @@
 # -*- coding: utf-8 -*-
+import json
+import logging
+import six
+import zope.deferredimport
+
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from lxml import etree
 from lxml import html
-from plone.app.blocks.interfaces import _
 from plone.app.blocks.interfaces import DEFAULT_AJAX_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.interfaces import DEFAULT_CONTENT_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.interfaces import ILayoutField
+from plone.app.blocks.interfaces import _
 from plone.app.blocks.utils import applyTilePersistent
 from plone.app.blocks.utils import resolveResource
 from plone.autoform.directives import omitted
@@ -19,25 +24,22 @@ from plone.jsonserializer.serializer.converters import json_compatible
 from plone.memoize import view
 from plone.registry.interfaces import IRegistry
 from plone.rfc822.interfaces import IPrimaryField
-from plone.supermodel.directives import fieldset
 from plone.supermodel import model
+from plone.supermodel.directives import fieldset
 from plone.tiles.data import defaultTileDataStorage
 from plone.tiles.interfaces import ITile
 from plone.tiles.interfaces import ITileDataStorage
 from plone.tiles.interfaces import ITileType
 from repoze.xmliter.utils import getHTMLSerializer
 from zExceptions import NotFound
+from zope import schema
 from zope.component import adapter
 from zope.component import getUtility
 from zope.component import queryUtility
 from zope.deprecation import deprecate
-from zope import schema
-from zope.interface import implementer
 from zope.interface import Interface
+from zope.interface import implementer
 from zope.interface import provider
-import json
-import logging
-import zope.deferredimport
 
 logger = logging.getLogger('plone.app.blocks')
 
@@ -175,6 +177,8 @@ class LayoutAwareDefault(object):
         path = self.content_layout_path()
         try:
             resolved = resolveResource(path)
+            if isinstance(resolved, six.text_type):
+                resolved = resolved.encode('utf-8')
             layout = applyTilePersistent(path, resolved)
         except (NotFound, RuntimeError, IOError):
             pass

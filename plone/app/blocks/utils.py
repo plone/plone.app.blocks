@@ -102,7 +102,10 @@ def resolveResource(url):
         directory = queryResourceDirectory(resource_type, resource_name)
         if directory:
             try:
-                return directory.readFile(path)
+                res = directory.readFile(path)
+                if isinstance(res, six.binary_type):
+                    res = res.decode()
+                return res
             except (NotFound, IOError):
                 pass
 
