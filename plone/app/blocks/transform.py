@@ -12,7 +12,6 @@ from repoze.xmliter.utils import getHTMLSerializer
 from zope.interface import implementer
 
 import re
-import six
 
 
 @implementer(ITransform)
@@ -95,11 +94,7 @@ class ParseXML(object):
             if any(['<![CDATA[' in item for item in iterable]):
                 result.serializer = html.tostring
             self.request['plone.app.blocks.enabled'] = True
-            if six.PY2:
-                return result
-            # iterating over repoze.xmliter objects always returns list of
-            # bytes ... return unicode serialized data instead
-            return str(result)
+            return result
         except (AttributeError, TypeError, etree.ParseError):
             return None
 
@@ -201,8 +196,7 @@ class ESIRender(object):
     def transformIterable(self, result, encoding):
         if self.request.getHeader(ESI_HEADER, 'false').lower() != 'true':
             return None
-
-        result = ''.join(result)
+        result = ''.join(str(result))
         transformed = esi.substituteESILinks(result)
         if transformed != result:
             self.request.response.setHeader('X-Esi', '1')

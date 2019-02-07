@@ -121,7 +121,7 @@ def resolveResource(url):
 
     resolved = response.getBody()
 
-    if isinstance(resolved, str):
+    if isinstance(resolved, six.binary_type):
         charset = extractCharset(response)
         resolved = resolved.decode(charset)
 

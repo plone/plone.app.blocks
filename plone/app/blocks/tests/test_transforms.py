@@ -46,7 +46,7 @@ class TestTransforms(unittest.TestCase):
 
         alsoProvides(request, IBlocksLayer)
         result = applyTransform(request)
-        self.assertIn('<head>', ''.join(result))
+        self.assertIn('<head>', ''.join(str(result)))
 
     def test_transforms_with_cdata(self):
         """Test fix for issue where layouts with inline js got rendered with
@@ -73,4 +73,4 @@ class TestTransforms(unittest.TestCase):
 
         alsoProvides(request, IBlocksLayer)
         result = applyTransform(request)
-        self.assertIn('<![CDATA[]]>', ''.join(result))
+        self.assertIn('<![CDATA[]]>', ''.join(str(result)))

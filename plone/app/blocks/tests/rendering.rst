@@ -118,13 +118,13 @@ See ``plone.resource`` for more details.
 
     >>> from Products.CMFCore.utils import getToolByName
     >>> from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2
-    >>> from six import StringIO
     >>> from OFS.Image import File
+    >>> import six
 
     >>> resources = getToolByName(portal, 'portal_resources')
     >>> resources._setOb('sitelayout', BTreeFolder2('sitelayout'))
     >>> resources['sitelayout']._setOb('mylayout', BTreeFolder2('mylayout'))
-    >>> resources['sitelayout']['mylayout']._setOb('site.html', File('site.html', 'site.html', StringIO(layoutHTML)))
+    >>> resources['sitelayout']['mylayout']._setOb('site.html', File('site.html', 'site.html', six.b(layoutHTML)))
 
     >>> transaction.commit()
 
