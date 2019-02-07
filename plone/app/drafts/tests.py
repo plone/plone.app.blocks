@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
+from pkg_resources import parse_version
 from plone.app.drafts.draft import Draft
 from plone.app.drafts.interfaces import DRAFT_NAME_KEY
 from plone.app.drafts.interfaces import ICurrentDraftManagement
 from plone.app.drafts.interfaces import IDraft
-from plone.app.drafts.interfaces import IDrafting
 from plone.app.drafts.interfaces import IDraftProxy
 from plone.app.drafts.interfaces import IDraftStorage
 from plone.app.drafts.interfaces import IDraftSyncer
+from plone.app.drafts.interfaces import IDrafting
 from plone.app.drafts.proxy import DraftProxy
 from plone.app.drafts.testing import DRAFTS_AT_FUNCTIONAL_TESTING
 from plone.app.drafts.testing import DRAFTS_DX_FUNCTIONAL_TESTING
@@ -15,12 +16,12 @@ from plone.app.drafts.utils import getCurrentDraft
 from plone.app.drafts.utils import getCurrentUserId
 from plone.app.drafts.utils import getDefaultKey
 from plone.app.drafts.utils import syncDraft
-from plone.app.testing import login
-from plone.app.testing import logout
-from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
 from plone.app.testing import TEST_USER_NAME
 from plone.app.testing import TEST_USER_PASSWORD
+from plone.app.testing import login
+from plone.app.testing import logout
+from plone.app.testing import setRoles
 from plone.dexterity.utils import createContent
 from plone.protect.authenticator import createToken
 from plone.testing.z2 import Browser
@@ -581,8 +582,20 @@ class TestCurrentDraft(unittest.TestCase):
         current = ICurrentDraftManagement(request)
         current.discard()
 
-        deletedToken = {'expires': 'Wed, 31-Dec-97 23:59:59 GMT', 'max_age': 0,
-                        'path': '/', 'quoted': True, 'value': 'deleted'}
+        expires = 'Wed, 31-Dec-97 23:59:59 GMT'
+
+        try:
+            # expires date changed in ZPublisher.HTTPResponse
+            # see https://github.com/zopefoundation/Zope/commit/77f483a22d6b0cb00883006cf38928cda77b75f9  # noqa
+            zope_version = pkg_resources.get_distribution('Zope').version
+            if parse_version(zope_version) >= parse_version('4.0b8'):
+                expires = 'Wed, 31 Dec 1997 23:59:59 GMT'
+        except Exception:
+            pass
+
+        deletedToken = {'expires': expires,
+                        'max_age': 0, 'path': '/', 'quoted': True,
+                        'value': 'deleted'}
 
         self.assertEqual(
             deletedToken,
