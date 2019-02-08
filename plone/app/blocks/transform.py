@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from Products.CMFPlone.utils import safe_unicode
 from lxml import etree
 from lxml import html
 from plone.app.blocks import panel
@@ -61,7 +62,7 @@ class ParseXML(object):
         self.request = request
 
     def transformBytes(self, result, encoding):
-        result = unicode(result, encoding, 'ignore')
+        result = safe_unicode(result, encoding)
         return self.transformIterable([result], encoding)
 
     def transformUnicode(self, result, encoding):
@@ -84,8 +85,9 @@ class ParseXML(object):
         try:
             # Fix layouts with CR[+LF] line endings not to lose their heads
             # (this has been seen with downloaded themes with CR[+LF] endings)
-            iterable = [re.sub('&#13;', '\n', re.sub('&#13;\n', '\n', item))
-                        for item in result if item]
+            iterable = [
+                re.sub('&#13;', '\n', re.sub('&#13;\n', '\n', safe_unicode(item)))  # noqa
+                for item in result if item]
             result = getHTMLSerializer(
                 iterable, pretty_print=self.pretty_print, encoding=encoding)
             # Fix XHTML layouts with where etree.tostring breaks <![CDATA[
@@ -194,8 +196,7 @@ class ESIRender(object):
     def transformIterable(self, result, encoding):
         if self.request.getHeader(ESI_HEADER, 'false').lower() != 'true':
             return None
-
-        result = ''.join(result)
+        result = ''.join(str(result))
         transformed = esi.substituteESILinks(result)
         if transformed != result:
             self.request.response.setHeader('X-Esi', '1')

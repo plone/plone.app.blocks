@@ -85,7 +85,7 @@ class TestContentLayout(unittest.TestCase):
             'My content layout 2')
 
     def test_content_layout(self):
-        from plone.app.blocks.layoutbehavior import ContentLayoutView
+        from plone.app.blocks.layoutviews import ContentLayoutView
         from plone.app.blocks.utils import bodyTileXPath
         from plone.app.blocks.utils import tileAttrib
         self.behavior.contentLayout = \
@@ -101,14 +101,14 @@ class TestContentLayout(unittest.TestCase):
             tiles)
 
     def test_error_layout(self):
-        from plone.app.blocks.layoutbehavior import ContentLayoutView
+        from plone.app.blocks.layoutviews import ContentLayoutView
         self.behavior.contentLayout = \
             '/++sitelayout++missing/missing.html'
         rendered = ContentLayoutView(self.portal['f1']['d1'], self.request)()
         self.assertIn('Could not find layout for content', rendered)
 
     def test_getLayout(self):
-        from plone.app.blocks.utils import getLayout
+        from plone.app.blocks.layoutbehavior import getLayout
         self.behavior.contentLayout = \
             '/++contentlayout++testlayout1/content.html'
         layout = getLayout(self.portal['f1']['d1'])
@@ -130,7 +130,7 @@ class TestContentLayout(unittest.TestCase):
     </div>
   </body>
 </html>"""  # noqa
-        from plone.app.blocks.utils import getLayout
+        from plone.app.blocks.layoutbehavior import getLayout
         layout = getLayout(self.portal['f1']['d1'])
         self.assertIn(
             './@@test.tile1/tile99?magicNumber:int=3',

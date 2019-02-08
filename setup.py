@@ -9,7 +9,7 @@ widgets_require = [
     'plone.app.widgets'
 ]
 test_require = [
-    'plone.app.tiles',
+    'plone.app.tiles >= 3.1.0',
     'plone.app.testing',
     'plone.app.textfield',
     'plone.testing',
@@ -48,9 +48,13 @@ setup(
         'Framework :: Plone',
         'Framework :: Plone :: 4.3',
         'Framework :: Plone :: 5.0',
+        'Framework :: Plone :: 5.1',
+        'Framework :: Plone :: 5.2',
         'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Software Development :: Libraries :: Python Modules',
@@ -87,6 +91,7 @@ setup(
         'Products.CMFPlone >= 4.3',
         'repoze.xmliter',
         'setuptools',
+        'six',
         'z3c.form',
         'zope.annotation',
         'zope.component',

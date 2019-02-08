@@ -4,13 +4,13 @@ from plone.app.blocks.interfaces import IBlocksTransformEnabled
 from plone.app.blocks.testing import BLOCKS_INTEGRATION_TESTING
 from plone.transformchain.zpublisher import applyTransform
 from zope.interface import alsoProvides
-from zope.interface import implements
+from zope.interface import implementer
 
 import unittest
 
 
+@implementer(IBlocksTransformEnabled)
 class TestTransformedView(object):
-    implements(IBlocksTransformEnabled)
 
     def __init__(self, ret_body):
         self.__call__ = lambda b=ret_body: b
@@ -26,8 +26,8 @@ class TestTransforms(unittest.TestCase):
         being dropped
         """
 
+        @implementer(IBlocksTransformEnabled)
         class TransformedView(object):
-            implements(IBlocksTransformEnabled)
 
             def __init__(self, ret_body):
                 self.__call__ = lambda b=ret_body: b
@@ -46,15 +46,15 @@ class TestTransforms(unittest.TestCase):
 
         alsoProvides(request, IBlocksLayer)
         result = applyTransform(request)
-        self.assertIn('<head>', ''.join(result))
+        self.assertIn('<head>', ''.join(str(result)))
 
     def test_transforms_with_cdata(self):
         """Test fix for issue where layouts with inline js got rendered with
         quoted (and therefore broken) <![CDATA[...]]> block
         """
 
+        @implementer(IBlocksTransformEnabled)
         class TransformedView(object):
-            implements(IBlocksTransformEnabled)
 
             def __init__(self, ret_body):
                 self.__call__ = lambda b=ret_body: b
@@ -73,4 +73,4 @@ class TestTransforms(unittest.TestCase):
 
         alsoProvides(request, IBlocksLayer)
         result = applyTransform(request)
-        self.assertIn('<![CDATA[]]>', ''.join(result))
+        self.assertIn('<![CDATA[]]>', ''.join(str(result)))

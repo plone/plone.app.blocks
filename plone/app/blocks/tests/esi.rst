@@ -83,7 +83,7 @@ Register these in the same way that the ZCML handlers would, more or less.
 
 .. code-block:: python
 
-    >>> from Products.Five.security import protectClass
+    >>> from AccessControl.security import protectClass
     >>> protectClass(NonESITile, 'zope2.View')
     >>> protectClass(SimpleESITile, 'zope2.View')
 
@@ -144,10 +144,10 @@ instead just referencing a view containing the layout directly.
     ... </html>
     ... """
 
-    >>> from zope.interface import implements
+    >>> from zope.interface import implementer
     >>> from plone.app.blocks.interfaces import IBlocksTransformEnabled
-    >>> class Page(BrowserView):
-    ...     implements(IBlocksTransformEnabled)
+    >>> @implementer(IBlocksTransformEnabled)
+    ... class Page(BrowserView):
     ...     __name__ = 'test-page'
     ...     def __call__(self):
     ...         return pageHTML
@@ -176,7 +176,7 @@ Some cleanup is needed to cover lxml platform discrepancies...
 
 .. code-block:: python
 
-    >>> print browser.contents.replace('<head><meta', '<head>\n\t<meta')
+    >>> print(browser.contents.replace('<head><meta', '<head>\n\t<meta'))
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
         <head>
@@ -230,7 +230,7 @@ tiles should be rendered as ESI links. See `plone.tiles`_ for more details.
 .. code-block:: python
 
     >>> browser.open(portal.absolute_url() + '/@@test-page')
-    >>> print browser.contents.replace('<head><meta', '<head>\n\t<meta')
+    >>> print(browser.contents.replace('<head><meta', '<head>\n\t<meta'))
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns:esi="http://www.edge-delivery.org/esi/1.0" xmlns="http://www.w3.org/1999/xhtml">
         <head>
@@ -275,13 +275,13 @@ When ESI rendering takes place, the following URLs will be called:
 .. code-block:: python
 
     >>> browser.open("http://nohost/plone/@@test.tile3/tile4/@@esi-body?foo=bar")
-    >>> print browser.contents
+    >>> print(browser.contents)
     <p>
         ESI tile with query string foo=bar
     </p>
 
     >>> browser.open("http://nohost/plone/@@test.tile3/tile2/@@esi-body?")
-    >>> print browser.contents
+    >>> print(browser.contents)
     <p>
         ESI tile with query string
     </p>

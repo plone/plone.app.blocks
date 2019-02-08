@@ -37,6 +37,7 @@ class TestLayoutBehavior(unittest.TestCase):
         self.portal = self.layer['portal']
         self.request = self.layer['request']
         self.registry = getUtility(IRegistry)
+        self.maxDiff = None
 
         fti = DexterityFTI(
             'MyDocument',
@@ -148,11 +149,7 @@ data-tiledata='{"content-type": "text/html"}'>
             )
         }
 
-        self.assertEqual(unicode(storage.storage).replace(u'\n', u''), u"""\
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
-<html>
-<body>
-<div data-tile="@@plone.app.blocks.richtext/demo" data-tiledata='{"html-output-content-type": "text/x-html-safe", "html-content-type": "text/html", "html-encoding": "utf-8"}'><div><p>Foo bar!</p></div></div>
-</body>
-</html>
-""".replace(u'\n', u''))  # noqa
+        output = str(storage.storage).replace(u'\n', u'')
+        self.assertIn('"html-content-type": "text/html"', output)
+        self.assertIn('"html-output-content-type": "text/x-html-safe"', output)
+        self.assertIn('<p>Foo bar!</p>', output)

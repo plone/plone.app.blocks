@@ -221,7 +221,7 @@ class TestRenderTiles(unittest.TestCase):
         request = self.layer['request']
         tree = serializer.tree
         renderTiles(request, tree)
-        result = serializer.serialize()
+        result = str(serializer)
         self.assertIn('This is a demo tile with id tile2', result)
         self.assertIn('This is a demo tile with id tile3', result)
         self.assertIn('This is a demo tile with id tile4', result)
@@ -231,7 +231,7 @@ class TestRenderTiles(unittest.TestCase):
         request = self.layer['request']
         tree = serializer.tree
         renderTiles(request, tree)
-        result = serializer.serialize()
+        result = str(serializer)
         self.assertIn('This is a demo tile with id tile2', result)
         self.assertNotIn('This is a demo tile with id tile3', result)
         self.assertIn('There was an error while rendering this tile', result)
@@ -244,7 +244,7 @@ class TestRenderTiles(unittest.TestCase):
         request = self.layer['request']
         tree = serializer.tree
         renderTiles(request, tree)
-        result = serializer.serialize()
+        result = str(serializer)
 
         self.assertIn("I'm a tile calling another tile as subtile.", result)
         self.assertIn("This is a demo tile with id subtile", result)
@@ -256,7 +256,7 @@ class TestRenderTiles(unittest.TestCase):
         request = self.layer['request']
         tree = serializer.tree
         renderTiles(request, tree)
-        result = serializer.serialize()
+        result = str(serializer)
 
         self.assertIn("structureless in head", result)
         self.assertIn("structureless in body", result)
@@ -268,6 +268,6 @@ class TestRenderTiles(unittest.TestCase):
         request = self.layer['request']
         tree = serializer.tree
         renderTiles(request, tree)
-        result = serializer.serialize()
+        result = str(serializer)
 
         self.assertIn("hi there!", result)

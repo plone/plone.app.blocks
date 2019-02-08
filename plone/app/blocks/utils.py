@@ -13,6 +13,7 @@ from plone.memoize import ram
 from plone.memoize.volatile import DontCache
 from plone.resource.utils import queryResourceDirectory
 from plone.subrequest import subrequest
+from six.moves.urllib import parse
 from z3c.form.interfaces import IFieldWidget
 from zExceptions import NotFound
 from zExceptions import Unauthorized
@@ -22,8 +23,7 @@ from zope.security.interfaces import IPermission
 from zope.site.hooks import getSite
 
 import logging
-import urllib
-import urlparse
+import six
 import zope.deferredimport
 
 
@@ -75,8 +75,6 @@ def resolve(url, resolved=None):
     if not resolved.strip():
         return None
     try:
-        if isinstance(resolved, unicode):
-            resolved = resolved.encode('utf-8')
         html_parser = html.HTMLParser(encoding='utf-8')
         return html.fromstring(resolved, parser=html_parser).getroottree()
     except etree.XMLSyntaxError as e:
@@ -95,18 +93,19 @@ def resolveResource(url):
     """Resolve the given URL to a unicode string. If the URL is an absolute
     path, it will be made relative to the Plone site root.
     """
-    url = urllib.unquote(url)  # subrequest does not support quoted paths
+    url = parse.unquote(url)  # subrequest does not support quoted paths
     if url.count('++') == 2:
         # it is a resource that can be resolved without a subrequest
-        scheme, netloc, path, params, query, fragment = urlparse.urlparse(url)
+        scheme, netloc, path, params, query, fragment = parse.urlparse(url)
         _, resource_type, path = path.split('++')
         resource_name, _, path = path.partition('/')
         directory = queryResourceDirectory(resource_type, resource_name)
-        if isinstance(path, unicode):
-            path = path.encode('utf-8', 'replace')
         if directory:
             try:
-                return directory.readFile(path)
+                res = directory.readFile(path)
+                if isinstance(res, six.binary_type):
+                    res = res.decode()
+                return res
             except (NotFound, IOError):
                 pass
 
@@ -122,7 +121,7 @@ def resolveResource(url):
 
     resolved = response.getBody()
 
-    if isinstance(resolved, str):
+    if isinstance(resolved, six.binary_type):
         charset = extractCharset(response)
         resolved = resolved.decode(charset)
 
@@ -142,7 +141,7 @@ def xpath1(xpath, node, strict=True):
     """Return a single node matched by the given etree.XPath object.
     """
 
-    if isinstance(xpath, basestring):
+    if isinstance(xpath, six.string_types):
         xpath = etree.XPath(xpath)
 
     result = xpath(node)
@@ -240,7 +239,7 @@ def _getWidgetName(field, widgets, request):
         factory = widgets[field.__name__]
     else:
         factory = getMultiAdapter((field, request), IFieldWidget)
-    if isinstance(factory, basestring):
+    if isinstance(factory, six.string_types):
         return factory
     if not isinstance(factory, type):
         factory = factory.__class__
@@ -249,7 +248,7 @@ def _getWidgetName(field, widgets, request):
 
 def isVisible(name, omitted):
     value = omitted.get(name, False)
-    if isinstance(value, basestring):
+    if isinstance(value, six.string_types):
         return value == 'false'
     else:
         return not bool(value)
@@ -392,4 +391,4 @@ def applyTilePersistent(path, resolved):
             else:
                 url += '?X-Tile-Persistent=yes'
         node.attrib[tileAttrib] = url
-    return html.tostring(tree)
+    return html.tostring(tree, encoding='unicode')

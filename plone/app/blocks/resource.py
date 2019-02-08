@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from Acquisition import aq_parent
 from App.config import getConfiguration
-from ConfigParser import SafeConfigParser
 from OFS.interfaces import ITraversable
+from Products.CMFCore.utils import getToolByName
 from plone.app.blocks.interfaces import CONTENT_LAYOUT_FILE_NAME
 from plone.app.blocks.interfaces import CONTENT_LAYOUT_MANIFEST_FORMAT
 from plone.app.blocks.interfaces import CONTENT_LAYOUT_RESOURCE_NAME
@@ -21,7 +21,8 @@ from plone.resource.manifest import MANIFEST_FILENAME
 from plone.resource.traversal import ResourceTraverser
 from plone.resource.utils import iterDirectoriesOfType
 from plone.subrequest import ISubRequest
-from Products.CMFCore.utils import getToolByName
+from six.moves.configparser import ConfigParser
+from six.moves.urllib import parse
 from zExceptions import NotFound
 from zope.annotation import IAnnotations
 from zope.component import adapter
@@ -34,8 +35,7 @@ from zope.schema.vocabulary import SimpleVocabulary
 from zope.site.hooks import getSite
 
 import logging
-import urlparse
-
+import six
 
 logger = logging.getLogger('plone.app.blocks')
 
@@ -80,8 +80,17 @@ class multidict(dict):
 
 
 def getLayoutsFromManifest(fp, _format, directory_name):
-    parser = SafeConfigParser(None, multidict)
-    parser.readfp(fp)
+    # support multiple sections with the same name in manifest.cfg
+
+    if six.PY2:
+        parser = ConfigParser(None, multidict)
+        parser.readfp(fp)
+    else:
+        data = fp.read()
+        if isinstance(data, six.binary_type):
+            data = data.decode()
+        parser = ConfigParser(dict_type=multidict, strict=False)
+        parser.read_string(data)
 
     layouts = {}
     for section in parser.sections():
@@ -275,9 +284,12 @@ class DefaultSiteLayout(BrowserView):
             if pathContext is None:
                 break
 
+        if isinstance(layout, six.binary_type):
+            layout = layout.decode()
+
         path = layout
         if pathContext is not None:
-            path = urlparse.urljoin(pathContext.absolute_url_path(), layout)
+            path = parse.urljoin(pathContext.absolute_url_path(), layout)
 
         return path
 

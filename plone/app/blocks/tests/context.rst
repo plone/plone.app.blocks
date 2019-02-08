@@ -23,10 +23,10 @@ and page layouts, respectively::
     ... </html>
     ... """ % self.context.Title()
 
-    >>> from zope.interface import implements
+    >>> from zope.interface import implementer
     >>> from plone.app.blocks.interfaces import IBlocksTransformEnabled
-    >>> class PageLayout(BrowserView):
-    ...     implements(IBlocksTransformEnabled)
+    >>> @implementer(IBlocksTransformEnabled)
+    ... class PageLayout(BrowserView):
     ...     __name__ = 'page-layout'
     ...	    def __call__(self):
     ...         return u"""
@@ -45,7 +45,7 @@ relative URL.
 Next, we initialize and register the browser views as ZCML handlers would::
 
     >>> from zope.interface import Interface
-    >>> from Products.Five.security import protectClass
+    >>> from AccessControl.security import protectClass
     >>> protectClass(SiteLayout, 'zope2.View')
     >>> protectClass(PageLayout, 'zope2.View')
 
@@ -67,7 +67,7 @@ the default title of the portal object, ``Plone site`` will be used::
 
     >>> portal = layer['portal']
     >>> browser.open(portal.absolute_url() + '/@@page-layout')
-    >>> print browser.contents
+    >>> print(browser.contents)
     <!DOCTYPE html...
         <title>Plone site</title>...
         <div data-panel="content">Plone site</div>...

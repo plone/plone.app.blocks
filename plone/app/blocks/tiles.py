@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 from lxml import html
 from lxml.etree import XSLTApplyError
-from plone.app.blocks import events
 from plone.app.blocks import PloneMessageFactory
+from plone.app.blocks import events
 from plone.app.blocks import utils
 from plone.app.blocks.interfaces import IBlocksSettings
 from plone.app.blocks.utils import resolve_transform
 from plone.registry.interfaces import IRegistry
 from plone.tiles.interfaces import ESI_HEADER
 from plone.tiles.interfaces import ESI_HEADER_KEY
-from urlparse import urljoin
+from six.moves.urllib import parse
 from zExceptions import NotFound
 from zope.component import queryUtility
 from zope.event import notify
@@ -49,7 +49,7 @@ def renderTiles(request, tree):
     for tileNode in utils.headTileXPath(tree):
         tileHref = tileNode.attrib[utils.tileAttrib]
         if not tileHref.startswith('/'):
-            tileHref = urljoin(baseURL, tileHref)
+            tileHref = parse.urljoin(baseURL, tileHref)
 
         notify(events.BeforeTileRenderEvent(tileHref, tileNode))
 
@@ -81,7 +81,7 @@ def renderTiles(request, tree):
         tileRulesHref = tileNode.attrib.get(utils.tileRulesAttrib)
 
         if not tileHref.startswith('/'):
-            tileHref = urljoin(baseURL, tileHref)
+            tileHref = parse.urljoin(baseURL, tileHref)
 
         notify(events.BeforeTileRenderEvent(tileHref, tileNode))
 
@@ -91,7 +91,8 @@ def renderTiles(request, tree):
         except RuntimeError:
             tileTree = errorTile(request)
         except NotFound:
-            logger.warn('NotFound while trying to render tile: %s', tileHref)
+            logger.warning(
+                'NotFound while trying to render tile: %s', tileHref)
 
         if tileTree is None:
             utils.remove_element(tileNode)
@@ -101,7 +102,7 @@ def renderTiles(request, tree):
         tileTransform = None
         if tileRulesHref:
             if not tileRulesHref.startswith('/'):
-                tileRulesHref = urljoin(baseURL, tileRulesHref)
+                tileRulesHref = parse.urljoin(baseURL, tileRulesHref)
             try:
                 tileTransform = resolve_transform(tileRulesHref, tileNode)
             except NotFound:
