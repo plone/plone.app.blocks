@@ -5,7 +5,7 @@ Changelog
 ------------------
 
 - Python 3 compatible
-  [vangheem]
+  [vangheem, petschki]
 
 
 1.1.2 (2017-07-03)
