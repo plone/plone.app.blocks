@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
+from pkg_resources import parse_version
 from plone.app.drafts.draft import Draft
 from plone.app.drafts.interfaces import DRAFT_NAME_KEY
 from plone.app.drafts.interfaces import ICurrentDraftManagement
 from plone.app.drafts.interfaces import IDraft
-from plone.app.drafts.interfaces import IDrafting
 from plone.app.drafts.interfaces import IDraftProxy
 from plone.app.drafts.interfaces import IDraftStorage
 from plone.app.drafts.interfaces import IDraftSyncer
+from plone.app.drafts.interfaces import IDrafting
 from plone.app.drafts.proxy import DraftProxy
 from plone.app.drafts.testing import DRAFTS_AT_FUNCTIONAL_TESTING
 from plone.app.drafts.testing import DRAFTS_DX_FUNCTIONAL_TESTING
@@ -15,12 +16,12 @@ from plone.app.drafts.utils import getCurrentDraft
 from plone.app.drafts.utils import getCurrentUserId
 from plone.app.drafts.utils import getDefaultKey
 from plone.app.drafts.utils import syncDraft
-from plone.app.testing import login
-from plone.app.testing import logout
-from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
 from plone.app.testing import TEST_USER_NAME
 from plone.app.testing import TEST_USER_PASSWORD
+from plone.app.testing import login
+from plone.app.testing import logout
+from plone.app.testing import setRoles
 from plone.dexterity.utils import createContent
 from plone.protect.authenticator import createToken
 from plone.testing.z2 import Browser
@@ -266,7 +267,7 @@ class TestDraftProxy(unittest.TestCase):
 
         self.assertEqual(
             set(['someAttribute', 'title', 'description']),
-            draft._proxyDeleted
+            draft._proxyDeleted,
         )
 
         self.assertFalse(hasattr(draft, 'someAttribute'))
@@ -581,8 +582,20 @@ class TestCurrentDraft(unittest.TestCase):
         current = ICurrentDraftManagement(request)
         current.discard()
 
-        deletedToken = {'expires': 'Wed, 31-Dec-97 23:59:59 GMT', 'max_age': 0,
-                        'path': '/', 'quoted': True, 'value': 'deleted'}
+        expires = 'Wed, 31-Dec-97 23:59:59 GMT'
+
+        try:
+            # expires date changed in ZPublisher.HTTPResponse
+            # see https://github.com/zopefoundation/Zope/commit/77f483a22d6b0cb00883006cf38928cda77b75f9  # noqa
+            zope_version = pkg_resources.get_distribution('Zope').version
+            if parse_version(zope_version) >= parse_version('4.0b8'):
+                expires = 'Wed, 31 Dec 1997 23:59:59 GMT'
+        except Exception:
+            pass
+
+        deletedToken = {'expires': expires,
+                        'max_age': 0, 'path': '/', 'quoted': True,
+                        'value': 'deleted'}
 
         self.assertEqual(
             deletedToken,
@@ -762,344 +775,351 @@ class TestUtils(unittest.TestCase):
         self.assertFalse('plone.app.drafts.draftName' in response.cookies)
 
 
-class TestArchetypesIntegration(unittest.TestCase):
+if HAS_ATCONTENTTYPES:  # noqa: C901
 
-    layer = DRAFTS_AT_FUNCTIONAL_TESTING
+    class TestArchetypesIntegration(unittest.TestCase):
 
-    def setUp(self):
-        self.portal = self.layer['portal']
+        layer = DRAFTS_AT_FUNCTIONAL_TESTING
 
-        setRoles(self.portal, TEST_USER_ID, ['Manager'])
-        login(self.portal, TEST_USER_NAME)
+        def setUp(self):
+            self.portal = self.layer['portal']
 
-        self.portal.invokeFactory('Folder', 'folder')
-        self.folder = self.portal['folder']
+            setRoles(self.portal, TEST_USER_ID, ['Manager'])
+            login(self.portal, TEST_USER_NAME)
 
-        transaction.commit()
+            self.portal.invokeFactory('Folder', 'folder')
+            self.folder = self.portal['folder']
 
-    def test_add_to_portal_root_cancel(self):
-        browser = Browser(self.layer['app'])
-        browser.handleErrors = False
+            transaction.commit()
 
-        # Login
-        browser.open(self.portal.absolute_url() + '/login')
-        browser.getControl(name='__ac_name').value = TEST_USER_NAME
-        browser.getControl(name='__ac_password').value = TEST_USER_PASSWORD
-        browser.getControl('Log in').click()
+        def test_add_to_portal_root_cancel(self):
+            browser = Browser(self.layer['app'])
+            browser.handleErrors = False
 
-        # Enter the add screen for a temporary portal_factory-managed object
-        browser.open(
-            '{}/portal_factory/Document/document.2010-02-04.2866363923/edit?_authenticator={}'.format(  # noqa
-                self.portal.absolute_url(),
-                createToken()))
+            # Login
+            browser.open(self.portal.absolute_url() + '/login')
+            browser.getControl(name='__ac_name').value = TEST_USER_NAME
+            browser.getControl(name='__ac_password').value = TEST_USER_PASSWORD
+            browser.getControl('Log in').click()
 
-        # We should now have cookies with the drafts information
-        cookies = browser.cookies.forURL(browser.url)
-        self.assertEqual(
-            '"/plone/portal_factory/Document/document.2010-02-04.2866363923"',
-            cookies['plone.app.drafts.path'],
-        )
-        self.assertEqual(
-            '"0%3ADocument"',
-            cookies['plone.app.drafts.targetKey'],
-        )
-        self.assertNotIn(
-            'plone.app.drafts.draftName',
-            browser.cookies.forURL(browser.url)
-        )
+            # Enter the add screen for a temporary
+            # portal_factory-managed object
+            browser.open(
+                '{}/portal_factory/Document/document.2010-02-04.2866363923/edit?_authenticator={}'.format(  # noqa
+                    self.portal.absolute_url(),
+                    createToken()))
 
-        # We can now cancel the edit. The cookies should expire.
-        browser.getControl(name='form.button.cancel').click()
-        self.assertNotIn(
-            'plone.app.drafts.targetKey',
-            browser.cookies.forURL(browser.url),
-        )
-        self.assertNotIn(
-            'plone.app.drafts.path',
-            browser.cookies.forURL(browser.url),
-        )
-        self.assertNotIn(
-            'plone.app.drafts.draftName',
-            browser.cookies.forURL(browser.url),
-        )
+            # We should now have cookies with the drafts information
+            cookies = browser.cookies.forURL(browser.url)
+            self.assertEqual(
+                '"/plone/portal_factory/Document/document.2010-02-04.2866363923"',  # noqa
+                cookies['plone.app.drafts.path'],
+            )
+            self.assertEqual(
+                '"0%3ADocument"',
+                cookies['plone.app.drafts.targetKey'],
+            )
+            self.assertNotIn(
+                'plone.app.drafts.draftName',
+                browser.cookies.forURL(browser.url),
+            )
 
-    def test_add_to_portal_root_save(self):
-        browser = Browser(self.layer['app'])
-        browser.handleErrors = False
+            # We can now cancel the edit. The cookies should expire.
+            browser.getControl(name='form.button.cancel').click()
+            self.assertNotIn(
+                'plone.app.drafts.targetKey',
+                browser.cookies.forURL(browser.url),
+            )
+            self.assertNotIn(
+                'plone.app.drafts.path',
+                browser.cookies.forURL(browser.url),
+            )
+            self.assertNotIn(
+                'plone.app.drafts.draftName',
+                browser.cookies.forURL(browser.url),
+            )
 
-        # Login
-        browser.open(self.portal.absolute_url() + '/login')
-        browser.getControl(name='__ac_name').value = TEST_USER_NAME
-        browser.getControl(name='__ac_password').value = TEST_USER_PASSWORD
-        browser.getControl('Log in').click()
+        def test_add_to_portal_root_save(self):
+            browser = Browser(self.layer['app'])
+            browser.handleErrors = False
 
-        # Enter the add screen for a temporary portal_factory-managed object
-        browser.open(
-            '{}/portal_factory/Document/document.2010-02-04.2866363923/edit?_authenticator={}'.format(  # noqa
-                self.portal.absolute_url(),
-                createToken()))
+            # Login
+            browser.open(self.portal.absolute_url() + '/login')
+            browser.getControl(name='__ac_name').value = TEST_USER_NAME
+            browser.getControl(name='__ac_password').value = TEST_USER_PASSWORD
+            browser.getControl('Log in').click()
 
-        # We should now have cookies with the drafts information
-        cookies = browser.cookies.forURL(browser.url)
-        self.assertEqual(
-            '"/plone/portal_factory/Document/document.2010-02-04.2866363923"',
-            cookies['plone.app.drafts.path'],
-        )
-        self.assertEqual(
-            '"0%3ADocument"',
-            cookies['plone.app.drafts.targetKey'],
-        )
-        self.assertNotIn(
-            'plone.app.drafts.draftName',
-            browser.cookies.forURL(browser.url),
-        )
+            # Enter the add screen for a temporary
+            # portal_factory-managed object
+            browser.open(
+                '{}/portal_factory/Document/document.2010-02-04.2866363923/edit?_authenticator={}'.format(  # noqa
+                    self.portal.absolute_url(),
+                    createToken()))
 
-        # We can now fill in the required fields and save. The cookies should
-        # expire.
+            # We should now have cookies with the drafts information
+            cookies = browser.cookies.forURL(browser.url)
+            self.assertEqual(
+                '"/plone/portal_factory/Document/document.2010-02-04.2866363923"',  # noqa
+                cookies['plone.app.drafts.path'],
+            )
+            self.assertEqual(
+                '"0%3ADocument"',
+                cookies['plone.app.drafts.targetKey'],
+            )
+            self.assertNotIn(
+                'plone.app.drafts.draftName',
+                browser.cookies.forURL(browser.url),
+            )
 
-        browser.getControl(name='title').value = u'New document'
-        browser.getControl(name='form.button.save').click()
-        self.assertNotIn(
-            'plone.app.drafts.targetKey',
-            browser.cookies.forURL(browser.url),
-        )
-        self.assertNotIn(
-            'plone.app.drafts.path',
-            browser.cookies.forURL(browser.url),
-        )
-        self.assertNotIn(
-            'plone.app.drafts.draftName',
-            browser.cookies.forURL(browser.url),
-        )
+            # We can now fill in the required fields and save.
+            # The cookies should expire.
 
-    def test_add_to_folder(self):
-        browser = Browser(self.layer['app'])
-        browser.handleErrors = False
+            browser.getControl(name='title').value = u'New document'
+            browser.getControl(name='form.button.save').click()
+            self.assertNotIn(
+                'plone.app.drafts.targetKey',
+                browser.cookies.forURL(browser.url),
+            )
+            self.assertNotIn(
+                'plone.app.drafts.path',
+                browser.cookies.forURL(browser.url),
+            )
+            self.assertNotIn(
+                'plone.app.drafts.draftName',
+                browser.cookies.forURL(browser.url),
+            )
 
-        uuid = IUUID(self.folder)
+        def test_add_to_folder(self):
+            browser = Browser(self.layer['app'])
+            browser.handleErrors = False
 
-        # Login
-        browser.open(self.portal.absolute_url() + '/login')
-        browser.getControl(name='__ac_name').value = TEST_USER_NAME
-        browser.getControl(name='__ac_password').value = TEST_USER_PASSWORD
-        browser.getControl('Log in').click()
+            uuid = IUUID(self.folder)
 
-        # Enter the add screen for a temporary portal_factory-managed object
-        browser.open(
-            '{}/portal_factory/Document/document.2010-02-04.2866363923/edit?_authenticator={}'.format(  # noqa
-                self.folder.absolute_url(),
-                createToken()))
+            # Login
+            browser.open(self.portal.absolute_url() + '/login')
+            browser.getControl(name='__ac_name').value = TEST_USER_NAME
+            browser.getControl(name='__ac_password').value = TEST_USER_PASSWORD
+            browser.getControl('Log in').click()
 
-        # We should now have cookies with the drafts information
-        cookies = browser.cookies.forURL(browser.url)
-        path = '"{0}/portal_factory/Document/document.2010-02-04.2866363923"'
-        self.assertEqual(
-            path.format(self.folder.absolute_url_path()),
-            cookies['plone.app.drafts.path']
-        )
-        self.assertEqual(
-            '"{0}%3ADocument"'.format(uuid),
-            cookies['plone.app.drafts.targetKey'],
-        )
-        self.assertNotIn(
-            'plone.app.drafts.draftName',
-            browser.cookies.forURL(browser.url),
-        )
+            # Enter the add screen for a temporary
+            # portal_factory-managed object
+            browser.open(
+                '{}/portal_factory/Document/document.2010-02-04.2866363923/edit?_authenticator={}'.format(  # noqa
+                    self.folder.absolute_url(),
+                    createToken()))
 
-        # We can now cancel the edit. The cookies should expire.
-        browser.getControl(name='form.button.cancel').click()
-        self.assertNotIn(
-            'plone.app.drafts.targetKey',
-            browser.cookies.forURL(browser.url),
-        )
-        self.assertNotIn(
-            'plone.app.drafts.path',
-            browser.cookies.forURL(browser.url),
-        )
+            # We should now have cookies with the drafts information
+            cookies = browser.cookies.forURL(browser.url)
+            path = '"{0}/portal_factory/Document/document.2010-02-04.2866363923"'  # noqa
+            self.assertEqual(
+                path.format(self.folder.absolute_url_path()),
+                cookies['plone.app.drafts.path'],
+            )
+            self.assertEqual(
+                '"{0}%3ADocument"'.format(uuid),
+                cookies['plone.app.drafts.targetKey'],
+            )
+            self.assertNotIn(
+                'plone.app.drafts.draftName',
+                browser.cookies.forURL(browser.url),
+            )
 
-    def test_edit(self):
-        browser = Browser(self.layer['app'])
-        browser.handleErrors = False
+            # We can now cancel the edit. The cookies should expire.
+            browser.getControl(name='form.button.cancel').click()
+            self.assertNotIn(
+                'plone.app.drafts.targetKey',
+                browser.cookies.forURL(browser.url),
+            )
+            self.assertNotIn(
+                'plone.app.drafts.path',
+                browser.cookies.forURL(browser.url),
+            )
 
-        self.folder.invokeFactory('Document', 'd1')
-        self.folder['d1'].setTitle(u'New title')
+        def test_edit(self):
+            browser = Browser(self.layer['app'])
+            browser.handleErrors = False
 
-        transaction.commit()
+            self.folder.invokeFactory('Document', 'd1')
+            self.folder['d1'].setTitle(u'New title')
 
-        uuid = IUUID(self.folder['d1'])
+            transaction.commit()
 
-        # Login
-        browser.open(self.portal.absolute_url() + '/login')
-        browser.getControl(name='__ac_name').value = TEST_USER_NAME
-        browser.getControl(name='__ac_password').value = TEST_USER_PASSWORD
-        browser.getControl('Log in').click()
+            uuid = IUUID(self.folder['d1'])
 
-        # Enter the edit screen
-        browser.open(self.folder['d1'].absolute_url() + '/edit')
+            # Login
+            browser.open(self.portal.absolute_url() + '/login')
+            browser.getControl(name='__ac_name').value = TEST_USER_NAME
+            browser.getControl(name='__ac_password').value = TEST_USER_PASSWORD
+            browser.getControl('Log in').click()
 
-        # Confirm pass CSRF protection
-        try:
-            browser.getControl(name='form.button.confirm').click()
-        except LookupError:
-            pass
+            # Enter the edit screen
+            browser.open(self.folder['d1'].absolute_url() + '/edit')
 
-        # We should now have cookies with the drafts information
-        cookies = browser.cookies.forURL(browser.url)
-        self.assertEqual(
-            '"{0}"'.format(self.folder['d1'].absolute_url_path()),
-            cookies['plone.app.drafts.path'],
-        )
-        self.assertEqual(
-            '"{0}"'.format(uuid),
-            cookies['plone.app.drafts.targetKey'])
-        self.assertNotIn(
-            'plone.app.drafts.draftName',
-            browser.cookies.forURL(browser.url),
-        )
+            # Confirm pass CSRF protection
+            try:
+                browser.getControl(name='form.button.confirm').click()
+            except LookupError:
+                pass
 
-        # We can now save the page. The cookies should expire.
-        browser.getControl(name='form.button.save').click()
-        self.assertNotIn(
-            'plone.app.drafts.targetKey',
-            browser.cookies.forURL(browser.url),
-        )
-        self.assertNotIn(
-            'plone.app.drafts.path',
-            browser.cookies.forURL(browser.url),
-        )
-        self.assertNotIn(
-            'plone.app.drafts.draftName',
-            browser.cookies.forURL(browser.url),
-        )
+            # We should now have cookies with the drafts information
+            cookies = browser.cookies.forURL(browser.url)
+            self.assertEqual(
+                '"{0}"'.format(self.folder['d1'].absolute_url_path()),
+                cookies['plone.app.drafts.path'],
+            )
+            self.assertEqual(
+                '"{0}"'.format(uuid),
+                cookies['plone.app.drafts.targetKey'])
+            self.assertNotIn(
+                'plone.app.drafts.draftName',
+                browser.cookies.forURL(browser.url),
+            )
 
-    def test_edit_existing_draft(self):
-        browser = Browser(self.layer['app'])
-        browser.handleErrors = False
+            # We can now save the page. The cookies should expire.
+            browser.getControl(name='form.button.save').click()
+            self.assertNotIn(
+                'plone.app.drafts.targetKey',
+                browser.cookies.forURL(browser.url),
+            )
+            self.assertNotIn(
+                'plone.app.drafts.path',
+                browser.cookies.forURL(browser.url),
+            )
+            self.assertNotIn(
+                'plone.app.drafts.draftName',
+                browser.cookies.forURL(browser.url),
+            )
 
-        self.folder.invokeFactory('Document', 'd1')
-        self.folder['d1'].setTitle(u'New title')
+        def test_edit_existing_draft(self):
+            browser = Browser(self.layer['app'])
+            browser.handleErrors = False
 
-        uuid = IUUID(self.folder['d1'])
+            self.folder.invokeFactory('Document', 'd1')
+            self.folder['d1'].setTitle(u'New title')
 
-        # Create a single draft for this object - we expect this to be used now
-        storage = getUtility(IDraftStorage)
-        draft = storage.createDraft(TEST_USER_ID, str(uuid))
+            uuid = IUUID(self.folder['d1'])
 
-        transaction.commit()
+            # Create a single draft for this object -
+            # we expect this to be used now
+            storage = getUtility(IDraftStorage)
+            draft = storage.createDraft(TEST_USER_ID, str(uuid))
 
-        # Login
-        browser.open(self.portal.absolute_url() + '/login')
-        browser.getControl(name='__ac_name').value = TEST_USER_NAME
-        browser.getControl(name='__ac_password').value = TEST_USER_PASSWORD
-        browser.getControl('Log in').click()
+            transaction.commit()
 
-        # Enter the edit screen
-        browser.open(self.folder['d1'].absolute_url() + '/edit')
+            # Login
+            browser.open(self.portal.absolute_url() + '/login')
+            browser.getControl(name='__ac_name').value = TEST_USER_NAME
+            browser.getControl(name='__ac_password').value = TEST_USER_PASSWORD
+            browser.getControl('Log in').click()
 
-        # Confirm pass CSRF protection
-        try:
-            browser.getControl(name='form.button.confirm').click()
-        except LookupError:
-            pass
+            # Enter the edit screen
+            browser.open(self.folder['d1'].absolute_url() + '/edit')
 
-        # We should now have cookies with the drafts information
-        cookies = browser.cookies.forURL(browser.url)
-        self.assertEqual(
-            '"{0}"'.format(self.folder['d1'].absolute_url_path()),
-            cookies['plone.app.drafts.path'],
-        )
-        self.assertEqual(
-            '"{0}"'.format(uuid),
-            cookies['plone.app.drafts.targetKey'],
-        )
-        self.assertEqual(
-            '"{0}"'.format(TEST_USER_ID),
-            cookies['plone.app.drafts.userId'],
-        )
-        self.assertEqual(
-            '"{0}"'.format(draft.__name__),
-            cookies['plone.app.drafts.draftName'],
-        )
+            # Confirm pass CSRF protection
+            try:
+                browser.getControl(name='form.button.confirm').click()
+            except LookupError:
+                pass
 
-        # We can now save the page. The cookies should expire.
-        browser.getControl(name='form.button.save').click()
-        self.assertNotIn(
-            'plone.app.drafts.targetKey',
-            browser.cookies.forURL(browser.url),
-        )
-        self.assertNotIn(
-            'plone.app.drafts.path',
-            browser.cookies.forURL(browser.url),
-        )
-        self.assertNotIn(
-            'plone.app.drafts.draftName',
-            browser.cookies.forURL(browser.url),
-        )
-        self.assertNotIn(
-            'plone.app.drafts.userId',
-            browser.cookies.forURL(browser.url),
-        )
+            # We should now have cookies with the drafts information
+            cookies = browser.cookies.forURL(browser.url)
+            self.assertEqual(
+                '"{0}"'.format(self.folder['d1'].absolute_url_path()),
+                cookies['plone.app.drafts.path'],
+            )
+            self.assertEqual(
+                '"{0}"'.format(uuid),
+                cookies['plone.app.drafts.targetKey'],
+            )
+            self.assertEqual(
+                '"{0}"'.format(TEST_USER_ID),
+                cookies['plone.app.drafts.userId'],
+            )
+            self.assertEqual(
+                '"{0}"'.format(draft.__name__),
+                cookies['plone.app.drafts.draftName'],
+            )
 
-    def test_edit_multiple_existing_drafts(self):
-        browser = Browser(self.layer['app'])
-        browser.handleErrors = False
+            # We can now save the page. The cookies should expire.
+            browser.getControl(name='form.button.save').click()
+            self.assertNotIn(
+                'plone.app.drafts.targetKey',
+                browser.cookies.forURL(browser.url),
+            )
+            self.assertNotIn(
+                'plone.app.drafts.path',
+                browser.cookies.forURL(browser.url),
+            )
+            self.assertNotIn(
+                'plone.app.drafts.draftName',
+                browser.cookies.forURL(browser.url),
+            )
+            self.assertNotIn(
+                'plone.app.drafts.userId',
+                browser.cookies.forURL(browser.url),
+            )
 
-        self.folder.invokeFactory('Document', 'd1')
-        self.folder['d1'].setTitle(u'New title')
+        def test_edit_multiple_existing_drafts(self):
+            browser = Browser(self.layer['app'])
+            browser.handleErrors = False
 
-        transaction.commit()
+            self.folder.invokeFactory('Document', 'd1')
+            self.folder['d1'].setTitle(u'New title')
 
-        uuid = IUUID(self.folder['d1'])
+            transaction.commit()
 
-        # Create two drafts for this object - we don't expect either to be used
-        storage = getUtility(IDraftStorage)
-        storage.createDraft(TEST_USER_ID, str(uuid))
-        storage.createDraft(TEST_USER_ID, str(uuid))
+            uuid = IUUID(self.folder['d1'])
 
-        # Login
-        browser.open(self.portal.absolute_url() + '/login')
-        browser.getControl(name='__ac_name').value = TEST_USER_NAME
-        browser.getControl(name='__ac_password').value = TEST_USER_PASSWORD
-        browser.getControl('Log in').click()
+            # Create two drafts for this object -
+            # we don't expect either to be used
+            storage = getUtility(IDraftStorage)
+            storage.createDraft(TEST_USER_ID, str(uuid))
+            storage.createDraft(TEST_USER_ID, str(uuid))
 
-        # Enter the edit screen
-        browser.open(self.folder['d1'].absolute_url() + '/edit')
+            # Login
+            browser.open(self.portal.absolute_url() + '/login')
+            browser.getControl(name='__ac_name').value = TEST_USER_NAME
+            browser.getControl(name='__ac_password').value = TEST_USER_PASSWORD
+            browser.getControl('Log in').click()
 
-        # Confirm pass CSRF protection
-        try:
-            browser.getControl(name='form.button.confirm').click()
-        except LookupError:
-            pass
+            # Enter the edit screen
+            browser.open(self.folder['d1'].absolute_url() + '/edit')
 
-        # We should now have cookies with the drafts information
-        cookies = browser.cookies.forURL(browser.url)
-        self.assertEqual(
-            '"{0}"'.format(self.folder['d1'].absolute_url_path()),
-            cookies['plone.app.drafts.path'],
-        )
-        self.assertEqual(
-            '"{0}"'.format(uuid),
-            cookies['plone.app.drafts.targetKey'],
-        )
-        self.assertNotIn(
-            'plone.app.drafts.draftName',
-            browser.cookies.forURL(browser.url),
-        )
+            # Confirm pass CSRF protection
+            try:
+                browser.getControl(name='form.button.confirm').click()
+            except LookupError:
+                pass
 
-        # We can now save the page. The cookies should expire.
-        browser.getControl(name='form.button.save').click()
-        self.assertNotIn(
-            'plone.app.drafts.targetKey',
-            browser.cookies.forURL(browser.url),
-        )
-        self.assertNotIn(
-            'plone.app.drafts.path',
-            browser.cookies.forURL(browser.url),
-        )
-        self.assertNotIn(
-            'plone.app.drafts.draftName',
-            browser.cookies.forURL(browser.url),
-        )
+            # We should now have cookies with the drafts information
+            cookies = browser.cookies.forURL(browser.url)
+            self.assertEqual(
+                '"{0}"'.format(self.folder['d1'].absolute_url_path()),
+                cookies['plone.app.drafts.path'],
+            )
+            self.assertEqual(
+                '"{0}"'.format(uuid),
+                cookies['plone.app.drafts.targetKey'],
+            )
+            self.assertNotIn(
+                'plone.app.drafts.draftName',
+                browser.cookies.forURL(browser.url),
+            )
+
+            # We can now save the page. The cookies should expire.
+            browser.getControl(name='form.button.save').click()
+            self.assertNotIn(
+                'plone.app.drafts.targetKey',
+                browser.cookies.forURL(browser.url),
+            )
+            self.assertNotIn(
+                'plone.app.drafts.path',
+                browser.cookies.forURL(browser.url),
+            )
+            self.assertNotIn(
+                'plone.app.drafts.draftName',
+                browser.cookies.forURL(browser.url),
+            )
 
 
 class TestDexterityIntegration(unittest.TestCase):
@@ -1192,7 +1212,7 @@ class TestDexterityIntegration(unittest.TestCase):
         browser.cookies.create(
             DRAFT_NAME_KEY,
             u'draft',
-            path='/plone'
+            path='/plone',
         )
 
         # We can now fill in the required fields and save. The cookies should
@@ -1231,7 +1251,7 @@ class TestDexterityIntegration(unittest.TestCase):
         cookies = browser.cookies.forURL(browser.url)
         self.assertEqual(
             '"{0}"'.format(self.folder.absolute_url_path()),
-            cookies['plone.app.drafts.path']
+            cookies['plone.app.drafts.path'],
         )
         self.assertEqual(  # noqa
             '"{0}"'.format(IUUID(self.folder)),

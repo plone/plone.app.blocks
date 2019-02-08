@@ -1,15 +1,26 @@
 language: python
-python: 2.7
 sudo: false
-env:
-  - PLONE_VERSION=4.x
-  - PLONE_VERSION=5.x
+matrix:
+  include:
+    - python: "2.7"
+      env: PLONE_VERSION=4.3
+    - python: "2.7"
+      env: PLONE_VERSION=5.0
+    - python: "2.7"
+      env: PLONE_VERSION=5.1
+    - python: "2.7"
+      env: PLONE_VERSION=5.2
+    - python: "3.6"
+      env: PLONE_VERSION=5.2
+    - python: "3.7"
+      env: PLONE_VERSION=5.2
+      dist: xenial
+      sudo: true
+  fast_finish: true
 cache:
   pip: true
   directories:
     - $HOME/buildout-cache
-matrix:
-  fast_finish: true
 before_install:
   - mkdir -p $HOME/buildout-cache/{eggs,downloads}
   - mkdir $HOME/.buildout
@@ -22,10 +33,11 @@ install:
   - buildout -N -t 3 annotate
   - buildout -N -t 3
 script:
-  - bin/code-analysis
+# Run code-analysis, except on Python 3.6, which mysteriously fails to find zc.buildout.
+  - python --version 2> /dev/stdout | grep 3.6 || bin/code-analysis
   - bin/test
 after_success:
-  - bin/createcoverage
+  - bin/createcoverage --output-dir=htmlcov
   - pip install -q coveralls
   - coveralls
 notifications:

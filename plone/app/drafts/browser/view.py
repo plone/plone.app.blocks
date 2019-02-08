@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 from plone.app.uuid.utils import uuidToObject
-from urllib import quote
+
+
+try:
+    from urllib import quote
+except ImportError:
+    from urllib.parse import quote
 
 
 class View(object):

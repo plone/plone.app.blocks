@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from Acquisition import aq_base
+from collections import MutableMapping
 from plone.app.drafts.interfaces import IDraftProxy
-from UserDict import DictMixin
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapter
 from zope.interface import implementedBy
@@ -109,7 +109,7 @@ class DraftProxy(object):
 
 @adapter(IDraftProxy)
 @implementer(IAnnotations)
-class AliasAnnotations(DictMixin):
+class AliasAnnotations(MutableMapping):
     """Layer draft annotations atop target annotations
     """
 
@@ -122,9 +122,9 @@ class AliasAnnotations(DictMixin):
         self.draftAnnotations = IAnnotations(self.draft)
         self.targetAnnotations = IAnnotations(self.target)
 
-    def __nonzero__(self):
-        return self.targetAnnotations.__nonzero__() or \
-            self.draftAnnotations.__nonzero__()
+    def __bool__(self):
+        return self.targetAnnotations.__bool__() or \
+            self.draftAnnotations.__bool__()
 
     def get(self, key, default=None):
 
@@ -145,6 +145,15 @@ class AliasAnnotations(DictMixin):
         if value is _marker:
             raise KeyError(key)
         return value
+
+    def __iter__(self):
+        # adhere to MutableMapping interface
+        for val in self.draftAnnotations.values():
+            yield val
+
+    def __len__(self):
+        # adhere to MutableMapping interface
+        return len(self.draftAnnotations)
 
     def keys(self):
         deleted = getattr(self.draft, '_proxyAnnotationsDeleted', set())

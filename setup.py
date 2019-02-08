@@ -20,9 +20,13 @@ setup(name='plone.app.drafts',
           'Framework :: Plone',
           'Framework :: Plone :: 4.3',
           'Framework :: Plone :: 5.0',
+          'Framework :: Plone :: 5.1',
+          'Framework :: Plone :: 5.2',
           'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
           'Programming Language :: Python',
           'Programming Language :: Python :: 2.7',
+          'Programming Language :: Python :: 3.6',
+          'Programming Language :: Python :: 3.7',
           'Topic :: Internet :: WWW/HTTP',
           'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
           'Topic :: Software Development :: Libraries :: Python Modules',
@@ -48,9 +52,13 @@ setup(name='plone.app.drafts',
           'Zope2',
       ],
       extras_require={
-          'test': ['plone.app.testing',
-                   'plone.app.dexterity',
-                   'Products.ATContentTypes'],
+          'test': [
+              'plone.app.testing',
+              'plone.app.dexterity',
+          ],
+          'test_atct': [
+              'Products.ATContentTypes'
+          ],
       },
       entry_points="""
       [z3c.autoinclude.plugin]

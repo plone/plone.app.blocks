@@ -55,7 +55,7 @@ class ArchetypesDraftingLayer(PloneSandboxLayer):
     defaultBases = (PLONE_FIXTURE,)
 
     def setUpZope(self, app, configurationContext):
-        if HAS_PLONE_APP_CONTENTTYPES and HAS_ATCONTENTTYPES:
+        if HAS_ATCONTENTTYPES:
             import Products.ATContentTypes
             self.loadZCML(package=Products.ATContentTypes)
 
@@ -64,12 +64,16 @@ class ArchetypesDraftingLayer(PloneSandboxLayer):
             z2.installProduct(app, 'plone.app.blob')
         import plone.app.drafts
         self.loadZCML(package=plone.app.drafts)
-        self.loadZCML(package=plone.app.drafts, name='archetypes.zcml')
+        if HAS_ATCONTENTTYPES:
+            self.loadZCML(package=plone.app.drafts, name='archetypes.zcml')
 
     def setUpPloneSite(self, portal):
-        # install plone.app.contenttypes on Plone 5
-        if HAS_PLONE_APP_CONTENTTYPES and HAS_ATCONTENTTYPES:
-            self.applyProfile(portal, 'Products.ATContentTypes:default')
+        if HAS_ATCONTENTTYPES:
+            try:
+                # ATContenttypes < 2.2 has no profiles (Plone 4.3)
+                self.applyProfile(portal, 'Products.ATContentTypes:default')
+            except KeyError:
+                pass
         # install into the Plone site
         self.applyProfile(portal, 'plone.app.drafts:default')
 
@@ -109,7 +113,7 @@ class DexterityDraftingLayer(PloneSandboxLayer):
         fti = DexterityFTI('MyDocument')
         fti.behaviors = (
             'plone.app.dexterity.behaviors.metadata.IDublinCore',
-            'plone.app.drafts.interfaces.IDraftable'
+            'plone.app.drafts.interfaces.IDraftable',
         )
         fti.global_allow = True
         portal.portal_types._setObject('MyDocument', fti)
