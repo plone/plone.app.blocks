@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.1.3 (unreleased)
+1.1.3 (2019-02-10)
 ------------------
 
 - Python 3 compatible
