@@ -37,6 +37,18 @@ from zope.site.hooks import getSite
 import logging
 import six
 
+try:
+    from configparser import DEFAULTSECT
+    from configparser import SectionProxy
+
+except ImportError:
+    # python 2.7 fallback for multidict
+
+    class SectionProxy(dict):
+        pass
+
+    DEFAULTSECT = None
+
 logger = logging.getLogger('plone.app.blocks')
 
 
@@ -73,7 +85,7 @@ class multidict(dict):
     _unique = 0
 
     def __setitem__(self, key, val):
-        if isinstance(val, dict):
+        if isinstance(val, (dict, SectionProxy)) and key != DEFAULTSECT:
             self._unique += 1
             key += str(self._unique)
         dict.__setitem__(self, key, val)
@@ -89,7 +101,7 @@ def getLayoutsFromManifest(fp, _format, directory_name):
         data = fp.read()
         if isinstance(data, six.binary_type):
             data = data.decode()
-        parser = ConfigParser(dict_type=multidict, strict=False)
+        parser = ConfigParser(dict_type=multidict)
         parser.read_string(data)
 
     layouts = {}

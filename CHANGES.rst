@@ -4,25 +4,14 @@ Changelog
 4.3.1 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
-New features:
-
-- *add item here*
-
 Bug fixes:
 
-- *add item here*
+- fix multidict feature for python 3
+  [petschki]
 
 
 4.3.0 (2019-02-10)
 ------------------
-
-Breaking changes:
-
-- Nothing changed yet.
 
 Bug fixes:
 
