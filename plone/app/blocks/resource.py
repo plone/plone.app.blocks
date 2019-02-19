@@ -101,7 +101,7 @@ def getLayoutsFromManifest(fp, _format, directory_name):
         data = fp.read()
         if isinstance(data, six.binary_type):
             data = data.decode()
-        parser = ConfigParser(dict_type=multidict)
+        parser = ConfigParser(dict_type=multidict, strict=False)
         parser.read_string(data)
 
     layouts = {}
