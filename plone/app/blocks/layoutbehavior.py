@@ -300,8 +300,8 @@ def layoutAwareTileDataStorage(context, request, tile):
         return defaultTileDataStorage(context, request, tile)
 
 
-def invalidate_view_memoize(view, func, args, kwargs):
-    """Invalidate @view.memoize for given view, func, args and kwargs.
+def invalidate_view_memoize(view, name, args, kwargs):
+    """Invalidate @view.memoize for given view, function name, args and kwargs.
 
     See: plone/memoize/view.py
     """
@@ -320,7 +320,7 @@ def invalidate_view_memoize(view, func, args, kwargs):
         # view instance and the whole point is that we can cache different
         # requests
 
-        key = (context_id, view.__class__.__name__, func.__name__,
+        key = (context_id, view.__class__.__name__, name,
                args[1:], frozenset(kwargs.items()))
 
         return cache.pop(key, None)
@@ -420,11 +420,11 @@ class LayoutAwareTileDataStorage(object):
 
             # Purge view.memoize
             invalidate_view_memoize(
-                self, self.__getitem__, (self, key), {})
+                self, '__getitem__', (self, key), {})
             invalidate_view_memoize(
-                self, self.__getitem__, (self, key.lstrip('@')), {})
+                self, '__getitem__', (self, key.lstrip('@')), {})
             invalidate_view_memoize(
-                self, self.__getitem__, (self, key.split('/', 1)[-1]), {})
+                self, '__getitem__', (self, key.split('/', 1)[-1]), {})
 
             return self.sync()
         raise KeyError(key)
@@ -462,11 +462,11 @@ class LayoutAwareTileDataStorage(object):
 
             # Purge view.memoize
             invalidate_view_memoize(
-                self, self.__getitem__, (self, key), {})
+                self, '__getitem__', (self, key), {})
             invalidate_view_memoize(
-                self, self.__getitem__, (self, key.lstrip('@')), {})
+                self, '__getitem__', (self, key.lstrip('@')), {})
             invalidate_view_memoize(
-                self, self.__getitem__, (self, key.split('/', 1)[-1]), {})
+                self, '__getitem__', (self, key.split('/', 1)[-1]), {})
 
             return self.sync()
 
@@ -481,11 +481,11 @@ class LayoutAwareTileDataStorage(object):
 
         # Purge view.memoize
         invalidate_view_memoize(
-            self, self.__getitem__, (self, key), {})
+            self, '__getitem__', (self, key), {})
         invalidate_view_memoize(
-            self, self.__getitem__, (self, key.lstrip('@')), {})
+            self, '__getitem__', (self, key.lstrip('@')), {})
         invalidate_view_memoize(
-            self, self.__getitem__, (self, key.split('/', 1)[-1]), {})
+            self, '__getitem__', (self, key.split('/', 1)[-1]), {})
 
         self.sync()
 
