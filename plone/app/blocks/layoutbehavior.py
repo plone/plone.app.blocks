@@ -33,6 +33,7 @@ from plone.tiles.interfaces import ITileType
 from repoze.xmliter.utils import getHTMLSerializer
 from zExceptions import NotFound
 from zope import schema
+from zope.annotation.interfaces import IAnnotations
 from zope.component import adapter
 from zope.component import getUtility
 from zope.component import queryUtility
@@ -299,6 +300,34 @@ def layoutAwareTileDataStorage(context, request, tile):
         return defaultTileDataStorage(context, request, tile)
 
 
+def invalidate_view_memoize(view, name, args, kwargs):
+    """Invalidate @view.memoize for given view, function name, args and kwargs.
+
+    See: plone/memoize/view.py
+    """
+
+    context = view.context
+    annotations = IAnnotations(view.request, None) or {}
+    cache = annotations.get('plone.memoize')
+
+    if cache:
+        try:
+            context_id = context.getPhysicalPath()
+        except AttributeError:
+            context_id = id(context)
+
+        # Note: we don't use args[0] in the cache key, since args[0] ==
+        # view instance and the whole point is that we can cache different
+        # requests
+
+        key = (context_id, view.__class__.__name__, name,
+               args[1:], frozenset(kwargs.items()))
+
+        return cache.pop(key, None)
+    else:
+        return None
+
+
 @implementer(ITileDataStorage)
 @adapter(ILayoutBehaviorAdaptable, Interface, ITile)
 class LayoutAwareTileDataStorage(object):
@@ -388,6 +417,15 @@ class LayoutAwareTileDataStorage(object):
         for el in self.storage.tree.xpath(
                 '//*[contains(@data-tile, "{0:s}")]'.format(key)):
             el.remove()
+
+            # Purge view.memoize
+            invalidate_view_memoize(
+                self, '__getitem__', (self, key), {})
+            invalidate_view_memoize(
+                self, '__getitem__', (self, key.lstrip('@')), {})
+            invalidate_view_memoize(
+                self, '__getitem__', (self, key.split('/', 1)[-1]), {})
+
             return self.sync()
         raise KeyError(key)
 
@@ -421,6 +459,15 @@ class LayoutAwareTileDataStorage(object):
                 del el.attrib['data-tiledata']
             if primary is not None:
                 el.append(primary)
+
+            # Purge view.memoize
+            invalidate_view_memoize(
+                self, '__getitem__', (self, key), {})
+            invalidate_view_memoize(
+                self, '__getitem__', (self, key.lstrip('@')), {})
+            invalidate_view_memoize(
+                self, '__getitem__', (self, key.split('/', 1)[-1]), {})
+
             return self.sync()
 
         # Add new value
@@ -431,6 +478,15 @@ class LayoutAwareTileDataStorage(object):
         if primary is not None:
             el.append(primary)
         self.storage.tree.find('body').append(el)
+
+        # Purge view.memoize
+        invalidate_view_memoize(
+            self, '__getitem__', (self, key), {})
+        invalidate_view_memoize(
+            self, '__getitem__', (self, key.lstrip('@')), {})
+        invalidate_view_memoize(
+            self, '__getitem__', (self, key.split('/', 1)[-1]), {})
+
         self.sync()
 
     # IEnumerableMapping

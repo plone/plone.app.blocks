@@ -4,8 +4,11 @@ Changelog
 4.3.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+Bug fixes:
 
+- Fix issue where layout aware tile data storage read cache was not purged when
+  data was updated programmatically [fixes #75]
+  [datakurre]
 
 4.3.1 (2019-02-20)
 ------------------

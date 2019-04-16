@@ -96,8 +96,6 @@ data-tiledata='{"message": "Hello World!"}' />
         data['message'] = u"Foo bar!"
         storage[tile] = data
 
-        delattr(self.layer['request'], '__annotations__')  # purge memoize
-
         view = self.portal['f1']['d1'].restrictedTraverse(tile)()
         self.assertEqual(
             view,
