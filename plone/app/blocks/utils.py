@@ -74,7 +74,7 @@ def resolve(url, resolved=None):
             resolved = resolveResource(url)
         except Exception:
             logger.exception(
-                'Error while trying to resolve tile: {0}'.format(
+                'There was an error while resolving the tile: {0}'.format(
                     url,
                 ),
             )
@@ -88,7 +88,7 @@ def resolve(url, resolved=None):
 <body>
     <dl class="portalMessage error" role="alert">
         <dt>Error</dt>
-        <dd>Error while resolving tile {scheme}://{netloc}{path}</dd>
+        <dd>There was an error while resolving the tile {scheme}://{netloc}{path}</dd>
     </dl>
 </body>
 </html>
