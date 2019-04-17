@@ -72,10 +72,10 @@ def resolve(url, resolved=None):
     if resolved is None:
         try:
             resolved = resolveResource(url)
-        except Exception as e:
-            logger.error(
-                'Error while trying to resolve tile: {0} {1}'.format(
-                    url, e
+        except Exception:
+            logger.exception(
+                'Error while trying to resolve tile: {0}'.format(
+                    url,
                 ),
             )
             scheme, netloc, path, params, query, fragment = parse.urlparse(url)
