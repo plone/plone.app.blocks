@@ -69,9 +69,31 @@ def extractCharset(response, default='utf-8'):
 def resolve(url, resolved=None):
     """Resolve the given URL to an lxml tree.
     """
-
     if resolved is None:
-        resolved = resolveResource(url)
+        try:
+            resolved = resolveResource(url)
+        except Exception:
+            logger.exception(
+                'There was an error while resolving the tile: {0}'.format(
+                    url,
+                ),
+            )
+            scheme, netloc, path, params, query, fragment = parse.urlparse(url)
+            tile_parts = {
+                'scheme': scheme,
+                'netloc': netloc,
+                'path': path,
+            }
+            resolved = """<html>
+<body>
+    <dl class="portalMessage error" role="alert">
+        <dt>Error</dt>
+        <dd>There was an error while resolving the tile {scheme}://{netloc}{path}</dd>
+    </dl>
+</body>
+</html>
+""".format(**tile_parts)
+
     if not resolved.strip():
         return None
     try:

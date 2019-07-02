@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 Bug fixes:
+- Catch errors on resolving tiles and return an error message instead of breaking the whole UI
+  [MrTango]
 
 - Fix issue where layout aware tile data storage read cache was not purged when
   data was updated programmatically [fixes #75]
