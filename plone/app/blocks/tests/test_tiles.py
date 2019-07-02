@@ -13,6 +13,13 @@ from zope.interface import Interface
 import unittest
 
 
+try:
+    # Python 2: "unicode" is built-in
+    unicode
+except NameError:
+    unicode = str
+
+
 class ITestTile(Interface):
 
     magicNumber = schema.Int(title=u"Magic number", required=False)
@@ -222,11 +229,11 @@ class TestRenderTiles(unittest.TestCase):
         request = self.layer['request']
         tree = serializer.tree
         renderTiles(request, tree)
-        result = str(serializer)
+        result = unicode(serializer)
         self.assertIn('This is a demo tile with id tile2', result)
         self.assertIn('This is a demo tile with id tile3', result)
         self.assertIn('This is a demo tile with id tile4', result)
-        self.assertIn(u'Umlauts: Übertile', result)
+        self.assertIn(u'Umlauts: \xdcbertile', result)
 
     def testRenderTilesError(self):
         serializer = getHTMLSerializer([testLayout2])
