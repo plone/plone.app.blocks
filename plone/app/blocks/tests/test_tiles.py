@@ -226,7 +226,7 @@ class TestRenderTiles(unittest.TestCase):
         self.assertIn('This is a demo tile with id tile2', result)
         self.assertIn('This is a demo tile with id tile3', result)
         self.assertIn('This is a demo tile with id tile4', result)
-        self.assertIn('Umlauts: &#220;bertile', result)
+        self.assertIn(u'Umlauts: Übertile', result)
 
     def testRenderTilesError(self):
         serializer = getHTMLSerializer([testLayout2])
