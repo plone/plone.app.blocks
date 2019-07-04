@@ -12,6 +12,9 @@ Bug fixes:
   data was updated programmatically [fixes #75]
   [datakurre]
 
+- Fix issue where resolveResource would break when url html content param contains other ++-url's
+  [MrTango]
+
 4.3.1 (2019-02-20)
 ------------------
 
