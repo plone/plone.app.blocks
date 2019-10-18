@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 Bug fixes:
+
 - Catch errors on resolving tiles and return an error message instead of breaking the whole UI
   [MrTango]
 
