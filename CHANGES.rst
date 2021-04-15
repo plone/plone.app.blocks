@@ -6,6 +6,8 @@ Changelog
 
 - Update test setup 
   [ksuess]
+- Stay with bytes: serialize bytes not string. Fix for Mosaic issue https://github.com/plone/plone.app.mosaic/issues/480
+  [ksuess]
 
 
 4.3.2 (2019-10-18)
