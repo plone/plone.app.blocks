@@ -4,7 +4,8 @@ Changelog
 4.3.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Test setuphandler
+  [ksuess]
 
 
 4.3.2 (2019-10-18)
