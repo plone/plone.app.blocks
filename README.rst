@@ -2,9 +2,9 @@
 Introduction to Blocks
 ======================
 
-.. image:: https://secure.travis-ci.org/plone/plone.app.blocks.png?branch=master
+.. image:: https://secure.travis-ci.com/plone/plone.app.blocks.png?branch=master
     :alt: Travis CI badge
-    :target: http://travis-ci.org/plone/plone.app.blocks
+    :target: http://travis-ci.com/plone/plone.app.blocks
 
 .. image:: https://coveralls.io/repos/plone/plone.app.blocks/badge.png?branch=master
     :alt: Coveralls badge
