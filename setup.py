@@ -23,6 +23,7 @@ test_require = [
 def read(*path):
     return open(os.path.join(*path)).read()
 
+
 long_description = '\n'.join(
     [
         open('README.rst').read(),
