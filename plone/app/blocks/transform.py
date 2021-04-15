@@ -13,6 +13,10 @@ from zope.interface import implementer
 
 import re
 
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 @implementer(ITransform)
 class DisableParsing(object):
@@ -86,16 +90,17 @@ class ParseXML(object):
             # Fix layouts with CR[+LF] line endings not to lose their heads
             # (this has been seen with downloaded themes with CR[+LF] endings)
             iterable = [
-                re.sub('&#13;', '\n', re.sub('&#13;\n', '\n', safe_unicode(item)))  # noqa
+                re.sub(b'&#13;', b'\n', re.sub(b'&#13;\n', b'\n', item))  # noqa
                 for item in result if item]
             result = getHTMLSerializer(
-                iterable, pretty_print=self.pretty_print, encoding=encoding)
+                iterable, pretty_print=self.pretty_print)
             # Fix XHTML layouts with where etree.tostring breaks <![CDATA[
-            if any(['<![CDATA[' in item for item in iterable]):
+            if any([b'<![CDATA[' in item for item in iterable]):
                 result.serializer = html.tostring
             self.request['plone.app.blocks.enabled'] = True
             return result
-        except (AttributeError, TypeError, etree.ParseError):
+        except (AttributeError, TypeError, etree.ParseError) as e:
+            logger.error(e)
             return None
 
 
