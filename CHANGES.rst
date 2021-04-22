@@ -4,7 +4,7 @@ Changelog
 4.3.3 (unreleased)
 ------------------
 
-- Test setuphandler
+- Update test setup 
   [ksuess]
 
 
