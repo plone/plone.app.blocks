@@ -11,6 +11,7 @@ from repoze.xmliter.serializer import XMLSerializer
 from repoze.xmliter.utils import getHTMLSerializer
 from zope.interface import implementer
 
+import six
 import re
 
 
@@ -85,14 +86,26 @@ class ParseXML(object):
         try:
             # Fix layouts with CR[+LF] line endings not to lose their heads
             # (this has been seen with downloaded themes with CR[+LF] endings)
-            iterable = [
-                re.sub('&#13;', '\n', re.sub('&#13;\n', '\n', safe_unicode(item)))  # noqa
-                for item in result if item]
-            result = getHTMLSerializer(
-                iterable, pretty_print=self.pretty_print, encoding=encoding)
-            # Fix XHTML layouts with where etree.tostring breaks <![CDATA[
-            if any(['<![CDATA[' in item for item in iterable]):
-                result.serializer = html.tostring
+
+            if six.PY2:
+                iterable = [
+                    re.sub('&#13;', '\n', re.sub('&#13;\n', '\n', safe_unicode(item)))  # noqa
+                    for item in result if item]
+                result = getHTMLSerializer(
+                    iterable, pretty_print=self.pretty_print, encoding=encoding)
+                # Fix XHTML layouts with where etree.tostring breaks <![CDATA[
+                if any(['<![CDATA[' in item for item in iterable]):
+                    result.serializer = html.tostring                
+            else:
+                iterable = [
+                    re.sub('&#13;'.encode('utf-8'), '\n'.encode('utf-8'), re.sub('&#13;\n'.encode('utf-8'), '\n'.encode('utf-8'), item))  # noqa
+                    for item in result if item]
+                result = getHTMLSerializer(
+                    iterable, pretty_print=self.pretty_print, encoding=encoding)
+                # Fix XHTML layouts with where etree.tostring breaks <![CDATA[
+                if any([b'<![CDATA[' in item for item in iterable]):
+                    result.serializer = html.tostring
+            
             self.request['plone.app.blocks.enabled'] = True
             return result
         except (AttributeError, TypeError, etree.ParseError):
