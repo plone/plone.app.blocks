@@ -13,7 +13,10 @@ from zope.interface import implementer
 
 import six
 import re
+import logging
 
+
+logger = logging.getLogger(__name__)
 
 @implementer(ITransform)
 class DisableParsing(object):
@@ -108,9 +111,9 @@ class ParseXML(object):
             
             self.request['plone.app.blocks.enabled'] = True
             return result
-        except (AttributeError, TypeError, etree.ParseError):
-            return None
-
+        except (AttributeError, TypeError, etree.ParseError) as e:
+             logger.error(e)
+             return None
 
 @implementer(ITransform)
 class MergePanels(object):
