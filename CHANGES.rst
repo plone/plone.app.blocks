@@ -4,6 +4,9 @@ Changelog
 4.3.3 (unreleased)
 ------------------
 
+- Fix unicode parsing error on Python 3, resulting in empty mosaic page.
+  [agitator]
+
 - Update test setup 
   [ksuess]
 
