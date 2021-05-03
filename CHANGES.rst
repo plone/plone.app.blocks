@@ -4,7 +4,7 @@ Changelog
 4.3.3 (unreleased)
 ------------------
 
-- Fix unicode parsing error on Python 3, resulting in empty mosaic page.
+- Fix unicode parsing error on Python 3, resulting in empty mosaic page (`#62 https://github.com/plone/plone.app.mosaic/issues/480`_).
   [agitator]
 
 - Update test setup 
