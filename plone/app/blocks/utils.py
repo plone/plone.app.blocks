@@ -20,7 +20,7 @@ from zExceptions import Unauthorized
 from zope.component import getMultiAdapter
 from zope.component import queryUtility
 from zope.security.interfaces import IPermission
-from zope.site.hooks import getSite
+from zope.component.hooks import getSite
 
 import logging
 import six

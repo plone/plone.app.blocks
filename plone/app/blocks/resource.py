@@ -32,7 +32,7 @@ from zope.publisher.browser import BrowserView
 from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleTerm
 from zope.schema.vocabulary import SimpleVocabulary
-from zope.site.hooks import getSite
+from zope.component.hooks import getSite
 
 import logging
 import six
