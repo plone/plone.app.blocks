@@ -15,6 +15,7 @@ jobs:
         config:
         # [Python version, tox env]
         - ["2.7",   "plone43-py27"]
+        - ["2.7",   "plone50-py27"]
         - ["2.7",   "plone51-py27"]
         - ["2.7",   "plone52-py27"]
         - ["3.7",   "plone52-py37"]
