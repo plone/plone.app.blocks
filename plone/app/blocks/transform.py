@@ -15,6 +15,13 @@ import logging
 import re
 import six
 
+try:
+    # Plone 5.2+
+    from Products.CMFPlone.utils import safe_bytes
+except ImportError:
+    # BBB for Plone 5.1 and lower
+    from Products.CMFPlone.utils import safe_encode as safe_bytes
+
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +74,6 @@ class ParseXML(object):
         self.request = request
 
     def transformBytes(self, result, encoding):
-        result = safe_unicode(result, encoding)
         return self.transformIterable([result], encoding)
 
     def transformUnicode(self, result, encoding):
@@ -93,37 +99,20 @@ class ParseXML(object):
         try:
             # Fix layouts with CR[+LF] line endings not to lose their heads
             # (this has been seen with downloaded themes with CR[+LF] endings)
-
-            if six.PY2:
-                iterable = [
-                    re.sub(
-                        "&#13;", "\n", re.sub("&#13;\n", "\n", safe_unicode(item))
-                    )  # noqa
-                    for item in result
-                    if item
-                ]
-                result = getHTMLSerializer(
-                    iterable, pretty_print=self.pretty_print, encoding=encoding
-                )
-                # Fix XHTML layouts with where etree.tostring breaks <![CDATA[
-                if any(["<![CDATA[" in item for item in iterable]):
-                    result.serializer = html.tostring
-            else:
-                iterable = [
-                    re.sub(
-                        "&#13;".encode("utf-8"),
-                        "\n".encode("utf-8"),
-                        re.sub("&#13;\n".encode("utf-8"), "\n".encode("utf-8"), item),
-                    )  # noqa
-                    for item in result
-                    if item
-                ]
-                result = getHTMLSerializer(
-                    iterable, pretty_print=self.pretty_print, encoding=encoding
-                )
-                # Fix XHTML layouts with where etree.tostring breaks <![CDATA[
-                if any([b"<![CDATA[" in item for item in iterable]):
-                    result.serializer = html.tostring
+            # The html serializer much prefers only bytes, no unicode/text,
+            # and it return a serializer that returns bytes.
+            # So we start with ensuring all items in the iterable are bytes.
+            iterable = [
+                re.sub(b"&#13;", b"\n", re.sub(b"&#13;\n", b"\n", safe_bytes(item)))
+                for item in result
+                if item
+            ]
+            result = getHTMLSerializer(
+                iterable, pretty_print=self.pretty_print, encoding=encoding
+            )
+            # Fix XHTML layouts with where etree.tostring breaks <![CDATA[
+            if any([b"<![CDATA[" in item for item in iterable]):
+                result.serializer = html.tostring
 
             self.request["plone.app.blocks.enabled"] = True
             return result
