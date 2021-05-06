@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from plone.app.blocks.interfaces import IBlocksLayer
 from plone.app.blocks.interfaces import IBlocksTransformEnabled
+from plone.app.blocks.transform import ParseXML
 from plone.app.blocks.testing import BLOCKS_INTEGRATION_TESTING
 from plone.transformchain.zpublisher import applyTransform
 from zope.interface import alsoProvides
@@ -67,3 +68,80 @@ class TestTransforms(BaseTestCase):
         request = self.prepare_request(body)
         result = applyTransform(request)
         self.assertIn("<![CDATA[]]>", "".join(str(result)))
+
+
+class TestParseXML(BaseTestCase):
+    """Test our XMLParser transform with only bytes.
+
+    Things can go wrong when there is more than one item in the iterable,
+    especially when one item is bytes and the other is text.
+    Or at least that is a way that I can more or less reproduce some problems.
+    See https://github.com/plone/plone.app.mosaic/issues/480
+
+    I test various combinations in this and the next test methods.
+    """
+
+    def test_transformBytes_method(self):
+        one = b"<p>one</p>"
+        request = self.prepare_request()
+        parser = ParseXML(request.get("PUBLISHED"), request)
+        result = parser.transformBytes(one, encoding="utf-8")
+        html = result.serialize()
+        self.assertIn(one, html)
+
+    def test_transformUnicode_method(self):
+        one = b"<p>one</p>"
+        request = self.prepare_request()
+        parser = ParseXML(request.get("PUBLISHED"), request)
+        result = parser.transformBytes(one.decode("utf-8"), encoding="utf-8")
+        html = result.serialize()
+        self.assertIn(one, html)
+
+    # The rest of the tests use the transformIterable method.
+    # We use a helper method 'transform' to make this easier.
+
+    def transform(self, iterable):
+        request = self.prepare_request()
+        parser = ParseXML(request.get("PUBLISHED"), request)
+        result = parser.transformIterable(iterable, encoding="utf-8")
+        return result.serialize()
+
+    def test_transform_one_byte(self):
+        one = b"<p>one</p>"
+        html = self.transform([one])
+        self.assertIn(one, html)
+
+    def test_transform_one_unicode(self):
+        one = b"<p>one</p>"
+        # Note: decoding creates a unicode (string on PY3).
+        html = self.transform([one.decode("utf-8")])
+        # Note: the html result is always bytes, so we must compare with bytes.
+        self.assertIn(one, html)
+
+    def test_transform_two_bytes(self):
+        one = b"<p>one</p>"
+        two = b"<p>two</p>"
+        html = self.transform([one, two])
+        self.assertIn(one, html)
+        self.assertIn(two, html)
+
+    def test_transform_two_unicodes(self):
+        one = b"<p>one</p>"
+        two = b"<p>two</p>"
+        html = self.transform([one.decode("utf-8"), two.decode("utf-8")])
+        self.assertIn(one, html)
+        self.assertIn(two, html)
+
+    def test_transform_byte_unicode(self):
+        one = b"<p>one</p>"
+        two = b"<p>two</p>"
+        html = self.transform([one, two.decode("utf-8")])
+        self.assertIn(one, html)
+        self.assertIn(two, html)
+
+    def test_transform_unicode_byte(self):
+        one = b"<p>one</p>"
+        two = b"<p>two</p>"
+        html = self.transform([one.decode("utf-8"), two])
+        self.assertIn(one, html)
+        self.assertIn(two, html)
