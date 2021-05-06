@@ -4,6 +4,9 @@ Changelog
 4.3.3 (unreleased)
 ------------------
 
+- Tests: Refactor buildout configs, use tox, use GitHub actions.
+  [mauritsvanrees]
+
 - Format code according to Plone standards: black, isort.
   [thet]
 
