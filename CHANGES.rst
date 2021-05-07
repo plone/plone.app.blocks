@@ -1,8 +1,11 @@
 Changelog
 =========
 
-4.3.3 (unreleased)
+5.0.0 (unreleased)
 ------------------
+
+- Remove support for Plone 4.3 and 5.0.
+  [mauritsvanrees, thet]
 
 - Tests: Refactor buildout configs, use tox, use GitHub actions.
   [mauritsvanrees]
