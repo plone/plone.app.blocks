@@ -4,7 +4,10 @@ Blocks rendering in detail
 This doctest illustrates the blocks rendering process.
 At a high level, it consists of the following steps:
 
+
 0. Obtain the content page, an HTML document.
+
+
 1. Look for a site layout link in the content page.
 
    This takes the form of an attribute on the html tag like ``<html data-layout="..." />``.
@@ -13,19 +16,31 @@ At a high level, it consists of the following steps:
    e.g. ``/++sitelayout++foo/site.html``,
    although the layout can be any URL.
    An absolute path like this will be adjusted so that it is always relative to the Plone site root.
+
+
 2. Resolve and obtain the site layout.
 
    This is another HTML document.
+
+
 3. Extract panels from the site layout.
 
    A panel is an element (usually a ``<div />``) in the layout page with a data-panel attribute,
-   for example: ``<div data-panel="panel1" />``.
+   for example: ``<div data-panel="panel1" />`` or ``<div data-panel="panel1" data-panel-mode="replace" />``.
    The attribute specifies an id which *may* be used in the content page.
+
+   You can specify how the content from the content page is inserted into the panel.
+   The default or with ``data-panel-mode="append"`` specified the content from the content page is appended to the layout page panel.
+   With ``data-panel-mode="replace"`` the content replaced the layout page panel.
+
+
 4. Merge panels.
 
    This is the process which applies the layout to the unstyled page.
-   All panels in the layout page that have a matching element in the content page are replaced by the content page element.
+   All panels in the layout page that have a matching element in the content page get the content page element appended or are replaced by it.
    The rest of the content page is discarded.
+
+
 5. Resolve and obtain tiles.
 
    A tile is a placeholder element in the page which will be replaced by the contents of a document referenced by a URL.
@@ -38,11 +53,14 @@ At a high level, it consists of the following steps:
 
    The ``plone.tiles`` package provides a framework for writing tiles,
    although in reality a tile can be any HTML page.
+
+
 6. Place tiles into the page.
 
    The tile should resolve to a full HTML document.
    Any content found in the ``<head />`` of the tile content will be merged into the ``<head />`` of the rendered content.
    The contents of the ``<body />`` of the tile content are put into the rendered document at the tile placeholder.
+
 
 Rendering step-by-step
 ----------------------
@@ -60,6 +78,7 @@ We'll need a few variables defined first:
 
     >>> browser = Browser(app)
     >>> browser.handleErrors = False
+
 
 Creating a site layout
 ~~~~~~~~~~~~~~~~~~~~~~

@@ -4,6 +4,11 @@ Changelog
 5.0.0 (unreleased)
 ------------------
 
+- New ``data-panel-mode`` attribute.
+  Add ``data-panel-mode`` attribute with possible values ``append`` (default) and ``replace`` for layout panels.
+  This allows for replacing the layout panel with the page panel instead of appending to it.
+  [thet]
+
 - Allow tox tests to run single tests e.g. via: ``tox -e plone52-py38 -- -t test_resolve_resource``.
   [thet]
 

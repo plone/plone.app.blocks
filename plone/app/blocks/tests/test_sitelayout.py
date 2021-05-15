@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from lxml import etree
+from lxml import html
 from OFS.Image import File
 from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
+from plone.app.blocks.panel import merge
 from plone.app.blocks.testing import BLOCKS_FUNCTIONAL_TESTING
 from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
@@ -14,7 +16,11 @@ from zope.component import adapter
 from zope.component import getMultiAdapter
 from zope.component import getSiteManager
 from zope.component import getUtility
+from zope.component import provideAdapter
 from zope.interface import implementer
+from zope.interface import Interface
+from zope.publisher.browser import BrowserPage
+from zope.publisher.interfaces.browser import IBrowserPage
 
 import six
 import transaction
@@ -305,3 +311,70 @@ class TestSiteLayout(unittest.TestCase):
 
         self.assertTrue(u"My Layout 1 Title" in rendered)
         self.assertFalse(u"Layout title" in rendered)
+
+    def test_panel_modes(self):
+        """Test data-panel-mode ``append`` and ``replace``."""
+
+        site_layout = u"""
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <title>okayish site layout</title>
+            </head>
+            <body>
+              <div class="panel-1" data-panel="content-1"/>
+              <div class="panel-2" data-panel="content-2" data-panel-mode="append"/>
+              <div class="panel-3" data-panel="content-3" data-panel-mode="replace"/>
+            </body>
+          </html>
+        """
+
+        content_layout = u"""
+          <html data-layout="./@@testsitelayout">
+            <body>
+              <div data-panel="content-1">
+                <article class="content-1">content 1</article>
+              </div>
+              <div data-panel="content-2">
+                <article class="content-2">content 2</article>
+              </div>
+              <div data-panel="content-3">
+                <article class="content-3">content 3</article>
+              </div>
+            </body>
+          </html>
+        """
+
+        class SiteLayout(BrowserPage):
+            def __call__(self):
+                return site_layout
+
+        provideAdapter(
+            SiteLayout,
+            adapts=(Interface, Interface),
+            provides=IBrowserPage,
+            name=u"testsitelayout",
+        )
+
+        parser = html.HTMLParser(encoding="utf-8")
+        page_tree = html.fromstring(content_layout, parser=parser).getroottree()
+
+        merged = merge(self.request, page_tree)
+
+        # Default case: append matched content panel into layout panel.
+        r1 = merged.xpath(
+            "//div[contains(@class, 'panel-1')]/article[contains(@class, 'content-1')]"
+        )
+        self.assertEqual(len(r1), 1)
+
+        # Mode "append": append matched content panel into layout panel.
+        r2 = merged.xpath(
+            "//div[contains(@class, 'panel-2')]/article[contains(@class, 'content-2')]"
+        )
+        self.assertEqual(len(r2), 1)
+
+        # Mode "replace": replace layout panel with matched content panel.
+        r3 = merged.xpath("//div[contains(@class, 'panel-3')]")
+        self.assertEqual(len(r3), 0)
+        r4 = merged.xpath("//article[contains(@class, 'content-3')]")
+        self.assertEqual(len(r4), 1)
