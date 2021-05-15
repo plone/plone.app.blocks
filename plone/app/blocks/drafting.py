@@ -10,8 +10,7 @@ from zope.interface import implementer
 @implementer(IDraftSyncer)
 @adapter(IDraft, ILayoutBehaviorAdaptable)
 class LayoutAwareDataStorageSyncher(object):
-    """Copy draft data to the real object on save
-    """
+    """Copy draft data to the real object on save"""
 
     def __init__(self, draft, target):
         self.draft = draft

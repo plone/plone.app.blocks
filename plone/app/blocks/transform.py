@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from Products.CMFPlone.utils import safe_unicode
 from lxml import etree
 from lxml import html
 from plone.app.blocks import panel
@@ -7,16 +6,18 @@ from plone.app.blocks import tiles
 from plone.tiles import esi
 from plone.tiles.interfaces import ESI_HEADER
 from plone.transformchain.interfaces import ITransform
+from Products.CMFPlone.utils import safe_unicode
 from repoze.xmliter.serializer import XMLSerializer
 from repoze.xmliter.utils import getHTMLSerializer
 from zope.interface import implementer
 
-import six
-import re
 import logging
+import re
+import six
 
 
 logger = logging.getLogger(__name__)
+
 
 @implementer(ITransform)
 class DisableParsing(object):
@@ -33,15 +34,15 @@ class DisableParsing(object):
         self.request = request
 
     def transformBytes(self, result, encoding):
-        self.request.set('plone.app.blocks.disabled', True)
+        self.request.set("plone.app.blocks.disabled", True)
         return None
 
     def transformUnicode(self, result, encoding):
-        self.request.set('plone.app.blocks.disabled', True)
+        self.request.set("plone.app.blocks.disabled", True)
         return None
 
     def transformIterable(self, result, encoding):
-        self.request.set('plone.app.blocks.disabled', True)
+        self.request.set("plone.app.blocks.disabled", True)
         return None
 
 
@@ -74,16 +75,19 @@ class ParseXML(object):
 
     def transformIterable(self, result, encoding):
 
-        if self.request.get('plone.app.blocks.disabled', False):
+        if self.request.get("plone.app.blocks.disabled", False):
             return None
 
-        content_type = self.request.response.getHeader('Content-Type')
-        if content_type is None or not content_type.startswith('text/html'):
+        content_type = self.request.response.getHeader("Content-Type")
+        if content_type is None or not content_type.startswith("text/html"):
             return None
 
-        contentEncoding = self.request.response.getHeader('Content-Encoding')
-        if contentEncoding and contentEncoding in ('zip', 'deflate',
-                                                   'compress',):
+        contentEncoding = self.request.response.getHeader("Content-Encoding")
+        if contentEncoding and contentEncoding in (
+            "zip",
+            "deflate",
+            "compress",
+        ):
             return None
 
         try:
@@ -92,33 +96,45 @@ class ParseXML(object):
 
             if six.PY2:
                 iterable = [
-                    re.sub('&#13;', '\n', re.sub('&#13;\n', '\n', safe_unicode(item)))  # noqa
-                    for item in result if item]
+                    re.sub(
+                        "&#13;", "\n", re.sub("&#13;\n", "\n", safe_unicode(item))
+                    )  # noqa
+                    for item in result
+                    if item
+                ]
                 result = getHTMLSerializer(
-                    iterable, pretty_print=self.pretty_print, encoding=encoding)
+                    iterable, pretty_print=self.pretty_print, encoding=encoding
+                )
                 # Fix XHTML layouts with where etree.tostring breaks <![CDATA[
-                if any(['<![CDATA[' in item for item in iterable]):
-                    result.serializer = html.tostring                
+                if any(["<![CDATA[" in item for item in iterable]):
+                    result.serializer = html.tostring
             else:
                 iterable = [
-                    re.sub('&#13;'.encode('utf-8'), '\n'.encode('utf-8'), re.sub('&#13;\n'.encode('utf-8'), '\n'.encode('utf-8'), item))  # noqa
-                    for item in result if item]
+                    re.sub(
+                        "&#13;".encode("utf-8"),
+                        "\n".encode("utf-8"),
+                        re.sub("&#13;\n".encode("utf-8"), "\n".encode("utf-8"), item),
+                    )  # noqa
+                    for item in result
+                    if item
+                ]
                 result = getHTMLSerializer(
-                    iterable, pretty_print=self.pretty_print, encoding=encoding)
+                    iterable, pretty_print=self.pretty_print, encoding=encoding
+                )
                 # Fix XHTML layouts with where etree.tostring breaks <![CDATA[
-                if any([b'<![CDATA[' in item for item in iterable]):
+                if any([b"<![CDATA[" in item for item in iterable]):
                     result.serializer = html.tostring
-            
-            self.request['plone.app.blocks.enabled'] = True
+
+            self.request["plone.app.blocks.enabled"] = True
             return result
         except (AttributeError, TypeError, etree.ParseError) as e:
-             logger.error(e)
-             return None
+            logger.error(e)
+            return None
+
 
 @implementer(ITransform)
 class MergePanels(object):
-    """Find the site layout and merge panels.
-    """
+    """Find the site layout and merge panels."""
 
     order = 8100
 
@@ -133,8 +149,9 @@ class MergePanels(object):
         return None
 
     def transformIterable(self, result, encoding):
-        if not self.request.get('plone.app.blocks.enabled', False) or \
-                not isinstance(result, XMLSerializer):
+        if not self.request.get("plone.app.blocks.enabled", False) or not isinstance(
+            result, XMLSerializer
+        ):
             return None
 
         tree = panel.merge(self.request, result.tree)
@@ -143,15 +160,12 @@ class MergePanels(object):
 
         # Set a marker in the request to let subsequent steps know the merging
         # has happened
-        self.request['plone.app.blocks.merged'] = True
+        self.request["plone.app.blocks.merged"] = True
 
         result.tree = tree
 
         # Fix serializer when layout has changed doctype from XHTML to HTML
-        if (
-            result.tree.docinfo.doctype and
-            'XHTML' not in result.tree.docinfo.doctype
-        ):
+        if result.tree.docinfo.doctype and "XHTML" not in result.tree.docinfo.doctype:
             result.serializer = html.tostring
 
         return result
@@ -177,8 +191,9 @@ class IncludeTiles(object):
         return None
 
     def transformIterable(self, result, encoding):
-        if not self.request.get('plone.app.blocks.enabled', False) or \
-                not isinstance(result, XMLSerializer):
+        if not self.request.get("plone.app.blocks.enabled", False) or not isinstance(
+            result, XMLSerializer
+        ):
             return None
 
         result.tree = tiles.renderTiles(self.request, result.tree)
@@ -198,22 +213,22 @@ class ESIRender(object):
         self.request = request
 
     def transformBytes(self, result, encoding):
-        if self.request.getHeader(ESI_HEADER, 'false').lower() != 'true':
+        if self.request.getHeader(ESI_HEADER, "false").lower() != "true":
             return None
 
         return esi.substituteESILinks([result])
 
     def transformUnicode(self, result, encoding):
-        if self.request.getHeader(ESI_HEADER, 'false').lower() != 'true':
+        if self.request.getHeader(ESI_HEADER, "false").lower() != "true":
             return None
 
-        return esi.substituteESILinks([result.encode(encoding, 'ignore')])
+        return esi.substituteESILinks([result.encode(encoding, "ignore")])
 
     def transformIterable(self, result, encoding):
-        if self.request.getHeader(ESI_HEADER, 'false').lower() != 'true':
+        if self.request.getHeader(ESI_HEADER, "false").lower() != "true":
             return None
-        result = ''.join(str(result))
+        result = "".join(str(result))
         transformed = esi.substituteESILinks(result)
         if transformed != result:
-            self.request.response.setHeader('X-Esi', '1')
+            self.request.response.setHeader("X-Esi", "1")
         return transformed

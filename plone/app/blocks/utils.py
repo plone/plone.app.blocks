@@ -19,8 +19,8 @@ from zExceptions import NotFound
 from zExceptions import Unauthorized
 from zope.component import getMultiAdapter
 from zope.component import queryUtility
-from zope.security.interfaces import IPermission
 from zope.component.hooks import getSite
+from zope.security.interfaces import IPermission
 
 import logging
 import six
@@ -28,61 +28,57 @@ import zope.deferredimport
 
 
 zope.deferredimport.deprecated(
-    'Moved in own behavior due to avoid circular imports. '
-    'Import from plone.app.blocks.layoutbehavior instead',
-    getDefaultAjaxLayout='plone.app.blocks.layoutbehavior:'
-                         'getDefaultAjaxLayout',
-    getDefaultSiteLayout='plone.app.blocks.layoutbehavior:'
-                         'getDefaultSiteLayout',
-    getLayout='plone.app.blocks.layoutbehavior:getLayout',
-    getLayoutAwareSiteLayout='plone.app.blocks.layoutbehavior:'
-                             'getLayoutAwareSiteLayout',
+    "Moved in own behavior due to avoid circular imports. "
+    "Import from plone.app.blocks.layoutbehavior instead",
+    getDefaultAjaxLayout="plone.app.blocks.layoutbehavior:" "getDefaultAjaxLayout",
+    getDefaultSiteLayout="plone.app.blocks.layoutbehavior:" "getDefaultSiteLayout",
+    getLayout="plone.app.blocks.layoutbehavior:getLayout",
+    getLayoutAwareSiteLayout="plone.app.blocks.layoutbehavior:"
+    "getLayoutAwareSiteLayout",
 )
 
 
 headXPath = etree.XPath("/html/head")
-layoutAttrib = 'data-layout'
+layoutAttrib = "data-layout"
 layoutXPath = etree.XPath("/html/@" + layoutAttrib)
-tileAttrib = 'data-tile'
-tileRulesAttrib = 'data-rules'
+tileAttrib = "data-tile"
+tileRulesAttrib = "data-rules"
 headTileXPath = etree.XPath("/html/head//*[@" + tileAttrib + "]")
 bodyTileXPath = etree.XPath("/html/body//*[@" + tileAttrib + "]")
 panelXPath = etree.XPath("//*[@data-panel]")
-gridDataAttrib = 'data-grid'
+gridDataAttrib = "data-grid"
 gridDataXPath = etree.XPath("//*[@" + gridDataAttrib + "]")
-logger = logging.getLogger('plone.app.blocks')
+logger = logging.getLogger("plone.app.blocks")
 
 
-def extractCharset(response, default='utf-8'):
-    """Get the charset of the given response
-    """
+def extractCharset(response, default="utf-8"):
+    """Get the charset of the given response"""
 
     charset = default
-    if 'content-type' in response.headers:
-        for item in response.headers['content-type'].split(';'):
-            if item.strip().startswith('charset'):
-                charset = item.split('=')[1].strip()
+    if "content-type" in response.headers:
+        for item in response.headers["content-type"].split(";"):
+            if item.strip().startswith("charset"):
+                charset = item.split("=")[1].strip()
                 break
     return charset
 
 
 def resolve(url, resolved=None):
-    """Resolve the given URL to an lxml tree.
-    """
+    """Resolve the given URL to an lxml tree."""
     if resolved is None:
         try:
             resolved = resolveResource(url)
         except Exception:
             logger.exception(
-                'There was an error while resolving the tile: {0}'.format(
+                "There was an error while resolving the tile: {0}".format(
                     url,
                 ),
             )
             scheme, netloc, path, params, query, fragment = parse.urlparse(url)
             tile_parts = {
-                'scheme': scheme,
-                'netloc': netloc,
-                'path': path,
+                "scheme": scheme,
+                "netloc": netloc,
+                "path": path,
             }
             resolved = """<html>
 <body>
@@ -92,15 +88,17 @@ def resolve(url, resolved=None):
     </dl>
 </body>
 </html>
-""".format(**tile_parts)
+""".format(
+                **tile_parts
+            )
 
     if not resolved.strip():
         return None
     try:
-        html_parser = html.HTMLParser(encoding='utf-8')
+        html_parser = html.HTMLParser(encoding="utf-8")
         return html.fromstring(resolved, parser=html_parser).getroottree()
     except etree.XMLSyntaxError as e:
-        logger.error('%s: %s' % (repr(e), url))
+        logger.error("%s: %s" % (repr(e), url))
         return None
 
 
@@ -117,10 +115,10 @@ def resolveResource(url):
     """
     url = parse.unquote(url)  # subrequest does not support quoted paths
     scheme, netloc, path, params, query, fragment = parse.urlparse(url)
-    if path.count('++') == 2:
+    if path.count("++") == 2:
         # it is a resource that can be resolved without a subrequest
-        _, resource_type, path = path.split('++')
-        resource_name, _, path = path.partition('/')
+        _, resource_type, path = path.split("++")
+        resource_name, _, path = path.partition("/")
         directory = queryResourceDirectory(resource_type, resource_name)
         if directory:
             try:
@@ -131,9 +129,9 @@ def resolveResource(url):
             except (NotFound, IOError):
                 pass
 
-    if url.startswith('/'):
+    if url.startswith("/"):
         site = getSite()
-        url = '/'.join(site.getPhysicalPath()) + url
+        url = "/".join(site.getPhysicalPath()) + url
 
     response = subrequest(url, exception_handler=subresponse_exception_handler)
     if response.status == 404:
@@ -149,9 +147,9 @@ def resolveResource(url):
 
     if response.status in (301, 302):
         site = getSite()
-        location = response.headers.get('location') or ''
+        location = response.headers.get("location") or ""
         if location.startswith(site.absolute_url()):
-            return resolveResource(location[len(site.absolute_url()):])
+            return resolveResource(location[len(site.absolute_url()) :])
 
     elif response.status != 200:
         raise RuntimeError(resolved)
@@ -160,8 +158,7 @@ def resolveResource(url):
 
 
 def xpath1(xpath, node, strict=True):
-    """Return a single node matched by the given etree.XPath object.
-    """
+    """Return a single node matched by the given etree.XPath object."""
 
     if isinstance(xpath, six.string_types):
         xpath = etree.XPath(xpath)
@@ -178,17 +175,16 @@ def xpath1(xpath, node, strict=True):
 
 def append_text(element, text):
     if text:
-        element.text = (element.text or '') + text
+        element.text = (element.text or "") + text
 
 
 def append_tail(element, text):
     if text:
-        element.tail = (element.tail or '') + text
+        element.tail = (element.tail or "") + text
 
 
 def replace_with_children(element, wrapper):
-    """element.replace also replaces the tail and forgets the wrapper.text
-    """
+    """element.replace also replaces the tail and forgets the wrapper.text"""
     # XXX needs tests
     parent = element.getparent()
     index = parent.index(element)
@@ -218,8 +214,7 @@ def replace_with_children(element, wrapper):
 
 
 def replace_content(element, wrapper):
-    """Similar to above but keeps parent tag
-    """
+    """Similar to above but keeps parent tag"""
     del element[:]
     if wrapper is not None:
         element.text = wrapper.text
@@ -232,7 +227,6 @@ def remove_element(element):
 
 
 class PermissionChecker(object):
-
     def __init__(self, permissions, context):
         self.permissions = permissions
         self.context = context
@@ -248,10 +242,7 @@ class PermissionChecker(object):
                     self.cache[permission_name] = True
                 else:
                     self.cache[permission_name] = bool(
-                        self.sm.checkPermission(
-                            permission.title,
-                            self.context
-                        )
+                        self.sm.checkPermission(permission.title, self.context)
                     )
         return self.cache.get(permission_name, True)
 
@@ -265,41 +256,47 @@ def _getWidgetName(field, widgets, request):
         return factory
     if not isinstance(factory, type):
         factory = factory.__class__
-    return '%s.%s' % (factory.__module__, factory.__name__)
+    return "%s.%s" % (factory.__module__, factory.__name__)
 
 
 def isVisible(name, omitted):
     value = omitted.get(name, False)
     if isinstance(value, six.string_types):
-        return value == 'false'
+        return value == "false"
     else:
         return not bool(value)
 
 
 def add_theme(rules_doc, theme_doc, absolute_prefix=None):
     if absolute_prefix is None:
-        absolute_prefix = ''
+        absolute_prefix = ""
     root = rules_doc.getroot()
-    element = root.makeelement(
-        rules.fullname(rules.namespaces['diazo'], 'theme'))
+    element = root.makeelement(rules.fullname(rules.namespaces["diazo"], "theme"))
     root.append(element)
     rules.expand_theme(element, theme_doc, absolute_prefix)
     return rules_doc
 
 
-def process_rules(rules_doc, theme=None, trace=None, css=True,
-                  absolute_prefix=None, includemode=None,
-                  update=True, stop=None):
+def process_rules(
+    rules_doc,
+    theme=None,
+    trace=None,
+    css=True,
+    absolute_prefix=None,
+    includemode=None,
+    update=True,
+    stop=None,
+):
     if trace:
-        trace = '1'
+        trace = "1"
     else:
-        trace = '0'
+        trace = "0"
     if stop == 0:
         return rules_doc
     if stop == 1:
         return rules_doc
     rules_doc = rules.add_identifiers(rules_doc)
-    if stop == 2 or stop == 'add_identifiers':
+    if stop == 2 or stop == "add_identifiers":
         return rules_doc
     if update:
         rules_doc = rules.update_namespace(rules_doc)
@@ -317,7 +314,7 @@ def process_rules(rules_doc, theme=None, trace=None, css=True,
     if stop == 6:
         return rules_doc
     if includemode is None:
-        includemode = 'document'
+        includemode = "document"
     includemode = "'%s'" % includemode
     rules_doc = rules.normalize_rules(rules_doc, includemode=includemode)
     if stop == 7:
@@ -344,9 +341,17 @@ def process_rules(rules_doc, theme=None, trace=None, css=True,
     return rules_doc
 
 
-def compile_theme(rules_doc, theme_doc=None, css=True,
-                  absolute_prefix=None, update=True, trace=False,
-                  includemode=None, parser=None, compiler_parser=None):
+def compile_theme(
+    rules_doc,
+    theme_doc=None,
+    css=True,
+    absolute_prefix=None,
+    update=True,
+    trace=False,
+    includemode=None,
+    parser=None,
+    compiler_parser=None,
+):
     rules_doc = process_rules(
         rules_doc=rules_doc,
         theme=theme_doc,
@@ -362,18 +367,21 @@ def compile_theme(rules_doc, theme_doc=None, css=True,
     known_params = compiler.build_xsl_params_document({})
 
     # Create a pseudo resolver for this
-    known_params_url = 'file:///__diazo_known_params__'
-    emit_stylesheet_resolver = utils.CustomResolver({
-        known_params_url: etree.tostring(known_params)})
+    known_params_url = "file:///__diazo_known_params__"
+    emit_stylesheet_resolver = utils.CustomResolver(
+        {known_params_url: etree.tostring(known_params)}
+    )
     emit_stylesheet_parser = etree.XMLParser()
     emit_stylesheet_parser.resolvers.add(emit_stylesheet_resolver)
 
     # Run the final stage compiler
     emit_stylesheet = utils.pkg_xsl(
-        'emit-stylesheet.xsl', parser=emit_stylesheet_parser)
+        "emit-stylesheet.xsl", parser=emit_stylesheet_parser
+    )
     compiled_doc = emit_stylesheet(rules_doc)
     compiled_doc = compiler.set_parser(
-        etree.tostring(compiled_doc), parser, compiler_parser)
+        etree.tostring(compiled_doc), parser, compiler_parser
+    )
 
     return compiled_doc
 
@@ -391,8 +399,7 @@ def cacheKey(func, rules_url, theme_node):
 def resolve_transform(rules_url, theme_node):
     rules_doc = resolveResource(rules_url)  # may raise NotFound
     rules_doc = etree.ElementTree(etree.fromstring(rules_doc))
-    compiled = compile_theme(rules_doc,
-                             etree.ElementTree(deepcopy(theme_node)))
+    compiled = compile_theme(rules_doc, etree.ElementTree(deepcopy(theme_node)))
     transform = etree.XSLT(compiled)
     return transform
 
@@ -407,10 +414,10 @@ def applyTilePersistent(path, resolved):
     tree = resolve(path, resolved=resolved)
     for node in bodyTileXPath(tree):
         url = node.attrib[tileAttrib]
-        if 'X-Tile-Persistent' not in url:
-            if '?' in url:
-                url += '&X-Tile-Persistent=yes'
+        if "X-Tile-Persistent" not in url:
+            if "?" in url:
+                url += "&X-Tile-Persistent=yes"
             else:
-                url += '?X-Tile-Persistent=yes'
+                url += "?X-Tile-Persistent=yes"
         node.attrib[tileAttrib] = url
-    return html.tostring(tree, encoding='unicode')
+    return html.tostring(tree, encoding="unicode")

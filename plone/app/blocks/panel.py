@@ -18,14 +18,14 @@ def merge(request, pageTree, removePanelLinks=False, removeLayoutLink=True):
     baseURL = request.getURL()
     if request.getVirtualRoot():
         # plone.subrequest deals with VHM requests
-        baseURL = ''
+        baseURL = ""
     layoutHref = parse.urljoin(baseURL, layoutHref)  # noqa: turn the link absolute
     # Pass special ajax_load parameter forward to allow layout indirection
     # views to select, for example, default AJAX layout instead of full layout.
-    if request.form.get('ajax_load'):
+    if request.form.get("ajax_load"):
         parts = list(parse.urlparse(layoutHref))
         query = parse.parse_qs(parts[4])
-        query['ajax_load'] = request.form.get('ajax_load')
+        query["ajax_load"] = request.form.get("ajax_load")
         parts[4] = parse.urlencode(query)
         layoutHref = parse.urlunparse(parts)
     layoutTree = utils.resolve(layoutHref)
@@ -35,21 +35,19 @@ def merge(request, pageTree, removePanelLinks=False, removeLayoutLink=True):
     # Map page panels onto the layout
 
     pagePanels = dict(
-        (node.attrib['data-panel'], node)
-        for node in utils.panelXPath(pageTree)
+        (node.attrib["data-panel"], node) for node in utils.panelXPath(pageTree)
     )
 
     layoutPanels = dict(
-        (node.attrib['data-panel'], node)
-        for node in utils.panelXPath(layoutTree)
+        (node.attrib["data-panel"], node) for node in utils.panelXPath(layoutTree)
     )
 
     # Site layout should always have element with data-panel="content"
     # Note: This could be more generic, but that would empower editors too much
-    if 'content' in pagePanels and 'content' not in layoutPanels:
+    if "content" in pagePanels and "content" not in layoutPanels:
         for node in layoutTree.xpath('//*[@id="content"]'):
-            node.attrib['data-panel'] = 'content'
-            layoutPanels['content'] = node
+            node.attrib["data-panel"] = "content"
+            layoutPanels["content"] = node
             break
 
     for panelId, layoutPanelNode in layoutPanels.items():
@@ -57,7 +55,7 @@ def merge(request, pageTree, removePanelLinks=False, removeLayoutLink=True):
         if pagePanelNode is not None:
             utils.replace_content(layoutPanelNode, pagePanelNode)
         if removePanelLinks:
-            del layoutPanelNode.attrib['data-panel']
+            del layoutPanelNode.attrib["data-panel"]
 
     if removeLayoutLink:
         del pageTree.getroot().attrib[utils.layoutAttrib]

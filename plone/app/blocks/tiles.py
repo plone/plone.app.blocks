@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from lxml import html
 from lxml.etree import XSLTApplyError
-from plone.app.blocks import PloneMessageFactory
 from plone.app.blocks import events
+from plone.app.blocks import PloneMessageFactory
 from plone.app.blocks import utils
 from plone.app.blocks.interfaces import IBlocksSettings
 from plone.app.blocks.utils import resolve_transform
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 def errorTile(request):
-    msg = PloneMessageFactory('There was an error while rendering this tile')
+    msg = PloneMessageFactory("There was an error while rendering this tile")
     translated = translate(msg, context=request)
     return html.fromstring(translated).getroottree()
 
@@ -38,17 +38,17 @@ def renderTiles(request, tree):
         registry = queryUtility(IRegistry)
         if registry is not None:
             if registry.forInterface(IBlocksSettings, check=False).esi:
-                request.environ[ESI_HEADER_KEY] = 'true'
+                request.environ[ESI_HEADER_KEY] = "true"
 
     root = tree.getroot()
-    headNode = root.find('head')
+    headNode = root.find("head")
     baseURL = request.getURL()
     if request.getVirtualRoot():
         # plone.subrequest deals with VHM requests
-        baseURL = ''
+        baseURL = ""
     for tileNode in utils.headTileXPath(tree):
         tileHref = tileNode.attrib[utils.tileAttrib]
-        if not tileHref.startswith('/'):
+        if not tileHref.startswith("/"):
             tileHref = parse.urljoin(baseURL, tileHref)
 
         notify(events.BeforeTileRenderEvent(tileHref, tileNode))
@@ -59,7 +59,7 @@ def renderTiles(request, tree):
         except RuntimeError:
             tileTree = None
         except NotFound:
-            logger.warn('NotFound while trying to render tile: %s', tileHref)
+            logger.warn("NotFound while trying to render tile: %s", tileHref)
 
         if tileTree is None:
             utils.remove_element(tileNode)
@@ -68,8 +68,8 @@ def renderTiles(request, tree):
 
         if tileTree is not None:
             tileRoot = tileTree.getroot()
-            tileHead = tileRoot.find('head')
-            if tileHead is None and tileRoot.find('body') is None:
+            tileHead = tileRoot.find("head")
+            if tileHead is None and tileRoot.find("body") is None:
                 tileHead = tileRoot
 
             utils.replace_with_children(tileNode, tileHead)
@@ -80,7 +80,7 @@ def renderTiles(request, tree):
         tileHref = tileNode.attrib[utils.tileAttrib]
         tileRulesHref = tileNode.attrib.get(utils.tileRulesAttrib)
 
-        if not tileHref.startswith('/'):
+        if not tileHref.startswith("/"):
             tileHref = parse.urljoin(baseURL, tileHref)
 
         notify(events.BeforeTileRenderEvent(tileHref, tileNode))
@@ -91,8 +91,7 @@ def renderTiles(request, tree):
         except RuntimeError:
             tileTree = errorTile(request)
         except NotFound:
-            logger.warning(
-                'NotFound while trying to render tile: %s', tileHref)
+            logger.warning("NotFound while trying to render tile: %s", tileHref)
 
         if tileTree is None:
             utils.remove_element(tileNode)
@@ -101,7 +100,7 @@ def renderTiles(request, tree):
 
         tileTransform = None
         if tileRulesHref:
-            if not tileRulesHref.startswith('/'):
+            if not tileRulesHref.startswith("/"):
                 tileRulesHref = parse.urljoin(baseURL, tileRulesHref)
             try:
                 tileTransform = resolve_transform(tileRulesHref, tileNode)
@@ -111,8 +110,8 @@ def renderTiles(request, tree):
 
         if tileTree is not None:
             tileRoot = tileTree.getroot()
-            tileHead = tileRoot.find('head')
-            tileBody = tileRoot.find('body')
+            tileHead = tileRoot.find("head")
+            tileBody = tileRoot.find("body")
 
             if tileHead is None and tileBody is None:
                 tileBody = tileRoot
@@ -124,9 +123,7 @@ def renderTiles(request, tree):
                     tileBody.append(result)
                 except XSLTApplyError:
                     logger.exception(
-                        'Failed to transform tile %s for %s',
-                        tileHref,
-                        baseURL
+                        "Failed to transform tile %s for %s", tileHref, baseURL
                     )
 
             if tileHead is not None:

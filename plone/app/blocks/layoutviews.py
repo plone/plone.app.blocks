@@ -29,11 +29,9 @@ ERROR_LAYOUT = u"""
 class SiteLayoutView(BrowserView):
     """Default site layout view called from the site layout resolving view"""
 
-    index = ViewPageTemplateFile(
-        os.path.join('templates', 'main_template.pt')
-    )
+    index = ViewPageTemplateFile(os.path.join("templates", "main_template.pt"))
 
-    def __init__(self, context, request, name='layout'):
+    def __init__(self, context, request, name="layout"):
         super(SiteLayoutView, self).__init__(context, request)
         self.__name__ = name
 
@@ -43,8 +41,7 @@ class SiteLayoutView(BrowserView):
 
 @implementer(IBlocksTransformEnabled)
 class ContentLayoutView(DefaultView):
-    """Default view for a layout aware page
-    """
+    """Default view for a layout aware page"""
 
     def __call__(self):
         """Render the contents of the "content" field coming from
@@ -59,16 +56,13 @@ class ContentLayoutView(DefaultView):
 
         # Here we skip legacy portal_transforms and call plone.outputfilters
         # directly by purpose
-        filters = [
-            f for _, f in getAdapters((self.context, self.request), IFilter)
-        ]
+        filters = [f for _, f in getAdapters((self.context, self.request), IFilter)]
         return apply_filters(filters, layout)
 
 
 @implementer(IBlocksTransformEnabled)
 class ContentLayoutPreview(ContentLayoutView):
-    """Default view for a layout aware page
-    """
+    """Default view for a layout aware page"""
 
     def __call__(self):
         from plone.app.drafts.dexterity import IDisplayFormDrafting
@@ -87,8 +81,7 @@ class ContentLayoutPreview(ContentLayoutView):
 
 @implementer(IBlocksTransformEnabled)
 class TileLayoutView(DefaultView):
-    """Introspection view for displaying configured tiles saved in 'content'
-    """
+    """Introspection view for displaying configured tiles saved in 'content'"""
 
     def __call__(self):
         """Render the contents of the "content" field coming from
@@ -103,7 +96,5 @@ class TileLayoutView(DefaultView):
 
         # Here we skip legacy portal_transforms and call plone.outputfilters
         # directly by purpose
-        filters = [
-            f for _, f in getAdapters((self.context, self.request), IFilter)
-        ]
+        filters = [f for _, f in getAdapters((self.context, self.request), IFilter)]
         return apply_filters(filters, layout)

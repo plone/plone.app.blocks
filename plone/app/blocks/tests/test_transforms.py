@@ -11,7 +11,6 @@ import unittest
 
 @implementer(IBlocksTransformEnabled)
 class TestTransformedView(object):
-
     def __init__(self, ret_body):
         self.__call__ = lambda b=ret_body: b
 
@@ -28,7 +27,6 @@ class TestTransforms(unittest.TestCase):
 
         @implementer(IBlocksTransformEnabled)
         class TransformedView(object):
-
             def __init__(self, ret_body):
                 self.__call__ = lambda b=ret_body: b
 
@@ -38,15 +36,15 @@ class TestTransforms(unittest.TestCase):
 <head></head>&#13;
 <body></body>&#13;
 </html>"""
-        request = self.layer['request']
-        request.set('PUBLISHED', TransformedView(body))
+        request = self.layer["request"]
+        request.set("PUBLISHED", TransformedView(body))
         request.response.setBase(request.getURL())
-        request.response.setHeader('content-type', 'text/html')
+        request.response.setHeader("content-type", "text/html")
         request.response.setBody(body)
 
         alsoProvides(request, IBlocksLayer)
         result = applyTransform(request)
-        self.assertIn('<head>', ''.join(str(result)))
+        self.assertIn("<head>", "".join(str(result)))
 
     def test_transforms_with_cdata(self):
         """Test fix for issue where layouts with inline js got rendered with
@@ -55,7 +53,6 @@ class TestTransforms(unittest.TestCase):
 
         @implementer(IBlocksTransformEnabled)
         class TransformedView(object):
-
             def __init__(self, ret_body):
                 self.__call__ = lambda b=ret_body: b
 
@@ -65,12 +62,12 @@ class TestTransforms(unittest.TestCase):
 <head><script type="text/javascript"><![CDATA[]]></script></head>
 <body></body>
 </html>"""
-        request = self.layer['request']
-        request.set('PUBLISHED', TransformedView(body))
+        request = self.layer["request"]
+        request.set("PUBLISHED", TransformedView(body))
         request.response.setBase(request.getURL())
-        request.response.setHeader('content-type', 'text/html')
+        request.response.setHeader("content-type", "text/html")
         request.response.setBody(body)
 
         alsoProvides(request, IBlocksLayer)
         result = applyTransform(request)
-        self.assertIn('<![CDATA[]]>', ''.join(str(result)))
+        self.assertIn("<![CDATA[]]>", "".join(str(result)))

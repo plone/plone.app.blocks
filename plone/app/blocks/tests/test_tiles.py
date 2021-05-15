@@ -27,7 +27,6 @@ class ITestTile(Interface):
 
 @implementer(ITestTile)
 class TestTile(Tile):
-
     def __call__(self):
         # fake a page template to keep things simple in the test
         return """\
@@ -45,14 +44,16 @@ class TestTile(Tile):
     Umlauts: Übertile ;)
   </p>
 </body>
-</html>""" % dict(name=self.id, number=self.data['magicNumber'] or -1,
-                  form=sorted(self.request.form.items()),
-                  queryString=self.request['QUERY_STRING'],
-                  url=self.request.getURL())
+</html>""" % dict(
+            name=self.id,
+            number=self.data["magicNumber"] or -1,
+            form=sorted(self.request.form.items()),
+            queryString=self.request["QUERY_STRING"],
+            url=self.request.getURL(),
+        )
 
 
 class TestTile2(Tile):
-
     def __call__(self):
         return """\
 <html>
@@ -66,16 +67,16 @@ class TestTile2(Tile):
 
 
 class TestTile3(Tile):
-
     def __call__(self):
         return """\
 <title>structureless in %s</title>
-""" % self.request.form.get('title', '')
+""" % self.request.form.get(
+            "title", ""
+        )
 
 
 @implementer(ITestTile)
 class TestTileBroken(Tile):
-
     def __call__(self):
         raise Exception("This tile is broken.")
 
@@ -85,7 +86,8 @@ class TestTilesLayer(PloneSandboxLayer):
     defaultBases = (BLOCKS_FIXTURE,)
 
     def setUpZope(self, app, configurationContext):
-        xmlconfig.string("""\
+        xmlconfig.string(
+            """\
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:plone="http://namespaces.plone.org/plone"
@@ -135,12 +137,15 @@ class TestTilesLayer(PloneSandboxLayer):
       />
 
 </configure>
-""", context=configurationContext)
+""",
+            context=configurationContext,
+        )
 
 
 BLOCKS_TILES_FIXTURE = TestTilesLayer()
 BLOCKS_TILES_INTEGRATION_TESTING = IntegrationTesting(
-    bases=(BLOCKS_TILES_FIXTURE,), name="Blocks:Tiles:Integration")
+    bases=(BLOCKS_TILES_FIXTURE,), name="Blocks:Tiles:Integration"
+)
 
 
 testLayout1 = """\
@@ -226,31 +231,30 @@ class TestRenderTiles(unittest.TestCase):
 
     def testRenderTiles(self):
         serializer = getHTMLSerializer([testLayout1])
-        request = self.layer['request']
+        request = self.layer["request"]
         tree = serializer.tree
         renderTiles(request, tree)
         result = unicode(serializer)
-        self.assertIn('This is a demo tile with id tile2', result)
-        self.assertIn('This is a demo tile with id tile3', result)
-        self.assertIn('This is a demo tile with id tile4', result)
-        self.assertIn(u'Umlauts: \xdcbertile', result)
+        self.assertIn("This is a demo tile with id tile2", result)
+        self.assertIn("This is a demo tile with id tile3", result)
+        self.assertIn("This is a demo tile with id tile4", result)
+        self.assertIn(u"Umlauts: \xdcbertile", result)
 
     def testRenderTilesError(self):
         serializer = getHTMLSerializer([testLayout2])
-        request = self.layer['request']
+        request = self.layer["request"]
         tree = serializer.tree
         renderTiles(request, tree)
         result = str(serializer)
-        self.assertIn('This is a demo tile with id tile2', result)
-        self.assertNotIn('This is a demo tile with id tile3', result)
-        self.assertIn('There was an error', result)
-        self.assertIn('This is a demo tile with id tile4', result)
+        self.assertIn("This is a demo tile with id tile2", result)
+        self.assertNotIn("This is a demo tile with id tile3", result)
+        self.assertIn("There was an error", result)
+        self.assertIn("This is a demo tile with id tile4", result)
 
     def testRenderSubTiles(self):
-        """Test if subtiles - tiles referenced in tiles - are resolved.
-        """
+        """Test if subtiles - tiles referenced in tiles - are resolved."""
         serializer = getHTMLSerializer([testLayout3])
-        request = self.layer['request']
+        request = self.layer["request"]
         tree = serializer.tree
         renderTiles(request, tree)
         result = str(serializer)
@@ -259,10 +263,9 @@ class TestRenderTiles(unittest.TestCase):
         self.assertIn("This is a demo tile with id subtile", result)
 
     def testRenderStructurelessTiles(self):
-        """Test if tiles without a html/head/body structure are also rendered.
-        """
+        """Test if tiles without a html/head/body structure are also rendered."""
         serializer = getHTMLSerializer([testLayout3])
-        request = self.layer['request']
+        request = self.layer["request"]
         tree = serializer.tree
         renderTiles(request, tree)
         result = str(serializer)
@@ -271,10 +274,9 @@ class TestRenderTiles(unittest.TestCase):
         self.assertIn("structureless in body", result)
 
     def testNonExistentAndBrokenTiiles(self):
-        """Test if non-existent or broken tiles do not end in an recursive loop.
-        """
+        """Test if non-existent or broken tiles do not end in an recursive loop."""
         serializer = getHTMLSerializer([testLayout4])
-        request = self.layer['request']
+        request = self.layer["request"]
         tree = serializer.tree
         renderTiles(request, tree)
         result = str(serializer)

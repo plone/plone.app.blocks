@@ -20,13 +20,11 @@ def onLayoutEdited(obj, event):
     tree = fromstring(layout)
     tile_keys = []
     for el in utils.bodyTileXPath(tree):
-        tile_url = el.attrib.get('data-tile', '')
-        if 'plone.app.standardtiles.field' in tile_url:
+        tile_url = el.attrib.get("data-tile", "")
+        if "plone.app.standardtiles.field" in tile_url:
             continue
         tile_keys.append(
-            ANNOTATIONS_KEY_PREFIX +
-            '.' +
-            tile_url.split('?')[0].split('/')[-1]
+            ANNOTATIONS_KEY_PREFIX + "." + tile_url.split("?")[0].split("/")[-1]
         )
 
     annotations = IAnnotations(obj)

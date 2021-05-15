@@ -2,7 +2,6 @@
 from Acquisition import aq_parent
 from App.config import getConfiguration
 from OFS.interfaces import ITraversable
-from Products.CMFCore.utils import getToolByName
 from plone.app.blocks.interfaces import CONTENT_LAYOUT_FILE_NAME
 from plone.app.blocks.interfaces import CONTENT_LAYOUT_MANIFEST_FORMAT
 from plone.app.blocks.interfaces import CONTENT_LAYOUT_RESOURCE_NAME
@@ -21,21 +20,23 @@ from plone.resource.manifest import MANIFEST_FILENAME
 from plone.resource.traversal import ResourceTraverser
 from plone.resource.utils import iterDirectoriesOfType
 from plone.subrequest import ISubRequest
+from Products.CMFCore.utils import getToolByName
 from six.moves.configparser import ConfigParser
 from six.moves.urllib import parse
 from zExceptions import NotFound
 from zope.annotation import IAnnotations
 from zope.component import adapter
+from zope.component.hooks import getSite
 from zope.globalrequest import getRequest
 from zope.interface import implementer
 from zope.publisher.browser import BrowserView
 from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleTerm
 from zope.schema.vocabulary import SimpleVocabulary
-from zope.component.hooks import getSite
 
 import logging
 import six
+
 
 try:
     from configparser import DEFAULTSECT
@@ -49,7 +50,7 @@ except ImportError:
 
     DEFAULTSECT = None
 
-logger = logging.getLogger('plone.app.blocks')
+logger = logging.getLogger("plone.app.blocks")
 
 
 class SiteLayoutTraverser(ResourceTraverser):
@@ -82,6 +83,7 @@ class multidict(dict):
     """
     Taken from: http://stackoverflow.com/questions/9876059/parsing-configure-file-with-same-section-name-in-python  # noqa
     """
+
     _unique = 0
 
     def __setitem__(self, key, val):
@@ -106,22 +108,19 @@ def getLayoutsFromManifest(fp, _format, directory_name):
 
     layouts = {}
     for section in parser.sections():
-        if not section.startswith(_format.resourceType) or \
-           ':variants' in section:
+        if not section.startswith(_format.resourceType) or ":variants" in section:
             continue
         # id is a combination of directory name + filename
-        if parser.has_option(section, 'file'):
-            filename = parser.get(section, 'file')
+        if parser.has_option(section, "file"):
+            filename = parser.get(section, "file")
         else:
-            filename = ''  # this should not happen...
-        _id = directory_name + '/' + filename
+            filename = ""  # this should not happen...
+        _id = directory_name + "/" + filename
         if _id in layouts:
             # because TTW resources are created first, we consider layouts
             # with same id in a TTW to be taken before other resources
             continue
-        data = {
-            'directory': directory_name
-        }
+        data = {"directory": directory_name}
         for key in _format.keys:
             if parser.has_option(section, key):
                 data[key] = parser.get(section, key)
@@ -140,23 +139,22 @@ def getLayoutsFromDirectory(directory, _format):
         try:
             layouts.update(getLayoutsFromManifest(manifest, _format, name))
         except:
-            logger.exception(
-                "Unable to read manifest for theme directory %s", name)
+            logger.exception("Unable to read manifest for theme directory %s", name)
         finally:
             manifest.close()
     else:
         # can provide default file for it with no manifest
-        filename = _format.defaults.get('file', '')
+        filename = _format.defaults.get("file", "")
         if filename and directory.isFile(filename):
-            _id = name + '/' + filename
+            _id = name + "/" + filename
             if _id not in layouts:
                 # not overridden
-                title = name.capitalize().replace('-', ' ').replace('.', ' ')
+                title = name.capitalize().replace("-", " ").replace(".", " ")
                 layouts[_id] = {
-                    'title': title,
-                    'description': '',
-                    'directory': name,
-                    'file': _format.defaults.get('file', '')
+                    "title": title,
+                    "description": "",
+                    "directory": name,
+                    "file": _format.defaults.get("file", ""),
                 }
     return layouts
 
@@ -172,8 +170,7 @@ def getLayoutsFromResources(_format):
 
 @implementer(IVocabularyFactory)
 class _AvailableLayoutsVocabulary(object):
-    """Vocabulary to return request cached available layouts of a given type
-    """
+    """Vocabulary to return request cached available layouts of a given type"""
 
     def __init__(self):
         self.request = getRequest() or AnnotationsDict()
@@ -185,11 +182,10 @@ class _AvailableLayoutsVocabulary(object):
         resources = getLayoutsFromResources(format)
         used = []
         for _id, config in resources.items():
-            title = config.get('title', _id)
-            filename = config.get('file', defaultFilename)
+            title = config.get("title", _id)
+            filename = config.get("file", defaultFilename)
 
-            path = "/++%s++%s/%s" % (format.resourceType,
-                                     config['directory'], filename)
+            path = "/++%s++%s/%s" % (format.resourceType, config["directory"], filename)
             if path in used:
                 # term values also need to be unique
                 # this should not happen but it's possible for users to screw
@@ -204,8 +200,7 @@ class _AvailableLayoutsVocabulary(object):
 
 @implementer(IVocabularyFactory)
 class AvailableLayoutsVocabulary(object):
-    """Vocabulary to return available layouts of a given type
-    """
+    """Vocabulary to return available layouts of a given type"""
 
     def __init__(self, format, defaultFilename):
         self.format = format
@@ -236,11 +231,11 @@ def cacheKey(method, self):
     if getConfiguration().debug_mode:
         raise volatile.DontCache()
 
-    catalog = getToolByName(self.context, 'portal_catalog')
+    catalog = getToolByName(self.context, "portal_catalog")
 
     return (
-        getattr(self.context, '_p_mtime', None),
-        self.request.form.get('ajax_load'),
+        getattr(self.context, "_p_mtime", None),
+        self.request.form.get("ajax_load"),
         catalog.getCounter(),
     )
 
@@ -251,11 +246,13 @@ def globalSiteLayoutModified(event):
     likely also affect things cached using plone.app.caching, which is what
     we want - the page has probably changed
     """
-    if event.record.__name__ in (DEFAULT_SITE_LAYOUT_REGISTRY_KEY,
-                                 DEFAULT_AJAX_LAYOUT_REGISTRY_KEY):
+    if event.record.__name__ in (
+        DEFAULT_SITE_LAYOUT_REGISTRY_KEY,
+        DEFAULT_AJAX_LAYOUT_REGISTRY_KEY,
+    ):
         if event.oldValue != event.newValue:
-            catalog = getToolByName(getSite(), 'portal_catalog', None)
-            if catalog is not None and hasattr(catalog, '_increment_counter'):
+            catalog = getToolByName(getSite(), "portal_catalog", None)
+            if catalog is not None and hasattr(catalog, "_increment_counter"):
                 catalog._increment_counter()
 
 
@@ -311,7 +308,7 @@ class DefaultSiteLayout(BrowserView):
 
     def _getLayout(self):
         layout_adapter = ILayoutAware(self.context)
-        if self.request.form.get('ajax_load'):
+        if self.request.form.get("ajax_load"):
             return layout_adapter.ajax_site_layout()
         return layout_adapter.site_layout()
 

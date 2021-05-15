@@ -7,30 +7,38 @@ from zope.interface import Interface
 
 
 SITE_LAYOUT_RESOURCE_NAME = "sitelayout"
-CONTENT_LAYOUT_RESOURCE_NAME = 'contentlayout'
+CONTENT_LAYOUT_RESOURCE_NAME = "contentlayout"
 
 SITE_LAYOUT_FILE_NAME = "site.html"
 CONTENT_LAYOUT_FILE_NAME = "content.html"
 
 SITE_LAYOUT_MANIFEST_FORMAT = ManifestFormat(
     SITE_LAYOUT_RESOURCE_NAME,
-    keys=('title', 'description', 'file'),
-    defaults={'file': SITE_LAYOUT_FILE_NAME}
+    keys=("title", "description", "file"),
+    defaults={"file": SITE_LAYOUT_FILE_NAME},
 )
 CONTENT_LAYOUT_MANIFEST_FORMAT = ManifestFormat(
     CONTENT_LAYOUT_RESOURCE_NAME,
-    keys=('title', 'description', 'file', 'screenshot',
-          'preview', 'sort_key', 'for', 'permission'),
-    defaults={'file': CONTENT_LAYOUT_FILE_NAME}
+    keys=(
+        "title",
+        "description",
+        "file",
+        "screenshot",
+        "preview",
+        "sort_key",
+        "for",
+        "permission",
+    ),
+    defaults={"file": CONTENT_LAYOUT_FILE_NAME},
 )
 
-DEFAULT_SITE_LAYOUT_REGISTRY_KEY = 'plone.defaultSiteLayout'
-DEFAULT_AJAX_LAYOUT_REGISTRY_KEY = 'plone.defaultAjaxLayout'
+DEFAULT_SITE_LAYOUT_REGISTRY_KEY = "plone.defaultSiteLayout"
+DEFAULT_AJAX_LAYOUT_REGISTRY_KEY = "plone.defaultAjaxLayout"
 
-DEFAULT_CONTENT_LAYOUT_REGISTRY_KEY = 'plone.app.blocks.default_layout'
+DEFAULT_CONTENT_LAYOUT_REGISTRY_KEY = "plone.app.blocks.default_layout"
 
 
-_ = MessageFactory('plone')
+_ = MessageFactory("plone")
 
 
 class IBlocksLayer(Interface):
@@ -47,8 +55,7 @@ class IBlocksTransformEnabled(Interface):
 
 
 class IBlocksSettings(Interface):
-    """Settings registered with the portal_registry tool
-    """
+    """Settings registered with the portal_registry tool"""
 
     esi = schema.Bool(
         title=_(u"Enable Edge Side Includes"),
@@ -61,8 +68,7 @@ class IBlocksSettings(Interface):
 
 
 class ILayoutField(Interface):
-    """Marker interface for the layout field
-    """
+    """Marker interface for the layout field"""
 
 
 class IOmittedField(Interface):
@@ -87,17 +93,15 @@ class ILayoutFieldDefaultValue(Interface):
 
 
 class IBaseTileRenderEvent(Interface):
-    """Base class for tile render events.
-    """
-    tile_href = Attribute('URL of the rendered tile')
-    tile_node = Attribute('LXML.html node on which the tile is called')
+    """Base class for tile render events."""
+
+    tile_href = Attribute("URL of the rendered tile")
+    tile_node = Attribute("LXML.html node on which the tile is called")
 
 
 class IBeforeTileRenderEvent(IBaseTileRenderEvent):
-    """Thrown before a tile is rendered.
-    """
+    """Thrown before a tile is rendered."""
 
 
 class IAfterTileRenderEvent(IBaseTileRenderEvent):
-    """Thrown after a tile is rendered.
-    """
+    """Thrown after a tile is rendered."""
