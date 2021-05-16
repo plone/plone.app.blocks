@@ -19,17 +19,8 @@ try:
     # Plone 5.2+
     from Products.CMFPlone.utils import safe_bytes
 except ImportError:
-    try:
-        # BBB for Plone 5.1
-        from Products.CMFPlone.utils import safe_encode as safe_bytes
-    except ImportError:
-        # BBB for Plone 4.3 and 5.0
-        def safe_bytes(value, encoding='utf-8'):
-            """Convert text to bytes of the specified encoding.
-            """
-            if isinstance(value, six.text_type):
-                value = value.encode(encoding)
-            return value
+    # BBB for Plone 5.1
+    from Products.CMFPlone.utils import safe_encode as safe_bytes
 
 
 logger = logging.getLogger(__name__)
