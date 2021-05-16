@@ -1,8 +1,17 @@
 Changelog
 =========
 
-4.3.3 (unreleased)
+5.0.0 (unreleased)
 ------------------
+
+- Allow tox tests to run single tests e.g. via: ``tox -e plone52-py38 -- -t test_resolve_resource``.
+  [thet]
+
+- Remove support for Plone 4.3 and 5.0.
+  [mauritsvanrees, thet]
+
+- Tests: Refactor buildout configs, use tox, use GitHub actions.
+  [mauritsvanrees]
 
 - Format code according to Plone standards: black, isort.
   [thet]

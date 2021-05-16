@@ -5,10 +5,10 @@ from setuptools import setup
 import os
 
 
-version = "4.3.3.dev0"
+version = "5.0.0.dev0"
 widgets_require = ["plone.app.widgets"]
 test_require = [
-    "plone.app.tiles >= 3.1.0",
+    "plone.app.tiles",
     "plone.app.testing",
     "plone.app.textfield",
     "plone.testing",
@@ -42,8 +42,6 @@ setup(
         "Development Status :: 5 - Production/Stable",
         "Environment :: Web Environment",
         "Framework :: Plone",
-        "Framework :: Plone :: 4.3",
-        "Framework :: Plone :: 5.0",
         "Framework :: Plone :: 5.1",
         "Framework :: Plone :: 5.2",
         "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
@@ -72,20 +70,20 @@ setup(
         "plone.app.layout",
         "plone.app.registry",
         "plone.autoform",
-        "plone.behavior>=1.1",
+        "plone.behavior",
         "plone.dexterity",
-        "plone.jsonserializer>=0.9.4",
+        "plone.jsonserializer",
         "plone.memoize",
         "plone.outputfilters",
         "plone.registry",
         "plone.resource",
-        "plone.subrequest >= 1.7.0",
+        "plone.subrequest",
         "plone.supermodel",
         "plone.tiles",
         "plone.transformchain",
         "plone.uuid",
         "Products.CMFCore",
-        "Products.CMFPlone >= 4.3",
+        "Products.CMFPlone >= 5.1",
         "repoze.xmliter",
         "setuptools",
         "six",
