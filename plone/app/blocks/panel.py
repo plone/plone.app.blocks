@@ -39,7 +39,8 @@ def merge(request, pageTree, removePanelLinks=False, removeLayoutLink=True):
     )
 
     layoutPanels = dict(
-        (node.attrib["data-panel"], node) for node in utils.panelXPath(layoutTree)
+        (node.attrib["data-panel"], (node, node.get("data-panel-mode", "append")))
+        for node in utils.panelXPath(layoutTree)
     )
 
     # Site layout should always have element with data-panel="content"
@@ -47,13 +48,16 @@ def merge(request, pageTree, removePanelLinks=False, removeLayoutLink=True):
     if "content" in pagePanels and "content" not in layoutPanels:
         for node in layoutTree.xpath('//*[@id="content"]'):
             node.attrib["data-panel"] = "content"
-            layoutPanels["content"] = node
+            layoutPanels["content"] = (node, "append")
             break
 
-    for panelId, layoutPanelNode in layoutPanels.items():
+    for panelId, (layoutPanelNode, layoutPanelMode) in layoutPanels.items():
         pagePanelNode = pagePanels.get(panelId, None)
         if pagePanelNode is not None:
-            utils.replace_content(layoutPanelNode, pagePanelNode)
+            if layoutPanelMode == "replace":
+                utils.replace_with_children(layoutPanelNode, pagePanelNode)
+            else:
+                utils.replace_content(layoutPanelNode, pagePanelNode)
         if removePanelLinks:
             del layoutPanelNode.attrib["data-panel"]
 
