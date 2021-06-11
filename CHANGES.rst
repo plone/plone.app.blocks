@@ -1,7 +1,7 @@
 Changelog
 =========
 
-5.0.0 (unreleased)
+5.0.0 (2021-06-11)
 ------------------
 
 - New ``data-panel-mode`` attribute.
