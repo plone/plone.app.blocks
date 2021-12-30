@@ -79,7 +79,9 @@ class BlocksLayer(PloneSandboxLayer):
         if "virtual_hosting" not in app.objectIds():
             # If ZopeLite was imported, we have no default virtual
             # host monster
-            from Products.SiteAccess.VirtualHostMonster import manage_addVirtualHostMonster
+            from Products.SiteAccess.VirtualHostMonster import (
+                manage_addVirtualHostMonster,
+            )
 
             manage_addVirtualHostMonster(app, "virtual_hosting")
 

@@ -48,6 +48,7 @@ class DisableParsing(object):
     def transformIterable(self, result, encoding):
         self.request.set("plone.app.blocks.disabled", True)
 
+
 @implementer(ITransform)
 class ParseXML(object):
     """First stage in the 8000's chain: parse the content to an lxml tree
