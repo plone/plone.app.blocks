@@ -292,7 +292,7 @@ We register these views and tiles in the same way the ZCML handlers for ``<brows
 
     >>> from plone.tiles.type import TileType
     >>> from AccessControl.security import protectClass
-    >>> from App.class_init import InitializeClass
+    >>> from AccessControl.class_init import InitializeClass
     >>> from zope.component import provideAdapter, provideUtility
     >>> from zope.interface import Interface
 

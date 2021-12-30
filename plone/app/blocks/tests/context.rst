@@ -49,7 +49,7 @@ Next, we initialize and register the browser views as ZCML handlers would::
     >>> protectClass(SiteLayout, 'zope2.View')
     >>> protectClass(PageLayout, 'zope2.View')
 
-    >>> from App.class_init import InitializeClass
+    >>> from AccessControl.class_init import InitializeClass
     >>> InitializeClass(SiteLayout)
     >>> InitializeClass(PageLayout)
 
