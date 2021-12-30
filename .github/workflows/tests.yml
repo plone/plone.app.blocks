@@ -33,7 +33,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ matrix.config[0] }}-${{ hashFiles('setup.*', 'tox.ini') }}
+        key: ${{ runner.os }}-pip-${{ matrix.config[0] }}-${{ matrix.config[1] }}-${{ hashFiles('setup.*', 'tox.ini') }}
         restore-keys: |
           ${{ runner.os }}-pip-${{ matrix.config[0] }}-
           ${{ runner.os }}-pip-
