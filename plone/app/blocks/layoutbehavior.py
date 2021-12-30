@@ -377,7 +377,7 @@ class LayoutAwareTileDataStorage(object):
                     logger.error(
                         (
                             u"No JSON object could be decoded from "
-                            u'data "{0:s}" for tile "{0:1}".'
+                            u'data "{0:s}" for tile "{1:s}".'
                         ).format(el.get("data-tiledata"), key)
                     )
                 raise KeyError(key)

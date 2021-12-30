@@ -138,7 +138,7 @@ def getLayoutsFromDirectory(directory, _format):
         manifest = directory.openFile(MANIFEST_FILENAME)
         try:
             layouts.update(getLayoutsFromManifest(manifest, _format, name))
-        except:
+        except Exception:
             logger.exception("Unable to read manifest for theme directory %s", name)
         finally:
             manifest.close()
