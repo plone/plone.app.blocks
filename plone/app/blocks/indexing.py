@@ -18,9 +18,7 @@ try:
 except pkg_resources.DistributionNotFound:
     HAS_DEXTERITYTEXTINDEXER = False
 else:
-    from collective.dexteritytextindexer.interfaces import (
-        IDynamicTextIndexExtender,
-    )  # noqa
+    from collective.dexteritytextindexer.interfaces import IDynamicTextIndexExtender  # noqa
 
     HAS_DEXTERITYTEXTINDEXER = True
 

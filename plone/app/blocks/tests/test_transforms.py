@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from plone.app.blocks.interfaces import IBlocksLayer
 from plone.app.blocks.interfaces import IBlocksTransformEnabled
-from plone.app.blocks.transform import ParseXML
 from plone.app.blocks.testing import BLOCKS_INTEGRATION_TESTING
+from plone.app.blocks.transform import ParseXML
 from plone.transformchain.zpublisher import applyTransform
 from zope.interface import alsoProvides
 from zope.interface import implementer

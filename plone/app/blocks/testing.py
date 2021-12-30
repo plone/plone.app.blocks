@@ -33,8 +33,8 @@ class BlocksLayer(PloneSandboxLayer):
             import plone.app.dexterity
 
             self.loadZCML(package=plone.app.dexterity)
-        import plone.app.tiles
         import plone.app.blocks
+        import plone.app.tiles
 
         self.loadZCML(package=plone.app.tiles, name="demo.zcml")
         self.loadZCML(package=plone.app.blocks)
@@ -79,9 +79,7 @@ class BlocksLayer(PloneSandboxLayer):
         if "virtual_hosting" not in app.objectIds():
             # If ZopeLite was imported, we have no default virtual
             # host monster
-            from Products.SiteAccess.VirtualHostMonster import (
-                manage_addVirtualHostMonster,
-            )
+            from Products.SiteAccess.VirtualHostMonster import manage_addVirtualHostMonster
 
             manage_addVirtualHostMonster(app, "virtual_hosting")
 

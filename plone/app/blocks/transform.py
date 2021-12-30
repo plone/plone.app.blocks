@@ -13,6 +13,7 @@ from zope.interface import implementer
 import logging
 import re
 
+
 try:
     # Plone 5.2+
     from Products.CMFPlone.utils import safe_bytes
