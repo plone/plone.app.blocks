@@ -6,14 +6,12 @@ from plone.app.blocks import tiles
 from plone.tiles import esi
 from plone.tiles.interfaces import ESI_HEADER
 from plone.transformchain.interfaces import ITransform
-from Products.CMFPlone.utils import safe_unicode
 from repoze.xmliter.serializer import XMLSerializer
 from repoze.xmliter.utils import getHTMLSerializer
 from zope.interface import implementer
 
 import logging
 import re
-import six
 
 try:
     # Plone 5.2+
