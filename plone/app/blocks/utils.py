@@ -93,13 +93,13 @@ def resolve(url, resolved=None):
             )
 
     if not resolved.strip():
-        return None
+        return
     try:
         html_parser = html.HTMLParser(encoding="utf-8")
         return html.fromstring(resolved, parser=html_parser).getroottree()
     except etree.XMLSyntaxError as e:
         logger.error("%s: %s" % (repr(e), url))
-        return None
+        return
 
 
 def subresponse_exception_handler(response, exception):
@@ -166,11 +166,8 @@ def xpath1(xpath, node, strict=True):
     result = xpath(node)
     if len(result) == 1:
         return result[0]
-    else:
-        if (len(result) > 1 and strict) or len(result) == 0:
-            return None
-        else:
-            return result
+    elif not ((len(result) > 1 and strict) or len(result) == 0):
+        return result
 
 
 def append_text(element, text):
@@ -263,8 +260,7 @@ def isVisible(name, omitted):
     value = omitted.get(name, False)
     if isinstance(value, six.string_types):
         return value == "false"
-    else:
-        return not bool(value)
+    return not bool(value)
 
 
 def add_theme(rules_doc, theme_doc, absolute_prefix=None):

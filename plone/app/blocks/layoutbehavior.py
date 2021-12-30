@@ -198,14 +198,14 @@ class LayoutAwareDefault(object):
 
         registry = queryUtility(IRegistry)
         if registry is None:
-            return None
+            return
 
         return registry.get(DEFAULT_SITE_LAYOUT_REGISTRY_KEY)
 
     def ajax_site_layout(self):
         registry = queryUtility(IRegistry)
         if registry is None:
-            return None
+            return
 
         return registry.get(DEFAULT_AJAX_LAYOUT_REGISTRY_KEY)
 
@@ -327,7 +327,7 @@ def invalidate_view_memoize(view, name, args, kwargs):
 
         return cache.pop(key, None)
     else:
-        return None
+        return
 
 
 @implementer(ITileDataStorage)

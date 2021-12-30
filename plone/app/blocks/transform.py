@@ -41,16 +41,12 @@ class DisableParsing(object):
 
     def transformBytes(self, result, encoding):
         self.request.set("plone.app.blocks.disabled", True)
-        return None
 
     def transformUnicode(self, result, encoding):
         self.request.set("plone.app.blocks.disabled", True)
-        return None
 
     def transformIterable(self, result, encoding):
         self.request.set("plone.app.blocks.disabled", True)
-        return None
-
 
 @implementer(ITransform)
 class ParseXML(object):
@@ -81,11 +77,11 @@ class ParseXML(object):
     def transformIterable(self, result, encoding):
 
         if self.request.get("plone.app.blocks.disabled", False):
-            return None
+            return
 
         content_type = self.request.response.getHeader("Content-Type")
         if content_type is None or not content_type.startswith("text/html"):
-            return None
+            return
 
         contentEncoding = self.request.response.getHeader("Content-Encoding")
         if contentEncoding and contentEncoding in (
@@ -93,7 +89,7 @@ class ParseXML(object):
             "deflate",
             "compress",
         ):
-            return None
+            return
 
         try:
             # Fix layouts with CR[+LF] line endings not to lose their heads
@@ -117,7 +113,6 @@ class ParseXML(object):
             return result
         except (AttributeError, TypeError, etree.ParseError) as e:
             logger.error(e)
-            return None
 
 
 @implementer(ITransform)
@@ -131,20 +126,20 @@ class MergePanels(object):
         self.request = request
 
     def transformBytes(self, result, encoding):
-        return None
+        return
 
     def transformUnicode(self, result, encoding):
-        return None
+        return
 
     def transformIterable(self, result, encoding):
         if not self.request.get("plone.app.blocks.enabled", False) or not isinstance(
             result, XMLSerializer
         ):
-            return None
+            return
 
         tree = panel.merge(self.request, result.tree)
         if tree is None:
-            return None
+            return
 
         # Set a marker in the request to let subsequent steps know the merging
         # has happened
@@ -173,16 +168,16 @@ class IncludeTiles(object):
         self.request = request
 
     def transformBytes(self, result, encoding):
-        return None
+        return
 
     def transformUnicode(self, result, encoding):
-        return None
+        return
 
     def transformIterable(self, result, encoding):
         if not self.request.get("plone.app.blocks.enabled", False) or not isinstance(
             result, XMLSerializer
         ):
-            return None
+            return
 
         result.tree = tiles.renderTiles(self.request, result.tree)
         return result
@@ -202,19 +197,19 @@ class ESIRender(object):
 
     def transformBytes(self, result, encoding):
         if self.request.getHeader(ESI_HEADER, "false").lower() != "true":
-            return None
+            return
 
         return esi.substituteESILinks([result])
 
     def transformUnicode(self, result, encoding):
         if self.request.getHeader(ESI_HEADER, "false").lower() != "true":
-            return None
+            return
 
         return esi.substituteESILinks([result.encode(encoding, "ignore")])
 
     def transformIterable(self, result, encoding):
         if self.request.getHeader(ESI_HEADER, "false").lower() != "true":
-            return None
+            return
         result = "".join(str(result))
         transformed = esi.substituteESILinks(result)
         if transformed != result:

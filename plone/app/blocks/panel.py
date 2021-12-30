@@ -12,7 +12,7 @@ def merge(request, pageTree, removePanelLinks=False, removeLayoutLink=True):
     # Find layout node
     layoutHref = utils.xpath1(utils.layoutXPath, pageTree)
     if layoutHref is None:
-        return None
+        return
 
     # Resolve layout tree
     baseURL = request.getURL()
@@ -30,7 +30,7 @@ def merge(request, pageTree, removePanelLinks=False, removeLayoutLink=True):
         layoutHref = parse.urlunparse(parts)
     layoutTree = utils.resolve(layoutHref)
     if layoutTree is None:
-        return None
+        return
 
     # Map page panels onto the layout
 
