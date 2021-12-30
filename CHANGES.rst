@@ -4,7 +4,8 @@ Changelog
 5.0.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Cleanup, make tests run on Plone 6 and include on GHA.
+  [jensens]
 
 
 5.0.0 (2021-06-11)
