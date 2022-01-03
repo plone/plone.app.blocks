@@ -153,33 +153,31 @@ class LayoutAwareDefault(object):
 
     def __init__(self, context):
         self.context = context
+        self.registry = getUtility(IRegistry)
 
     def tile_layout(self):
         return u""
 
     def content_layout_path(self):
         """Get path of content layout resource."""
-        registry = getUtility(IRegistry)
         content_layout_key = u"{0}.{1}".format(
             DEFAULT_CONTENT_LAYOUT_REGISTRY_KEY,
             getattr(self.context, "portal_type", "").replace(" ", "-"),
         )
-        path = registry.get(content_layout_key, None)
-        path = path or registry.get(DEFAULT_CONTENT_LAYOUT_REGISTRY_KEY, None)
+        path = self.registry.get(content_layout_key, None)
+        path = path or self.registry.get(DEFAULT_CONTENT_LAYOUT_REGISTRY_KEY, None)
         return path
 
     def content_layout(self):
         """Returns the content HTML layout."""
-        layout = None
         path = self.content_layout_path()
         try:
             resolved = resolveResource(path)
             if isinstance(resolved, six.text_type):
                 resolved = resolved.encode("utf-8")
-            layout = applyTilePersistent(path, resolved)
+            return applyTilePersistent(path, resolved)
         except (NotFound, RuntimeError, IOError):
             pass
-        return layout
 
     def site_layout(self):
         """Bubble up looking for an sectionSiteLayout, otherwise lookup the
@@ -192,22 +190,15 @@ class LayoutAwareDefault(object):
         while parent is not None:
             layoutAware = ILayoutAware(parent, None)
             if layoutAware is not None:
-                if getattr(layoutAware, "sectionSiteLayout", None):
+                section_site_layout = layoutAware.sectionSiteLayout
+                if section_site_layout:
                     return layoutAware.sectionSiteLayout
             parent = aq_parent(aq_inner(parent))
 
-        registry = queryUtility(IRegistry)
-        if registry is None:
-            return
-
-        return registry.get(DEFAULT_SITE_LAYOUT_REGISTRY_KEY)
+        return self.registry.get(DEFAULT_SITE_LAYOUT_REGISTRY_KEY)
 
     def ajax_site_layout(self):
-        registry = queryUtility(IRegistry)
-        if registry is None:
-            return
-
-        return registry.get(DEFAULT_AJAX_LAYOUT_REGISTRY_KEY)
+        return self.registry.get(DEFAULT_AJAX_LAYOUT_REGISTRY_KEY)
 
 
 @implementer(ILayoutAware)
@@ -293,8 +284,7 @@ def layoutAwareTileDataStorage(context, request, tile):
     schema = getUtility(ITileType, name=tile.__name__).schema
     if schema and tile.id is not None:
         return LayoutAwareTileDataStorage(context, request, tile)
-    else:
-        return defaultTileDataStorage(context, request, tile)
+    return defaultTileDataStorage(context, request, tile)
 
 
 def invalidate_view_memoize(view, name, args, kwargs):
@@ -303,31 +293,31 @@ def invalidate_view_memoize(view, name, args, kwargs):
     See: plone/memoize/view.py
     """
 
-    context = view.context
     annotations = IAnnotations(view.request, None) or {}
     cache = annotations.get("plone.memoize")
 
-    if cache:
-        try:
-            context_id = context.getPhysicalPath()
-        except AttributeError:
-            context_id = id(context)
-
-        # Note: we don't use args[0] in the cache key, since args[0] ==
-        # view instance and the whole point is that we can cache different
-        # requests
-
-        key = (
-            context_id,
-            view.__class__.__name__,
-            name,
-            args[1:],
-            frozenset(kwargs.items()),
-        )
-
-        return cache.pop(key, None)
-    else:
+    if not cache:
         return
+
+    context = view.context
+    try:
+        context_id = context.getPhysicalPath()
+    except AttributeError:
+        context_id = id(context)
+
+    # Note: we don't use args[0] in the cache key, since args[0] ==
+    # view instance and the whole point is that we can cache different
+    # requests
+
+    key = (
+        context_id,
+        view.__class__.__name__,
+        name,
+        args[1:],
+        frozenset(kwargs.items()),
+    )
+
+    return cache.pop(key, None)
 
 
 @implementer(ITileDataStorage)
@@ -348,13 +338,10 @@ class LayoutAwareTileDataStorage(object):
         ILayoutAware(self.context).content = str(self.storage)
 
     def resolve(self, key):
-        if self.tile is None:
-            name = None
-        else:
-            name = self.tile.__name__
         try:
             name, key = key.strip("@").split("/", 1)
         except ValueError:
+            name = self.tile.__name__ if self.tile is not None else None
             if name is None:
                 raise KeyError(key)
             key = key.strip("@")
@@ -393,24 +380,24 @@ class LayoutAwareTileDataStorage(object):
                 primary = None
             if primary:
                 for name in schema_:
-                    if IPrimaryField.providedBy(schema_[name]):
-                        data[name] = primary
-                        # Supports supermodel-defined RichTextValue
-                        keys = [
-                            key_
-                            for key_ in data.keys()
-                            if key_.startswith("{0:s}-".format(name))
-                        ]
-                        if keys:
-                            data[name] = dict(
-                                [(u"data", data[name])]
-                                + [
-                                    (key_.split("-", 1)[-1], data.pop(key_))
-                                    for key_ in keys
-                                ]
-                            )
-                        break
-
+                    if not IPrimaryField.providedBy(schema_[name]):
+                        continue
+                    data[name] = primary
+                    # Supports supermodel-defined RichTextValue
+                    keys = [
+                        key_
+                        for key_ in data.keys()
+                        if key_.startswith("{0:s}-".format(name))
+                    ]
+                    if keys:
+                        data[name] = dict(
+                            [(u"data", data[name])]
+                            + [
+                                (key_.split("-", 1)[-1], data.pop(key_))
+                                for key_ in keys
+                            ]
+                        )
+                    break
             return schema_compatible(data, schema_)
         raise KeyError(key)
 
