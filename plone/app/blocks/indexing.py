@@ -1,7 +1,7 @@
-# -*- coding: utf-8 -*-
 from lxml.html import fromstring
 from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.app.blocks.layoutbehavior import ILayoutBehaviorAdaptable
+from plone.app.contenttypes import indexers
 from plone.indexer.decorator import indexer
 from plone.tiles.data import ANNOTATIONS_KEY_PREFIX
 from Products.CMFPlone.utils import safe_unicode
@@ -10,7 +10,6 @@ from zope.component import adapter
 from zope.interface import implementer
 
 import pkg_resources
-import six
 
 
 try:
@@ -24,20 +23,8 @@ else:
 
     HAS_DEXTERITYTEXTINDEXER = True
 
-try:
-    from plone.app.contenttypes import indexers
 
-    concat = indexers._unicode_save_string_concat
-except ImportError:
-
-    def concat(*args):
-        result = ""
-        for value in args:
-            if isinstance(value, six.text_type):
-                value = value.encode("utf-8", "replace")
-            if value:
-                result = " ".join((result, value))
-        return result
+concat = indexers._unicode_save_string_concat
 
 
 @indexer(ILayoutBehaviorAdaptable)
@@ -64,7 +51,7 @@ def LayoutSearchableText(obj):
             data = annotations[key]
             for field_name in ("title", "label", "content"):
                 val = data.get(field_name)
-                if isinstance(val, six.string_types):
+                if isinstance(val, str):
                     text.append(val)
 
     try:
@@ -88,7 +75,7 @@ if HAS_DEXTERITYTEXTINDEXER:
 
     @implementer(IDynamicTextIndexExtender)
     @adapter(ILayoutBehaviorAdaptable)
-    class LayoutSearchableTextIndexExtender(object):
+    class LayoutSearchableTextIndexExtender:
         def __init__(self, context):
             self.context = context
 

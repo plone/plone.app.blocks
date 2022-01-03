@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.app.blocks.interfaces import IBlocksLayer
 from plone.app.blocks.interfaces import IBlocksTransformEnabled
 from plone.app.blocks.testing import BLOCKS_INTEGRATION_TESTING
@@ -11,7 +10,7 @@ import unittest
 
 
 @implementer(IBlocksTransformEnabled)
-class TransformedView(object):
+class TransformedView:
     def __init__(self, ret_body):
         self.body = ret_body
 

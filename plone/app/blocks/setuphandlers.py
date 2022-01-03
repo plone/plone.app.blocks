@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.registry import field
 from plone.registry import Record
 from plone.registry.interfaces import IRegistry
@@ -17,14 +16,14 @@ def initialize_default_layout_registry_values(portal):
     records = (
         (
             "plone.defaultSiteLayout",
-            u"Default site layout",
-            u"The default site layout for the site",
+            "Default site layout",
+            "The default site layout for the site",
             None,
         ),
         (
             "plone.defaultAjaxLayout",
-            u"Default ajax layout",
-            u"The default ajax layout for the site",
+            "Default ajax layout",
+            "The default ajax layout for the site",
             None,
         ),
     )

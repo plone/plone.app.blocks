@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from lxml import html
 from lxml.etree import XSLTApplyError
 from plone.app.blocks import events

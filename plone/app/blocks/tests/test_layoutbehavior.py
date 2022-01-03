@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.app.blocks.layoutbehavior import ILayoutBehaviorAdaptable
 from plone.app.blocks.layoutbehavior import LayoutAwareTileDataStorage
@@ -51,8 +50,8 @@ class TestLayoutBehavior(unittest.TestCase):
         self.portal.portal_types._setObject("MyDocument", fti)
 
         setRoles(self.portal, TEST_USER_ID, ("Manager",))
-        self.portal.invokeFactory("Folder", "f1", title=u"Folder 1")
-        self.portal["f1"].invokeFactory("MyDocument", "d1", title=u"Document 1")
+        self.portal.invokeFactory("Folder", "f1", title="Folder 1")
+        self.portal["f1"].invokeFactory("MyDocument", "d1", title="Document 1")
         setRoles(self.portal, TEST_USER_ID, ("Member",))
 
         self.behavior = ILayoutAware(self.portal["f1"]["d1"])
@@ -62,8 +61,8 @@ class TestLayoutBehavior(unittest.TestCase):
         from plone.app.blocks.layoutviews import ContentLayoutView
 
         self.behavior.customContentLayout = (
-            u'<html><body><a href="{0:s}"></a></body></html>'.format(
-                "resolveuid/{0:s}".format(IUUID(self.portal["f1"]))
+            '<html><body><a href="{:s}"></a></body></html>'.format(
+                "resolveuid/{:s}".format(IUUID(self.portal["f1"]))
             )
         )
         rendered = ContentLayoutView(self.portal["f1"]["d1"], self.request)()
@@ -74,7 +73,7 @@ class TestLayoutBehavior(unittest.TestCase):
 
     def test_content(self):
         tile = "plone.app.tiles.demo.transient/demo"
-        self.behavior.content = u"""\
+        self.behavior.content = """\
 <html>
 <body>
 <div data-tile="@@plone.app.tiles.demo.transient/demo"
@@ -92,10 +91,10 @@ data-tiledata='{"message": "Hello World!"}' />
         )
         self.assertEqual(len(storage), 1)
         self.assertEqual(list(storage), [tile])
-        self.assertEqual(storage[tile]["message"], u"Hello World!")
+        self.assertEqual(storage[tile]["message"], "Hello World!")
 
         data = storage[tile]
-        data["message"] = u"Foo bar!"
+        data["message"] = "Foo bar!"
         storage[tile] = data
 
         view = self.portal["f1"]["d1"].restrictedTraverse(tile)()
@@ -121,7 +120,7 @@ data-tiledata='{"message": "Hello World!"}' />
             name="plone.app.blocks.richtext",
         )
 
-        self.behavior.content = u"""\
+        self.behavior.content = """\
 <html>
 <body>
 <div data-tile="@@plone.app.blocks.richtext/demo"
@@ -138,7 +137,7 @@ data-tiledata='{"content-type": "text/html"}'>
 
         self.assertIn("html", data)
         self.assertIsInstance(data["html"], RichTextValue)
-        self.assertEqual(data["html"].output, u"<p>Hello World!</p>")
+        self.assertEqual(data["html"].output, "<p>Hello World!</p>")
 
         storage["@@plone.app.blocks.richtext/demo"] = {
             "html": RichTextValue(
@@ -149,7 +148,7 @@ data-tiledata='{"content-type": "text/html"}'>
             )
         }
 
-        output = str(storage.storage).replace(u"\n", u"")
+        output = str(storage.storage).replace("\n", "")
         self.assertIn('"html-content-type": "text/html"', output)
         self.assertIn('"html-output-content-type": "text/x-html-safe"', output)
         self.assertIn("<p>Foo bar!</p>", output)

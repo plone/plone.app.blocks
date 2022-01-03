@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.app.blocks.layoutbehavior import ILayoutBehaviorAdaptable
 from Products.CMFCore.utils import getToolByName

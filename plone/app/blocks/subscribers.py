@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from lxml.html import fromstring
 from plone.app.blocks import utils
 from plone.app.blocks.layoutbehavior import ILayoutAware

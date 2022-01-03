@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.app.blocks.interfaces import IBlocksTransformEnabled
 from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.app.layout.globals.interfaces import IViewView
@@ -14,7 +13,7 @@ from zope.interface import implementer
 import os
 
 
-ERROR_LAYOUT = u"""
+ERROR_LAYOUT = """
 <!DOCTYPE html>
 <html lang="en" data-layout="./@@page-site-layout">
 <body>
@@ -32,7 +31,7 @@ class SiteLayoutView(BrowserView):
     index = ViewPageTemplateFile(os.path.join("templates", "main_template.pt"))
 
     def __init__(self, context, request, name="layout"):
-        super(SiteLayoutView, self).__init__(context, request)
+        super().__init__(context, request)
         self.__name__ = name
 
     def __call__(self):
@@ -76,7 +75,7 @@ class ContentLayoutPreview(ContentLayoutView):
             alsoProvides(self.request, IDisplayFormDrafting)
             self.context = DraftProxy(draft, self.context)
 
-        return super(ContentLayoutPreview, self).__call__()
+        return super().__call__()
 
 
 @implementer(IBlocksTransformEnabled)

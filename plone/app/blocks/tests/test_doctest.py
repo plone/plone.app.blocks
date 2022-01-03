@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.app.blocks.testing import BLOCKS_FUNCTIONAL_TESTING_PRETTY_PRINT
 from plone.testing import layered
 

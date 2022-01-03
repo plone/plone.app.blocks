@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
@@ -31,7 +30,6 @@ from zope import schema
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapter
 from zope.component import getUtility
-from zope.component import queryUtility
 from zope.deprecation import deprecate
 from zope.interface import implementer
 from zope.interface import Interface
@@ -39,7 +37,6 @@ from zope.interface import provider
 
 import json
 import logging
-import six
 import zope.deferredimport
 
 
@@ -64,31 +61,31 @@ class ILayoutAware(model.Schema):
 
     omitted("content")
     content = schema.Text(
-        title=_(u"Tile content"),
-        description=_(u"Transient tile configurations and data for this page"),
+        title=_("Tile content"),
+        description=_("Transient tile configurations and data for this page"),
         default=None,
         required=False,
     )
 
     customContentLayout = LayoutField(
-        title=_(u"Custom layout"),
-        description=_(u"Custom content and content layout of this page"),
+        title=_("Custom layout"),
+        description=_("Custom content and content layout of this page"),
         default=None,
         required=False,
     )
 
     contentLayout = schema.ASCIILine(
-        title=_(u"Content Layout"),
+        title=_("Content Layout"),
         description=_(
-            u"Selected content layout. If selected, custom layout is " u"ignored."
+            "Selected content layout. If selected, custom layout is " "ignored."
         ),
         required=False,
     )
 
     pageSiteLayout = schema.Choice(
-        title=_(u"Site layout"),
+        title=_("Site layout"),
         description=_(
-            u"Site layout to apply to this page " u"instead of the default site layout"
+            "Site layout to apply to this page " "instead of the default site layout"
         ),
         vocabulary="plone.availableSiteLayouts",
         required=False,
@@ -96,10 +93,10 @@ class ILayoutAware(model.Schema):
     write_permission(pageSiteLayout="plone.ManageSiteLayouts")
 
     sectionSiteLayout = schema.Choice(
-        title=_(u"Section site layout"),
+        title=_("Section site layout"),
         description=_(
-            u"Site layout to apply to sub-pages of this page "
-            u"instead of the default site layout"
+            "Site layout to apply to sub-pages of this page "
+            "instead of the default site layout"
         ),
         vocabulary="plone.availableSiteLayouts",
         required=False,
@@ -142,7 +139,7 @@ class ILayoutBehaviorAdaptable(Interface):
 
 @implementer(ILayoutAware)
 @adapter(Interface)
-class LayoutAwareDefault(object):
+class LayoutAwareDefault:
     """Default layout lookup for a context w/o the behavior"""
 
     content = None
@@ -156,11 +153,11 @@ class LayoutAwareDefault(object):
         self.registry = getUtility(IRegistry)
 
     def tile_layout(self):
-        return u""
+        return ""
 
     def content_layout_path(self):
         """Get path of content layout resource."""
-        content_layout_key = u"{0}.{1}".format(
+        content_layout_key = "{}.{}".format(
             DEFAULT_CONTENT_LAYOUT_REGISTRY_KEY,
             getattr(self.context, "portal_type", "").replace(" ", "-"),
         )
@@ -173,10 +170,10 @@ class LayoutAwareDefault(object):
         path = self.content_layout_path()
         try:
             resolved = resolveResource(path)
-            if isinstance(resolved, six.text_type):
+            if isinstance(resolved, str):
                 resolved = resolved.encode("utf-8")
             return applyTilePersistent(path, resolved)
-        except (NotFound, RuntimeError, IOError):
+        except (NotFound, RuntimeError, OSError):
             pass
 
     def site_layout(self):
@@ -246,16 +243,16 @@ class LayoutAwareBehavior(LayoutAwareDefault):
         self.context.sectionSiteLayout = value
 
     def tile_layout(self):
-        return self.content or u""
+        return self.content or ""
 
     def content_layout_path(self):
         path = self.contentLayout
-        return path or super(LayoutAwareBehavior, self).content_layout_path()
+        return path or super().content_layout_path()
 
     def content_layout(self):
         if self.customContentLayout and not self.contentLayout:
             return self.customContentLayout
-        return super(LayoutAwareBehavior, self).content_layout()
+        return super().content_layout()
 
     def site_layout(self):
         """Get the path to the site layout for a page.
@@ -263,14 +260,10 @@ class LayoutAwareBehavior(LayoutAwareDefault):
         This is generally only appropriate for the view of this page.
         For a generic template or view getDefaultSiteLayout(context)
         """
-        return (
-            self.pageSiteLayout
-            or self.sectionSiteLayout
-            or super(LayoutAwareBehavior, self).site_layout()
-        )
+        return self.pageSiteLayout or self.sectionSiteLayout or super().site_layout()
 
 
-DATA_LAYOUT = u"""
+DATA_LAYOUT = """
 <!DOCTYPE html>
 <html lang="en" data-layout="./@@page-site-layout">
 <body data-panel="content">
@@ -322,7 +315,7 @@ def invalidate_view_memoize(view, name, args, kwargs):
 
 @implementer(ITileDataStorage)
 @adapter(ILayoutBehaviorAdaptable, Interface, ITile)
-class LayoutAwareTileDataStorage(object):
+class LayoutAwareTileDataStorage:
     def __init__(self, context, request, tile=None):
         self.context = context
         self.request = request
@@ -346,7 +339,7 @@ class LayoutAwareTileDataStorage(object):
                 raise KeyError(key)
             key = key.strip("@")
         return (
-            "@@{0:s}/{1:s}".format(name, key),
+            f"@@{name:s}/{key:s}",
             getUtility(ITileType, name=name).schema,
         )
 
@@ -354,24 +347,22 @@ class LayoutAwareTileDataStorage(object):
     @view.memoize
     def __getitem__(self, key):
         key, schema_ = self.resolve(key)
-        for el in self.storage.tree.xpath(
-            '//*[contains(@data-tile, "{0:s}")]'.format(key)
-        ):
+        for el in self.storage.tree.xpath(f'//*[contains(@data-tile, "{key:s}")]'):
             try:
                 data = json.loads(el.get("data-tiledata") or "{}")
             except ValueError:
                 if el.get("data-tiledata"):
                     logger.error(
                         (
-                            u"No JSON object could be decoded from "
-                            u'data "{0:s}" for tile "{1:s}".'
+                            "No JSON object could be decoded from "
+                            'data "{:s}" for tile "{:s}".'
                         ).format(el.get("data-tiledata"), key)
                     )
                 raise KeyError(key)
 
             # Read primary field content from el content
             if len(el) and len(el[0]):
-                primary = u"".join(
+                primary = "".join(
                     [html.tostring(x, encoding="utf-8").decode("utf-8") for x in el[0]]
                 )
             elif len(el):
@@ -385,13 +376,11 @@ class LayoutAwareTileDataStorage(object):
                     data[name] = primary
                     # Supports supermodel-defined RichTextValue
                     keys = [
-                        key_
-                        for key_ in data.keys()
-                        if key_.startswith("{0:s}-".format(name))
+                        key_ for key_ in data.keys() if key_.startswith(f"{name:s}-")
                     ]
                     if keys:
                         data[name] = dict(
-                            [(u"data", data[name])]
+                            [("data", data[name])]
                             + [
                                 (key_.split("-", 1)[-1], data.pop(key_))
                                 for key_ in keys
@@ -415,9 +404,7 @@ class LayoutAwareTileDataStorage(object):
     # IWriteMapping
     def __delitem__(self, key):
         key, schema_ = self.resolve(key)
-        for el in self.storage.tree.xpath(
-            '//*[contains(@data-tile, "{0:s}")]'.format(key)
-        ):
+        for el in self.storage.tree.xpath(f'//*[contains(@data-tile, "{key:s}")]'):
             el.remove()
 
             # Purge view.memoize
@@ -438,21 +425,19 @@ class LayoutAwareTileDataStorage(object):
         primary = None
         for name in schema_:
             if IPrimaryField.providedBy(schema_[name]) and data.get(name):
-                raw = data.pop(name) or u""
+                raw = data.pop(name) or ""
                 if isinstance(raw, dict):  # Support supermodel RichTextValue
                     for key_ in [k for k in raw if k != "data"]:
-                        data[u"{0:s}-{1:s}".format(name, key_)] = raw[key_]
+                        data[f"{name:s}-{key_:s}"] = raw[key_]
                     raw = raw.get("data")
                 try:
-                    raw = u"<div>{0:s}</div>".format(raw or u"")
+                    raw = "<div>{:s}</div>".format(raw or "")
                     primary = html.fromstring(raw)
                 except (etree.ParseError, TypeError):
                     pass
 
         # Update existing value
-        for el in self.storage.tree.xpath(
-            '//*[contains(@data-tile, "{0:s}")]'.format(key)
-        ):
+        for el in self.storage.tree.xpath(f'//*[contains(@data-tile, "{key:s}")]'):
             el.clear()
             el.attrib["data-tile"] = key
             if data:

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.resource.manifest import ManifestFormat
 from zope import schema
 from zope.i18nmessageid import MessageFactory
@@ -58,10 +57,10 @@ class IBlocksSettings(Interface):
     """Settings registered with the portal_registry tool"""
 
     esi = schema.Bool(
-        title=_(u"Enable Edge Side Includes"),
+        title=_("Enable Edge Side Includes"),
         description=_(
-            u"Allows tiles which support Edge Side Includes (ESI) to be "
-            u"rendered as ESI links instead of invoked directly."
+            "Allows tiles which support Edge Side Includes (ESI) to be "
+            "rendered as ESI links instead of invoked directly."
         ),
         default=False,
     )

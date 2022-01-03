@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.app.blocks.testing import BLOCKS_FIXTURE
 from plone.app.blocks.tiles import renderTiles
 from plone.app.testing import IntegrationTesting
@@ -22,7 +21,7 @@ except NameError:
 
 class ITestTile(Interface):
 
-    magicNumber = schema.Int(title=u"Magic number", required=False)
+    magicNumber = schema.Int(title="Magic number", required=False)
 
 
 @implementer(ITestTile)
@@ -238,7 +237,7 @@ class TestRenderTiles(unittest.TestCase):
         self.assertIn("This is a demo tile with id tile2", result)
         self.assertIn("This is a demo tile with id tile3", result)
         self.assertIn("This is a demo tile with id tile4", result)
-        self.assertIn(u"Umlauts: \xdcbertile", result)
+        self.assertIn("Umlauts: \xdcbertile", result)
 
     def testRenderTilesError(self):
         serializer = getHTMLSerializer([testLayout2])

@@ -1,6 +1,7 @@
-# -*- coding: utf-8 -*-
 from Acquisition import aq_parent
 from App.config import getConfiguration
+from configparser import DEFAULTSECT
+from configparser import SectionProxy
 from OFS.interfaces import ITraversable
 from plone.app.blocks.interfaces import CONTENT_LAYOUT_FILE_NAME
 from plone.app.blocks.interfaces import CONTENT_LAYOUT_MANIFEST_FORMAT
@@ -35,20 +36,7 @@ from zope.schema.vocabulary import SimpleTerm
 from zope.schema.vocabulary import SimpleVocabulary
 
 import logging
-import six
 
-
-try:
-    from configparser import DEFAULTSECT
-    from configparser import SectionProxy
-
-except ImportError:
-    # python 2.7 fallback for multidict
-
-    class SectionProxy(dict):
-        pass
-
-    DEFAULTSECT = None
 
 logger = logging.getLogger("plone.app.blocks")
 
@@ -96,15 +84,11 @@ class multidict(dict):
 def getLayoutsFromManifest(fp, _format, directory_name):
     # support multiple sections with the same name in manifest.cfg
 
-    if six.PY2:
-        parser = ConfigParser(None, multidict)
-        parser.readfp(fp)
-    else:
-        data = fp.read()
-        if isinstance(data, six.binary_type):
-            data = data.decode()
-        parser = ConfigParser(dict_type=multidict, strict=False)
-        parser.read_string(data)
+    data = fp.read()
+    if isinstance(data, bytes):
+        data = data.decode()
+    parser = ConfigParser(dict_type=multidict, strict=False)
+    parser.read_string(data)
 
     layouts = {}
     for section in parser.sections():
@@ -169,7 +153,7 @@ def getLayoutsFromResources(_format):
 
 
 @implementer(IVocabularyFactory)
-class _AvailableLayoutsVocabulary(object):
+class _AvailableLayoutsVocabulary:
     """Vocabulary to return request cached available layouts of a given type"""
 
     def __init__(self):
@@ -185,7 +169,9 @@ class _AvailableLayoutsVocabulary(object):
             title = config.get("title", _id)
             filename = config.get("file", defaultFilename)
 
-            path = "/++%s++%s/%s" % (format.resourceType, config["directory"], filename)
+            path = "/++{}++{}/{}".format(
+                format.resourceType, config["directory"], filename
+            )
             if path in used:
                 # term values also need to be unique
                 # this should not happen but it's possible for users to screw
@@ -199,7 +185,7 @@ class _AvailableLayoutsVocabulary(object):
 
 
 @implementer(IVocabularyFactory)
-class AvailableLayoutsVocabulary(object):
+class AvailableLayoutsVocabulary:
     """Vocabulary to return available layouts of a given type"""
 
     def __init__(self, format, defaultFilename):
@@ -293,7 +279,7 @@ class DefaultSiteLayout(BrowserView):
             if pathContext is None:
                 break
 
-        if isinstance(layout, six.binary_type):
+        if isinstance(layout, bytes):
             layout = layout.decode()
 
         path = layout

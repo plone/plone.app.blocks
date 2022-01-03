@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.app.blocks.layoutbehavior import LayoutAwareBehavior
@@ -25,8 +24,8 @@ class TestPageSiteLayout(unittest.TestCase):
         self.registry = getUtility(IRegistry)
 
         setRoles(self.portal, TEST_USER_ID, ("Manager",))
-        self.portal.invokeFactory("Folder", "f1", title=u"Folder 1")
-        self.portal["f1"].invokeFactory("Document", "d1", title=u"Document 1")
+        self.portal.invokeFactory("Folder", "f1", title="Folder 1")
+        self.portal["f1"].invokeFactory("Document", "d1", title="Document 1")
         setRoles(self.portal, TEST_USER_ID, ("Member",))
 
         # setup default behavior
@@ -49,7 +48,7 @@ class TestPageSiteLayout(unittest.TestCase):
                 self.portal["f1"]["d1"],
                 self.request,
             ),
-            name=u"page-site-layout",
+            name="page-site-layout",
         )
         self.assertRaises(NotFound, view.index)
 
@@ -67,13 +66,13 @@ class TestPageSiteLayout(unittest.TestCase):
                 self.portal["f1"]["d1"],
                 self.request,
             ),
-            name=u"page-site-layout",
+            name="page-site-layout",
         )
         rendered = view()
-        self.assertTrue(u"Layout title" in rendered)
+        self.assertTrue("Layout title" in rendered)
 
     def test_page_site_layout_page_override(self):
-        self.behavior.customContentLayout = u"<html><body>N/A</body></html>"
+        self.behavior.customContentLayout = "<html><body>N/A</body></html>"
         self.behavior.pageSiteLayout = "/++sitelayout++testlayout2/mylayout.html"
 
         view = getMultiAdapter(
@@ -81,11 +80,11 @@ class TestPageSiteLayout(unittest.TestCase):
                 self.portal["f1"]["d1"],
                 self.request,
             ),
-            name=u"page-site-layout",
+            name="page-site-layout",
         )
         rendered = view()
-        self.assertFalse(u"Layout title" in rendered)
-        self.assertTrue(u"My Layout 1 Title" in rendered)
+        self.assertFalse("Layout title" in rendered)
+        self.assertTrue("My Layout 1 Title" in rendered)
 
     def test_page_site_layout_section_override(self):
         self.behavior.sectionSiteLayout = "/++sitelayout++testlayout2/mylayout.html"
@@ -95,12 +94,12 @@ class TestPageSiteLayout(unittest.TestCase):
                 self.portal["f1"]["d1"],
                 self.request,
             ),
-            name=u"page-site-layout",
+            name="page-site-layout",
         )
         rendered = view()
 
-        self.assertFalse(u"Layout title" in rendered)
-        self.assertTrue(u"My Layout 1 Title" in rendered)
+        self.assertFalse("Layout title" in rendered)
+        self.assertTrue("My Layout 1 Title" in rendered)
 
     def test_page_site_layout_cache(self):
         self.behavior.pageSiteLayout = "/++sitelayout++testlayout2/mylayout.html"
@@ -110,12 +109,12 @@ class TestPageSiteLayout(unittest.TestCase):
                 self.portal["f1"]["d1"],
                 self.request,
             ),
-            name=u"page-site-layout",
+            name="page-site-layout",
         )
         rendered = view()
 
-        self.assertFalse(u"Layout title" in rendered)
-        self.assertTrue(u"My Layout 1 Title" in rendered)
+        self.assertFalse("Layout title" in rendered)
+        self.assertTrue("My Layout 1 Title" in rendered)
 
         # Change the section value
         self.behavior.pageSiteLayout = "/++sitelayout++testlayout1/site.html"
@@ -125,16 +124,16 @@ class TestPageSiteLayout(unittest.TestCase):
                 self.portal["f1"]["d1"],
                 self.request,
             ),
-            name=u"page-site-layout",
+            name="page-site-layout",
         )
         rendered = view()
 
         # Cache means our change is ignored
-        self.assertFalse(u"Layout title" in rendered)
-        self.assertTrue(u"My Layout 1 Title" in rendered)
+        self.assertFalse("Layout title" in rendered)
+        self.assertTrue("My Layout 1 Title" in rendered)
 
     def test_page_site_layout_cache_invalidate_mtime(self):
-        self.behavior.customContentLayout = u"<html><body>N/A</body></html>"
+        self.behavior.customContentLayout = "<html><body>N/A</body></html>"
         self.behavior.sectionSiteLayout = "/++sitelayout++testlayout2/mylayout.html"
 
         view = getMultiAdapter(
@@ -142,15 +141,15 @@ class TestPageSiteLayout(unittest.TestCase):
                 self.portal["f1"]["d1"],
                 self.request,
             ),
-            name=u"page-site-layout",
+            name="page-site-layout",
         )
         rendered = view()
 
-        self.assertFalse(u"Layout title" in rendered)
-        self.assertTrue(u"My Layout 1 Title" in rendered)
+        self.assertFalse("Layout title" in rendered)
+        self.assertTrue("My Layout 1 Title" in rendered)
 
         # Trigger invalidation by modifying the context
-        self.portal["f1"]["d1"].title = u"New title"
+        self.portal["f1"]["d1"].title = "New title"
         transaction.commit()
 
         # Change the section value
@@ -161,13 +160,13 @@ class TestPageSiteLayout(unittest.TestCase):
                 self.portal["f1"]["d1"],
                 self.request,
             ),
-            name=u"page-site-layout",
+            name="page-site-layout",
         )
         rendered = view()
 
         # We now get the new layout
-        self.assertTrue(u"Layout title" in rendered)
-        self.assertFalse(u"My Layout 1 Title" in rendered)
+        self.assertTrue("Layout title" in rendered)
+        self.assertFalse("My Layout 1 Title" in rendered)
 
     def test_page_site_layout_cache_invalidate_catalog_counter(self):
         self.behavior.sectionSiteLayout = "/++sitelayout++testlayout2/mylayout.html"
@@ -177,12 +176,12 @@ class TestPageSiteLayout(unittest.TestCase):
                 self.portal["f1"]["d1"],
                 self.request,
             ),
-            name=u"page-site-layout",
+            name="page-site-layout",
         )
         rendered = view()
 
-        self.assertFalse(u"Layout title" in rendered)
-        self.assertTrue(u"My Layout 1 Title" in rendered)
+        self.assertFalse("Layout title" in rendered)
+        self.assertTrue("My Layout 1 Title" in rendered)
 
         # Trigger invalidation by incrementing the catalog counter
         self.portal["portal_catalog"]._increment_counter()
@@ -195,13 +194,13 @@ class TestPageSiteLayout(unittest.TestCase):
                 self.portal["f1"]["d1"],
                 self.request,
             ),
-            name=u"page-site-layout",
+            name="page-site-layout",
         )
         rendered = view()
 
         # We now get the new layout
-        self.assertTrue(u"Layout title" in rendered)
-        self.assertFalse(u"My Layout 1 Title" in rendered)
+        self.assertTrue("Layout title" in rendered)
+        self.assertFalse("My Layout 1 Title" in rendered)
 
     def test_page_site_layout_cache_invalidate_registry_key(self):
         self.behavior.sectionSiteLayout = "/++sitelayout++testlayout2/mylayout.html"
@@ -211,12 +210,12 @@ class TestPageSiteLayout(unittest.TestCase):
                 self.portal["f1"]["d1"],
                 self.request,
             ),
-            name=u"page-site-layout",
+            name="page-site-layout",
         )
         rendered = view()
 
-        self.assertFalse(u"Layout title" in rendered)
-        self.assertTrue(u"My Layout 1 Title" in rendered)
+        self.assertFalse("Layout title" in rendered)
+        self.assertTrue("My Layout 1 Title" in rendered)
 
         # Trigger invalidation by modifying the global registry key
         self.registry[
@@ -231,13 +230,13 @@ class TestPageSiteLayout(unittest.TestCase):
                 self.portal["f1"]["d1"],
                 self.request,
             ),
-            name=u"page-site-layout",
+            name="page-site-layout",
         )
         rendered = view()
 
         # We now get the new layout
-        self.assertTrue(u"Layout title" in rendered)
-        self.assertFalse(u"My Layout 1 Title" in rendered)
+        self.assertTrue("Layout title" in rendered)
+        self.assertFalse("My Layout 1 Title" in rendered)
 
 
 class TestPageSiteLayoutAcquisition(unittest.TestCase):
@@ -250,8 +249,8 @@ class TestPageSiteLayoutAcquisition(unittest.TestCase):
         self.registry = getUtility(IRegistry)
 
         setRoles(self.portal, TEST_USER_ID, ("Manager",))
-        self.portal.invokeFactory("Folder", "f1", title=u"Folder 1")
-        self.portal["f1"].invokeFactory("Document", "d1", title=u"Document 1")
+        self.portal.invokeFactory("Folder", "f1", title="Folder 1")
+        self.portal["f1"].invokeFactory("Document", "d1", title="Document 1")
         setRoles(self.portal, TEST_USER_ID, ("Member",))
 
         sm = getGlobalSiteManager()

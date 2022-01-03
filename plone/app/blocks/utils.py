@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from AccessControl import getSecurityManager
 from App.config import getConfiguration
 from copy import deepcopy
@@ -23,7 +22,6 @@ from zope.component.hooks import getSite
 from zope.security.interfaces import IPermission
 
 import logging
-import six
 import zope.deferredimport
 
 
@@ -70,7 +68,7 @@ def resolve(url, resolved=None):
             resolved = resolveResource(url)
         except Exception:
             logger.exception(
-                "There was an error while resolving the tile: {0}".format(
+                "There was an error while resolving the tile: {}".format(
                     url,
                 ),
             )
@@ -98,7 +96,7 @@ def resolve(url, resolved=None):
         html_parser = html.HTMLParser(encoding="utf-8")
         return html.fromstring(resolved, parser=html_parser).getroottree()
     except etree.XMLSyntaxError as e:
-        logger.error("%s: %s" % (repr(e), url))
+        logger.error(f"{repr(e)}: {url}")
         return
 
 
@@ -123,10 +121,10 @@ def resolveResource(url):
         if directory:
             try:
                 res = directory.readFile(path)
-                if isinstance(res, six.binary_type):
+                if isinstance(res, bytes):
                     res = res.decode()
                 return res
-            except (NotFound, IOError):
+            except (NotFound, OSError):
                 pass
 
     if url.startswith("/"):
@@ -141,7 +139,7 @@ def resolveResource(url):
 
     resolved = response.getBody()
 
-    if isinstance(resolved, six.binary_type):
+    if isinstance(resolved, bytes):
         charset = extractCharset(response)
         resolved = resolved.decode(charset)
 
@@ -160,7 +158,7 @@ def resolveResource(url):
 def xpath1(xpath, node, strict=True):
     """Return a single node matched by the given etree.XPath object."""
 
-    if isinstance(xpath, six.string_types):
+    if isinstance(xpath, str):
         xpath = etree.XPath(xpath)
 
     result = xpath(node)
@@ -223,7 +221,7 @@ def remove_element(element):
     parent.remove(element)
 
 
-class PermissionChecker(object):
+class PermissionChecker:
     def __init__(self, permissions, context):
         self.permissions = permissions
         self.context = context
@@ -249,16 +247,16 @@ def _getWidgetName(field, widgets, request):
         factory = widgets[field.__name__]
     else:
         factory = getMultiAdapter((field, request), IFieldWidget)
-    if isinstance(factory, six.string_types):
+    if isinstance(factory, str):
         return factory
     if not isinstance(factory, type):
         factory = factory.__class__
-    return "%s.%s" % (factory.__module__, factory.__name__)
+    return f"{factory.__module__}.{factory.__name__}"
 
 
 def isVisible(name, omitted):
     value = omitted.get(name, False)
-    if isinstance(value, six.string_types):
+    if isinstance(value, str):
         return value == "false"
     return not bool(value)
 

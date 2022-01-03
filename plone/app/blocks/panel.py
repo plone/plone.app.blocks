@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.app.blocks import utils
 from six.moves.urllib import parse
 
@@ -34,14 +33,14 @@ def merge(request, pageTree, removePanelLinks=False, removeLayoutLink=True):
 
     # Map page panels onto the layout
 
-    pagePanels = dict(
-        (node.attrib["data-panel"], node) for node in utils.panelXPath(pageTree)
-    )
+    pagePanels = {
+        node.attrib["data-panel"]: node for node in utils.panelXPath(pageTree)
+    }
 
-    layoutPanels = dict(
-        (node.attrib["data-panel"], (node, node.get("data-panel-mode", "append")))
+    layoutPanels = {
+        node.attrib["data-panel"]: (node, node.get("data-panel-mode", "append"))
         for node in utils.panelXPath(layoutTree)
-    )
+    }
 
     # Site layout should always have element with data-panel="content"
     # Note: This could be more generic, but that would empower editors too much

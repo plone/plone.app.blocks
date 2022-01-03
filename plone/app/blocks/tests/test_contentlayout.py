@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from lxml import html
 from plone.app.blocks.testing import BLOCKS_FUNCTIONAL_TESTING
 from plone.app.testing import setRoles
@@ -32,8 +31,8 @@ class TestContentLayout(unittest.TestCase):
         self.registry = getUtility(IRegistry)
 
         setRoles(self.portal, TEST_USER_ID, ("Manager",))
-        self.portal.invokeFactory("Folder", "f1", title=u"Folder 1")
-        self.portal["f1"].invokeFactory("Document", "d1", title=u"Document 1")
+        self.portal.invokeFactory("Folder", "f1", title="Folder 1")
+        self.portal["f1"].invokeFactory("Document", "d1", title="Document 1")
         setRoles(self.portal, TEST_USER_ID, ("Member",))
 
         if HAS_PLONE_APP_CONTENTTYPES:
@@ -60,7 +59,7 @@ class TestContentLayout(unittest.TestCase):
         self.assertIn("testlayout1/content.html", vocab.by_token)
         self.assertEqual(
             vocab.getTermByToken("testlayout1/content.html").value,
-            u"/++contentlayout++testlayout1/content.html",
+            "/++contentlayout++testlayout1/content.html",
         )
         self.assertEqual(
             vocab.getTermByToken("testlayout1/content.html").title, "Testlayout1"
@@ -69,7 +68,7 @@ class TestContentLayout(unittest.TestCase):
         self.assertIn("testlayout2/mylayout.html", vocab.by_token)
         self.assertEqual(
             vocab.getTermByToken("testlayout2/mylayout.html").value,
-            u"/++contentlayout++testlayout2/mylayout.html",
+            "/++contentlayout++testlayout2/mylayout.html",
         )
         self.assertEqual(
             vocab.getTermByToken("testlayout2/mylayout.html").title, "My content layout"
@@ -78,7 +77,7 @@ class TestContentLayout(unittest.TestCase):
         self.assertIn("testlayout2/mylayout2.html", vocab.by_token)
         self.assertEqual(
             vocab.getTermByToken("testlayout2/mylayout2.html").value,
-            u"/++contentlayout++testlayout2/mylayout2.html",
+            "/++contentlayout++testlayout2/mylayout2.html",
         )
         self.assertEqual(
             vocab.getTermByToken("testlayout2/mylayout2.html").title,

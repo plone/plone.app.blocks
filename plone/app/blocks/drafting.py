@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.app.blocks.layoutbehavior import ILayoutBehaviorAdaptable
 from plone.app.drafts.interfaces import IDraft
@@ -9,7 +8,7 @@ from zope.interface import implementer
 
 @implementer(IDraftSyncer)
 @adapter(IDraft, ILayoutBehaviorAdaptable)
-class LayoutAwareDataStorageSyncher(object):
+class LayoutAwareDataStorageSyncher:
     """Copy draft data to the real object on save"""
 
     def __init__(self, draft, target):

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from lxml import etree
 from lxml import html
 from plone.app.blocks import panel
@@ -26,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 
 @implementer(ITransform)
-class DisableParsing(object):
+class DisableParsing:
     """A no-op transform which sets flags to stop plone.app.blocks
     transformations. You may register this for a particular published
     object or request as required. By default, it's registered for ESI-
@@ -50,7 +49,7 @@ class DisableParsing(object):
 
 
 @implementer(ITransform)
-class ParseXML(object):
+class ParseXML:
     """First stage in the 8000's chain: parse the content to an lxml tree
     encapsulated in an XMLSerializer.
 
@@ -117,7 +116,7 @@ class ParseXML(object):
 
 
 @implementer(ITransform)
-class MergePanels(object):
+class MergePanels:
     """Find the site layout and merge panels."""
 
     order = 8100
@@ -156,7 +155,7 @@ class MergePanels(object):
 
 
 @implementer(ITransform)
-class IncludeTiles(object):
+class IncludeTiles:
     """Turn a panel-merged page into the final composition by including tiles.
     Assumes the input result is an lxml tree and returns an lxml tree for
     later serialization.
@@ -185,7 +184,7 @@ class IncludeTiles(object):
 
 
 @implementer(ITransform)
-class ESIRender(object):
+class ESIRender:
     """If ESI rendering was used, render the page down to a format that allows
     ESI to work.
     """

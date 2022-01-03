@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from lxml import etree
 from lxml import html
 from OFS.Image import File
@@ -36,8 +35,8 @@ class TestSiteLayout(unittest.TestCase):
         self.request = self.layer["request"]
         self.registry = getUtility(IRegistry)
         setRoles(self.portal, TEST_USER_ID, ("Manager",))
-        self.portal.invokeFactory("Folder", "f1", title=u"Folder 1")
-        self.portal["f1"].invokeFactory("Document", "d1", title=u"Document 1")
+        self.portal.invokeFactory("Folder", "f1", title="Folder 1")
+        self.portal["f1"].invokeFactory("Document", "d1", title="Document 1")
         setRoles(self.portal, TEST_USER_ID, ("Member",))
 
     def test_default_site_layout_no_registry_key(self):
@@ -52,7 +51,7 @@ class TestSiteLayout(unittest.TestCase):
                 self.portal,
                 self.request,
             ),
-            name=u"default-site-layout",
+            name="default-site-layout",
         )
         self.assertRaises(NotFound, view.index)
 
@@ -75,11 +74,11 @@ class TestSiteLayout(unittest.TestCase):
                 self.portal,
                 self.request,
             ),
-            name=u"default-site-layout",
+            name="default-site-layout",
         )
         rendered = view()
 
-        self.assertTrue(u"Layout title" in rendered)
+        self.assertTrue("Layout title" in rendered)
 
     def test_no_default_site_layout(self):
         # Clear cache if there
@@ -91,7 +90,7 @@ class TestSiteLayout(unittest.TestCase):
                 self.portal,
                 self.request,
             ),
-            name=u"default-site-layout",
+            name="default-site-layout",
         )
         rendered = view()
 
@@ -99,7 +98,7 @@ class TestSiteLayout(unittest.TestCase):
         rendered_tree = etree.parse(six.StringIO(rendered), etree.HTMLParser())
         xpath_body = etree.XPath("/html/body")
         body_tag = xpath_body(rendered_tree)[0]
-        self.assertIn(u"template-layout", body_tag.attrib["class"])
+        self.assertIn("template-layout", body_tag.attrib["class"])
 
     def test_default_site_layout_section_override(self):
         self.registry[
@@ -110,11 +109,11 @@ class TestSiteLayout(unittest.TestCase):
 
         @implementer(ILayoutAware)
         @adapter(self.portal["f1"].__class__)
-        class FolderLayoutAware(object):
+        class FolderLayoutAware:
             def __init__(self, context):
                 self.context = context
 
-            customContentLayout = u"<html><body>N/A</body></html>"
+            customContentLayout = "<html><body>N/A</body></html>"
             sectionSiteLayout = "/++sitelayout++testlayout2/mylayout.html"
             pageSiteLayout = None
 
@@ -127,12 +126,12 @@ class TestSiteLayout(unittest.TestCase):
                 self.portal["f1"]["d1"],
                 self.request,
             ),
-            name=u"default-site-layout",
+            name="default-site-layout",
         )
         rendered = view()
 
-        self.assertFalse(u"Layout title" in rendered)
-        self.assertTrue(u"My Layout 1 Title" in rendered)
+        self.assertFalse("Layout title" in rendered)
+        self.assertTrue("My Layout 1 Title" in rendered)
 
     def test_default_site_layout_section_no_override(self):
         self.registry[
@@ -144,12 +143,12 @@ class TestSiteLayout(unittest.TestCase):
                 self.portal["f1"]["d1"],
                 self.request,
             ),
-            name=u"default-site-layout",
+            name="default-site-layout",
         )
         rendered = view()
 
-        self.assertFalse(u"My Layout 1 Title" in rendered)
-        self.assertTrue(u"Layout title" in rendered)
+        self.assertFalse("My Layout 1 Title" in rendered)
+        self.assertTrue("Layout title" in rendered)
 
     def test_default_site_layout_cache(self):
         # Clear cache if there
@@ -177,11 +176,11 @@ class TestSiteLayout(unittest.TestCase):
                 self.portal,
                 self.request,
             ),
-            name=u"default-site-layout",
+            name="default-site-layout",
         )
         rendered = view()
 
-        self.assertTrue(u"ZODB test" in rendered)
+        self.assertTrue("ZODB test" in rendered)
 
         resources["sitelayout"]["testlayout3"]._delOb("site.html")
         resources["sitelayout"]["testlayout3"]._setOb(
@@ -198,12 +197,12 @@ class TestSiteLayout(unittest.TestCase):
                 self.portal,
                 self.request,
             ),
-            name=u"default-site-layout",
+            name="default-site-layout",
         )
         rendered = view()
 
-        self.assertFalse(u"Cache test" in rendered)  # hidden by cache
-        self.assertTrue(u"ZODB test" in rendered)
+        self.assertFalse("Cache test" in rendered)  # hidden by cache
+        self.assertTrue("ZODB test" in rendered)
 
         self.assertEqual("/++sitelayout++testlayout3/site.html", view.layout)
 
@@ -242,14 +241,14 @@ class TestSiteLayout(unittest.TestCase):
                 self.portal,
                 self.request,
             ),
-            name=u"default-site-layout",
+            name="default-site-layout",
         )
         rendered = view()
 
-        self.assertTrue(u"ZODB test" in rendered)
+        self.assertTrue("ZODB test" in rendered)
 
         # Trigger invalidation by modifying the context and committing
-        self.portal.title = u"New title"
+        self.portal.title = "New title"
         transaction.commit()
 
         # Modify the site layout
@@ -268,12 +267,12 @@ class TestSiteLayout(unittest.TestCase):
                 self.portal,
                 self.request,
             ),
-            name=u"default-site-layout",
+            name="default-site-layout",
         )
         rendered = view()
 
-        self.assertTrue(u"Cache test" in rendered)
-        self.assertFalse(u"ZODB test" in rendered)
+        self.assertTrue("Cache test" in rendered)
+        self.assertFalse("ZODB test" in rendered)
 
     def test_default_site_layout_invalidate_registry_key(self):
         # Clear cache if there
@@ -289,11 +288,11 @@ class TestSiteLayout(unittest.TestCase):
                 self.portal,
                 self.request,
             ),
-            name=u"default-site-layout",
+            name="default-site-layout",
         )
         rendered = view()
 
-        self.assertTrue(u"Layout title" in rendered)
+        self.assertTrue("Layout title" in rendered)
 
         # Trigger invalidation by modifying the global site layout selection
         self.registry[
@@ -305,17 +304,17 @@ class TestSiteLayout(unittest.TestCase):
                 self.portal,
                 self.request,
             ),
-            name=u"default-site-layout",
+            name="default-site-layout",
         )
         rendered = view()
 
-        self.assertTrue(u"My Layout 1 Title" in rendered)
-        self.assertFalse(u"Layout title" in rendered)
+        self.assertTrue("My Layout 1 Title" in rendered)
+        self.assertFalse("Layout title" in rendered)
 
     def test_panel_modes(self):
         """Test data-panel-mode ``append`` and ``replace``."""
 
-        site_layout = u"""
+        site_layout = """
           <!DOCTYPE html>
           <html>
             <head>
@@ -329,7 +328,7 @@ class TestSiteLayout(unittest.TestCase):
           </html>
         """
 
-        content_layout = u"""
+        content_layout = """
           <html data-layout="./@@testsitelayout">
             <body>
               <div data-panel="content-1">
@@ -353,7 +352,7 @@ class TestSiteLayout(unittest.TestCase):
             SiteLayout,
             adapts=(Interface, Interface),
             provides=IBrowserPage,
-            name=u"testsitelayout",
+            name="testsitelayout",
         )
 
         parser = html.HTMLParser(encoding="utf-8")
