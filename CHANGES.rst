@@ -1,8 +1,14 @@
 Changelog
 =========
 
-5.0.1 (unreleased)
+6.0.0 (unreleased)
 ------------------
+
+- Drop Plone 5.1 and Python 2 support.
+  [jensens]
+
+- Remove long deprecated functions and attributes.
+  [jensens]
 
 - Cleanup, make tests run on Plone 6 and include on GHA.
   [jensens]

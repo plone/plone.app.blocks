@@ -5,20 +5,6 @@ from setuptools import setup
 import os
 
 
-version = "5.0.1.dev0"
-widgets_require = ["plone.app.widgets"]
-test_require = [
-    "plone.app.tiles",
-    "plone.app.testing",
-    "plone.app.textfield",
-    "plone.testing",
-    "Products.BTreeFolder2",
-    "transaction",
-    "zExceptions",
-    "zope.configuration",
-]
-
-
 def read(*path):
     return open(os.path.join(*path)).read()
 
@@ -35,7 +21,7 @@ long_description = "\n".join(
 
 setup(
     name="plone.app.blocks",
-    version=version,
+    version="6.0.0.dev0",
     description="Implements the in-Plone blocks rendering process",
     long_description=long_description,
     classifiers=[
@@ -43,12 +29,10 @@ setup(
         "Environment :: Web Environment",
         "Framework :: Plone",
         "Framework :: Plone :: Addon",
-        "Framework :: Plone :: 5.1",
         "Framework :: Plone :: 5.2",
         "Framework :: Plone :: 6.0",
         "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
@@ -66,46 +50,20 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        "AccessControl",
-        "Acquisition",
-        "diazo",
         "lxml",
-        "plone.app.layout",
-        "plone.app.registry",
-        "plone.autoform",
-        "plone.behavior",
-        "plone.dexterity",
         "plone.jsonserializer",
-        "plone.memoize",
-        "plone.outputfilters",
-        "plone.registry",
-        "plone.resource",
         "plone.subrequest",
-        "plone.supermodel",
         "plone.tiles",
-        "plone.transformchain",
-        "plone.uuid",
-        "Products.CMFCore",
-        "Products.CMFPlone >= 5.1",
+        "Products.CMFPlone >= 5.2",
         "repoze.xmliter",
         "setuptools",
-        "six",
-        "z3c.form",
-        "zope.annotation",
-        "zope.component",
-        "zope.globalrequest",
-        "zope.i18nmessageid",
-        "zope.interface",
-        "zope.publisher",
-        "zope.schema",
-        "zope.security",
-        "zope.site",
-        "zope.traversing",
-        "Zope2",
     ],
     extras_require={
-        "widgets": widgets_require,
-        "test": test_require,
+        "test": [
+            "plone.app.tiles",
+            "plone.app.testing",
+            "plone.testing",
+        ],
     },
     entry_points="""
         [z3c.autoinclude.plugin]
