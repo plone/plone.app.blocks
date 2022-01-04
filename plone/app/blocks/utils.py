@@ -22,19 +22,6 @@ from zope.component.hooks import getSite
 from zope.security.interfaces import IPermission
 
 import logging
-import zope.deferredimport
-
-
-zope.deferredimport.deprecated(
-    "Moved in own behavior due to avoid circular imports. "
-    "Import from plone.app.blocks.layoutbehavior instead",
-    getDefaultAjaxLayout="plone.app.blocks.layoutbehavior:" "getDefaultAjaxLayout",
-    getDefaultSiteLayout="plone.app.blocks.layoutbehavior:" "getDefaultSiteLayout",
-    getLayout="plone.app.blocks.layoutbehavior:getLayout",
-    getLayoutAwareSiteLayout="plone.app.blocks.layoutbehavior:"
-    "getLayoutAwareSiteLayout",
-)
-
 
 headXPath = etree.XPath("/html/head")
 layoutAttrib = "data-layout"
@@ -96,8 +83,7 @@ def resolve(url, resolved=None):
         html_parser = html.HTMLParser(encoding="utf-8")
         return html.fromstring(resolved, parser=html_parser).getroottree()
     except etree.XMLSyntaxError as e:
-        logger.error(f"{repr(e)}: {url}")
-        return
+        logger.exception(f"url: {url}")
 
 
 def subresponse_exception_handler(response, exception):
@@ -240,18 +226,6 @@ class PermissionChecker:
                         self.sm.checkPermission(permission.title, self.context)
                     )
         return self.cache.get(permission_name, True)
-
-
-def _getWidgetName(field, widgets, request):
-    if field.__name__ in widgets:
-        factory = widgets[field.__name__]
-    else:
-        factory = getMultiAdapter((field, request), IFieldWidget)
-    if isinstance(factory, str):
-        return factory
-    if not isinstance(factory, type):
-        factory = factory.__class__
-    return f"{factory.__module__}.{factory.__name__}"
 
 
 def isVisible(name, omitted):

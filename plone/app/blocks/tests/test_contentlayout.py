@@ -35,12 +35,8 @@ class TestContentLayout(unittest.TestCase):
         self.portal["f1"].invokeFactory("Document", "d1", title="Document 1")
         setRoles(self.portal, TEST_USER_ID, ("Member",))
 
-        if HAS_PLONE_APP_CONTENTTYPES:
-            from plone.app.contenttypes.interfaces import IDocument
-
-            iface = IDocument
-        else:
-            iface = self.portal["f1"]["d1"].__class__
+        from plone.app.contenttypes.interfaces import IDocument
+        iface = IDocument
 
         from plone.app.blocks.layoutbehavior import ILayoutAware
         from plone.app.blocks.layoutbehavior import LayoutAwareBehavior
@@ -104,32 +100,6 @@ class TestContentLayout(unittest.TestCase):
         self.behavior.contentLayout = "/++sitelayout++missing/missing.html"
         rendered = ContentLayoutView(self.portal["f1"]["d1"], self.request)()
         self.assertIn("Could not find layout for content", rendered)
-
-    def test_getLayout(self):
-        from plone.app.blocks.layoutbehavior import getLayout
-
-        self.behavior.contentLayout = "/++contentlayout++testlayout1/content.html"
-        layout = getLayout(self.portal["f1"]["d1"])
-        self.assertIn("./@@test.tile1/tile2?magicNumber:int=2", layout)
-
-    def test_getLayout_custom(self):
-        self.behavior.customContentLayout = """
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html data-layout="./@@default-site-layout">
-  <body>
-    <h1>Foobar!</h1>
-    <div data-panel="panel1">
-      Page panel 1
-       <div id="page-tile2" data-tile="./@@test.tile1/tile99?magicNumber:int=3">
-       Page tile 2 placeholder</div>
-    </div>
-  </body>
-</html>"""  # noqa
-        from plone.app.blocks.layoutbehavior import getLayout
-
-        layout = getLayout(self.portal["f1"]["d1"])
-        self.assertIn("./@@test.tile1/tile99?magicNumber:int=3", layout)
 
     def test_getting_indexed_data(self):
         self.behavior.content = """

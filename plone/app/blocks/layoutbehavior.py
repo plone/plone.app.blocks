@@ -30,25 +30,15 @@ from zope import schema
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapter
 from zope.component import getUtility
-from zope.deprecation import deprecate
 from zope.interface import implementer
 from zope.interface import Interface
 from zope.interface import provider
 
 import json
 import logging
-import zope.deferredimport
 
 
 logger = logging.getLogger("plone.app.blocks")
-
-zope.deferredimport.deprecated(
-    "Moved in own module due to avoid circular imports. "
-    "Import from plone.app.blocks.layoutviews instead",
-    SiteLayoutView="plone.app.blocks.layoutviews:SiteLayoutView",
-    ContentLayoutView="plone.app.blocks.layoutviews:ContentLayoutView",
-)
-
 
 @implementer(ILayoutField)
 class LayoutField(schema.Text):
@@ -151,9 +141,6 @@ class LayoutAwareDefault:
     def __init__(self, context):
         self.context = context
         self.registry = getUtility(IRegistry)
-
-    def tile_layout(self):
-        return ""
 
     def content_layout_path(self):
         """Get path of content layout resource."""
@@ -496,36 +483,3 @@ class LayoutAwareTileDataStorage:
 
     def __len__(self):
         return len(self.items())
-
-
-@deprecate("adapt with ILayoutAware instead, call adapter.site_layout()")
-def getLayoutAwareSiteLayout(content):
-    lookup = ILayoutAware(content)
-    return lookup.site_layout()
-
-
-@deprecate("adapt with ILayoutAware instead, call adapter.content_layout()")
-def getLayout(content):
-    lookup = ILayoutAware(content)
-    return lookup.content_layout()
-
-
-@deprecate(
-    "adapt with ILayoutAware instead. Never depend on the default. "
-    "In fact this was meant only for internal use."
-)
-def getDefaultSiteLayout(context):
-    """Get the path to the site layout to use by default for the given content
-    object
-    """
-    lookup = LayoutAwareDefault(context)
-    return lookup.site_layout()
-
-
-@deprecate("adapt with ILayoutAware instead, call adapter.ajax_site_layout()")
-def getDefaultAjaxLayout(context):
-    """Get the path to the ajax site layout to use by default for the given
-    content object
-    """
-    lookup = ILayoutAware(context)
-    return lookup.ajax_site_layout()
