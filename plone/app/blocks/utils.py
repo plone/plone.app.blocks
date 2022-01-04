@@ -13,10 +13,8 @@ from plone.memoize.volatile import DontCache
 from plone.resource.utils import queryResourceDirectory
 from plone.subrequest import subrequest
 from six.moves.urllib import parse
-from z3c.form.interfaces import IFieldWidget
 from zExceptions import NotFound
 from zExceptions import Unauthorized
-from zope.component import getMultiAdapter
 from zope.component import queryUtility
 from zope.component.hooks import getSite
 from zope.security.interfaces import IPermission
@@ -82,7 +80,7 @@ def resolve(url, resolved=None):
     try:
         html_parser = html.HTMLParser(encoding="utf-8")
         return html.fromstring(resolved, parser=html_parser).getroottree()
-    except etree.XMLSyntaxError as e:
+    except etree.XMLSyntaxError:
         logger.exception(f"url: {url}")
 
 

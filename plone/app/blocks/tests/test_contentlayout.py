@@ -36,6 +36,7 @@ class TestContentLayout(unittest.TestCase):
         setRoles(self.portal, TEST_USER_ID, ("Member",))
 
         from plone.app.contenttypes.interfaces import IDocument
+
         iface = IDocument
 
         from plone.app.blocks.layoutbehavior import ILayoutAware

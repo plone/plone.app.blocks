@@ -40,6 +40,7 @@ import logging
 
 logger = logging.getLogger("plone.app.blocks")
 
+
 @implementer(ILayoutField)
 class LayoutField(schema.Text):
     """A field used to store layout information"""
