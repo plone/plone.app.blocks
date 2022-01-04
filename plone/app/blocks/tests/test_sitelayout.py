@@ -1,3 +1,4 @@
+from io import StringIO
 from lxml import etree
 from lxml import html
 from OFS.Image import File
@@ -21,7 +22,6 @@ from zope.interface import Interface
 from zope.publisher.browser import BrowserPage
 from zope.publisher.interfaces.browser import IBrowserPage
 
-import six
 import transaction
 import unittest
 
@@ -95,7 +95,7 @@ class TestSiteLayout(unittest.TestCase):
         rendered = view()
 
         # Should render main_template with template-layout in body class
-        rendered_tree = etree.parse(six.StringIO(rendered), etree.HTMLParser())
+        rendered_tree = etree.parse(StringIO(rendered), etree.HTMLParser())
         xpath_body = etree.XPath("/html/body")
         body_tag = xpath_body(rendered_tree)[0]
         self.assertIn("template-layout", body_tag.attrib["class"])

@@ -12,7 +12,7 @@ from plone.memoize import ram
 from plone.memoize.volatile import DontCache
 from plone.resource.utils import queryResourceDirectory
 from plone.subrequest import subrequest
-from six.moves.urllib import parse
+from urllib import parse
 from zExceptions import NotFound
 from zExceptions import Unauthorized
 from zope.component import queryUtility
@@ -20,6 +20,7 @@ from zope.component.hooks import getSite
 from zope.security.interfaces import IPermission
 
 import logging
+
 
 headXPath = etree.XPath("/html/head")
 layoutAttrib = "data-layout"

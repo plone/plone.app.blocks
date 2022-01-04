@@ -1,5 +1,6 @@
 from Acquisition import aq_parent
 from App.config import getConfiguration
+from configparser import ConfigParser
 from configparser import DEFAULTSECT
 from configparser import SectionProxy
 from OFS.interfaces import ITraversable
@@ -22,8 +23,7 @@ from plone.resource.traversal import ResourceTraverser
 from plone.resource.utils import iterDirectoriesOfType
 from plone.subrequest import ISubRequest
 from Products.CMFCore.utils import getToolByName
-from six.moves.configparser import ConfigParser
-from six.moves.urllib import parse
+from urllib import parse
 from zExceptions import NotFound
 from zope.annotation import IAnnotations
 from zope.component import adapter

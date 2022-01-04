@@ -18,8 +18,6 @@
 
     <include package="plone.app.registry" />
 
-    <include file="upgrades.zcml" />
-
     <permission
         id="plone.ManageSiteLayouts"
         title="Plone: Manage Site Layouts"

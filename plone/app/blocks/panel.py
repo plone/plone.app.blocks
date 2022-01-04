@@ -1,5 +1,5 @@
 from plone.app.blocks import utils
-from six.moves.urllib import parse
+from urllib import parse
 
 
 def merge(request, pageTree, removePanelLinks=False, removeLayoutLink=True):

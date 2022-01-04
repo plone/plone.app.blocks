@@ -96,7 +96,7 @@ The tiles in this case are managed by ``plone.tiles``, and are both of the same 
 
 .. code-block:: python
 
-    >>> layoutHTML = """\
+    >>> layoutHTML = b"""\
     ... <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     ... <html>
     ...     <head>
@@ -138,12 +138,11 @@ See ``plone.resource`` for more details.
     >>> from Products.CMFCore.utils import getToolByName
     >>> from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2
     >>> from OFS.Image import File
-    >>> import six
 
     >>> resources = getToolByName(portal, 'portal_resources')
     >>> resources._setOb('sitelayout', BTreeFolder2('sitelayout'))
     >>> resources['sitelayout']._setOb('mylayout', BTreeFolder2('mylayout'))
-    >>> resources['sitelayout']['mylayout']._setOb('site.html', File('site.html', 'site.html', six.b(layoutHTML)))
+    >>> resources['sitelayout']['mylayout']._setOb('site.html', File('site.html', 'site.html', layoutHTML))
 
     >>> transaction.commit()
 

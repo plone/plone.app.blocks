@@ -8,7 +8,7 @@ from plone.app.blocks.utils import resolve_transform
 from plone.registry.interfaces import IRegistry
 from plone.tiles.interfaces import ESI_HEADER
 from plone.tiles.interfaces import ESI_HEADER_KEY
-from six.moves.urllib import parse
+from urllib import parse
 from zExceptions import NotFound
 from zope.component import queryUtility
 from zope.event import notify

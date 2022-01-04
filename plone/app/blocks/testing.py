@@ -7,16 +7,6 @@ from plone.testing import Layer
 from zope.component import getUtility
 from zope.configuration import xmlconfig
 
-import pkg_resources
-
-
-try:
-    pkg_resources.get_distribution("plone.app.contenttypes")
-except pkg_resources.DistributionNotFound:
-    HAS_PLONE_APP_CONTENTTYPES = False
-else:
-    HAS_PLONE_APP_CONTENTTYPES = True
-
 
 class BlocksLayer(PloneSandboxLayer):
 
@@ -24,19 +14,13 @@ class BlocksLayer(PloneSandboxLayer):
 
     def setUpZope(self, app, configurationContext):
         # load ZCML
-        if HAS_PLONE_APP_CONTENTTYPES:
-            import plone.app.contenttypes
-
-            self.loadZCML(package=plone.app.contenttypes)
-        else:
-            import plone.app.dexterity
-
-            self.loadZCML(package=plone.app.dexterity)
         import plone.app.blocks
         import plone.app.tiles
+        import plone.app.contenttypes
 
         self.loadZCML(package=plone.app.tiles, name="demo.zcml")
         self.loadZCML(package=plone.app.blocks)
+        self.loadZCML(package=plone.app.contenttypes)
 
         # Register directory for testing
         xmlconfig.string(
@@ -91,10 +75,7 @@ class BlocksLayer(PloneSandboxLayer):
         if key in registry:
             registry[key] = False
         # install plone.app.contenttypes on Plone 5
-        if HAS_PLONE_APP_CONTENTTYPES:
-            self.applyProfile(portal, "plone.app.contenttypes:default")
-        else:
-            self.applyProfile(portal, "plone.app.dexterity:default")
+        self.applyProfile(portal, "plone.app.contenttypes:default")
         # install into the Plone site
         self.applyProfile(portal, "plone.app.blocks:default")
 

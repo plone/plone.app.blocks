@@ -106,7 +106,7 @@ To create such a manifest, put a ``manifest.cfg`` file in the layout directory w
 A vocabulary factory called ``plone.availableContentLayouts`` is registered to allow lookup of all registered content layouts.
 The terms in this vocabulary use the URL as a value,
 the resource directory name as a token,
-and the title from the manifest (falling back on a sanitised version of the resource directory name) as the title.
+and the title from the manifest (falling back on a sanitized version of the resource directory name) as the title.
 
 The default content layout can be identified by the ``plone.registry`` key ``plone.app.blocks.default_layout``,
 and the default content layout for some specific content type with key ``plone.app.blocks.default_layout.my_type``.
@@ -118,10 +118,10 @@ ILayoutAware behavior
 
 It is possible for the default site layout to be overridden per section,
 by having parent objects provide or be adaptable to ``plone.app.blocks.layoutbehavior.ILayoutAware``.
-As the module name implies, this interface can be used as a ``plone.behavior`` behavior,
+As the module name implies, this interface can be used as a ``plone.behavior`` behavior named ``plone.layoutaware``,
 but it can also be implemented directly or used as a standard adapter.
 
-The ``ILayoutAware`` interface defines three properties:
+The ``ILayoutAware`` interface defines properties:
 
 ``content``
     which contains the body of the page to be rendered.

@@ -5,20 +5,13 @@ from plone.app.blocks import tiles
 from plone.tiles import esi
 from plone.tiles.interfaces import ESI_HEADER
 from plone.transformchain.interfaces import ITransform
+from Products.CMFPlone.utils import safe_bytes
 from repoze.xmliter.serializer import XMLSerializer
 from repoze.xmliter.utils import getHTMLSerializer
 from zope.interface import implementer
 
 import logging
 import re
-
-
-try:
-    # Plone 5.2+
-    from Products.CMFPlone.utils import safe_bytes
-except ImportError:
-    # BBB for Plone 5.1
-    from Products.CMFPlone.utils import safe_encode as safe_bytes
 
 
 logger = logging.getLogger(__name__)
