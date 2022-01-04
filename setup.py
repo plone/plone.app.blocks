@@ -43,6 +43,8 @@ setup(
     keywords="plone blocks deco",
     author="Martin Aspeli, Laurence Rowe",
     author_email="optilude@gmail.com",
+    maintainer="Plone Community",
+    maintainer_email="releaseteam@plone.org",
     license="GPLv2",
     url="https://github.com/plone/plone.app.blocks",
     packages=find_packages(),
