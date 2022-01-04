@@ -143,6 +143,9 @@ class LayoutAwareDefault:
         self.context = context
         self.registry = getUtility(IRegistry)
 
+    def tile_layout(self):
+        return ""
+
     def content_layout_path(self):
         """Get path of content layout resource."""
         content_layout_key = "{}.{}".format(
@@ -150,8 +153,9 @@ class LayoutAwareDefault:
             getattr(self.context, "portal_type", "").replace(" ", "-"),
         )
         path = self.registry.get(content_layout_key, None)
-        path = path or self.registry.get(DEFAULT_CONTENT_LAYOUT_REGISTRY_KEY, None)
-        return path
+        if path:
+            return path
+        return self.registry.get(DEFAULT_CONTENT_LAYOUT_REGISTRY_KEY, None)
 
     def content_layout(self):
         """Returns the content HTML layout."""
@@ -234,8 +238,7 @@ class LayoutAwareBehavior(LayoutAwareDefault):
         return self.content or ""
 
     def content_layout_path(self):
-        path = self.contentLayout
-        return path or super().content_layout_path()
+        return self.contentLayout or super().content_layout_path()
 
     def content_layout(self):
         if self.customContentLayout and not self.contentLayout:
