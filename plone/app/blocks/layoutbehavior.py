@@ -148,10 +148,8 @@ class LayoutAwareDefault:
 
     def content_layout_path(self):
         """Get path of content layout resource."""
-        content_layout_key = "{}.{}".format(
-            DEFAULT_CONTENT_LAYOUT_REGISTRY_KEY,
-            getattr(self.context, "portal_type", "").replace(" ", "-"),
-        )
+        portal_type = getattr(self.context, "portal_type", "").replace(" ", "-")
+        content_layout_key = f"{DEFAULT_CONTENT_LAYOUT_REGISTRY_KEY}.{portal_type}"
         path = self.registry.get(content_layout_key, None)
         if path:
             return path
@@ -166,7 +164,7 @@ class LayoutAwareDefault:
                 resolved = resolved.encode("utf-8")
             return applyTilePersistent(path, resolved)
         except (NotFound, RuntimeError, OSError):
-            pass
+            logger.warning(f"Problem with path: {path}")
 
     def site_layout(self):
         """Bubble up looking for an sectionSiteLayout, otherwise lookup the
