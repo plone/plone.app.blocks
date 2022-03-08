@@ -94,6 +94,10 @@ def resolve(url, resolved=None):
 
     if not resolved.strip():
         return
+
+    if isinstance(resolved, str):
+        resolved = resolved.encode("utf-8")
+
     try:
         html_parser = html.HTMLParser(encoding="utf-8")
         return html.fromstring(resolved, parser=html_parser).getroottree()
