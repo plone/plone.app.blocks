@@ -4,6 +4,9 @@ Changelog
 5.0.1 (unreleased)
 ------------------
 
+- Support 🐧🌈🐧 emojis by encoding string to match parser encoding.
+  [agitator]
+
 - Cleanup, make tests run on Plone 6 and include on GHA.
   [jensens]
 
