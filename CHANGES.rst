@@ -1,7 +1,7 @@
 Changelog
 =========
 
-5.0.1 (unreleased)
+5.0.1 (2022-03-23)
 ------------------
 
 - Support more unicode emojis by encoding string to match parser encoding.
