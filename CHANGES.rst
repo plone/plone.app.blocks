@@ -1,7 +1,7 @@
 Changelog
 =========
 
-6.0.0 (unreleased)
+6.0.0 (2022-03-23)
 ------------------
 
 - Drop Plone 5.1 and Python 2 support.
