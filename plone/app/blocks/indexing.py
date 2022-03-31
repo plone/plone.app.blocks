@@ -14,6 +14,13 @@ import pkg_resources
 
 HAS_DEXTERITYTEXTINDEXER = False
 
+try:
+    from collective.dexteritytextindexer.interfaces import (
+        IDynamicTextIndexExtender,
+    )  # noqa
+    HAS_DEXTERITYTEXTINDEXER = True
+except ImportError:
+    pass
 
 try:
     from plone.app.dexterity.textindexer.interfaces import (
@@ -22,7 +29,6 @@ try:
     HAS_DEXTERITYTEXTINDEXER = True
 except ImportError:
     pass
-
 
 concat = indexers._unicode_save_string_concat
 
