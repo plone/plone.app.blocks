@@ -12,16 +12,16 @@ from zope.interface import implementer
 import pkg_resources
 
 
+HAS_DEXTERITYTEXTINDEXER = False
+
+
 try:
-    pkg_resources.get_distribution("collective.dexteritytextindexer")
-except pkg_resources.DistributionNotFound:
-    HAS_DEXTERITYTEXTINDEXER = False
-else:
-    from collective.dexteritytextindexer.interfaces import (
+    from plone.app.dexterity.textindexer.interfaces import (
         IDynamicTextIndexExtender,
     )  # noqa
-
     HAS_DEXTERITYTEXTINDEXER = True
+except ImportError:
+    pass
 
 
 concat = indexers._unicode_save_string_concat
