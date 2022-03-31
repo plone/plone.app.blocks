@@ -9,8 +9,6 @@ from zope.annotation.interfaces import IAnnotations
 from zope.component import adapter
 from zope.interface import implementer
 
-import pkg_resources
-
 
 HAS_DEXTERITYTEXTINDEXER = False
 
