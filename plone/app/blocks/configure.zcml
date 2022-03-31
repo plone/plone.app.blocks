@@ -217,7 +217,7 @@
     <adapter
         name="SearchableText"
         factory=".indexing.LayoutSearchableText"
-        zcml:condition="not-installed collective.dexteritytextindexer"
+        zcml:condition="not-installed plone.app.dexterity.textindexer"
         />
 
     <adapter
