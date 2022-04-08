@@ -4,7 +4,9 @@ Changelog
 6.0.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add support for dexteritytextindexer in Plone 6 core.
+  Keep support for collective.dexteritytextindexer in Plone 5.
+  [zworkb]
 
 
 6.0.0 (2022-03-23)
