@@ -110,7 +110,7 @@
         provides="zope.traversing.interfaces.ITraversable"
         factory=".resource.ContentLayoutTraverser"
         />
-xmlns:meta="http://namespaces.zope.org/meta">
+
     <!-- Register vocabulary -->
     <utility
         component=".resource.AvailableSiteLayoutsVocabularyFactory"
