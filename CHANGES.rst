@@ -4,7 +4,8 @@ Changelog
 5.0.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Support for link integrity for tiles that needs it
+  [gotcha, Mychae1]
 
 
 5.0.1 (2022-03-23)

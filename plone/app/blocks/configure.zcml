@@ -228,4 +228,8 @@
         zcml:condition="installed collective.dexteritytextindexer"
         />
 
+    <adapter factory=".linkintegrity.BlocksDXGeneral" />
+    <adapter factory=".linkintegrity.TileGeneral" />
+    <adapter factory=".linkintegrity.HTMLTile" />
+    <adapter factory=".linkintegrity.ExistingContentTile" />
 </configure>
