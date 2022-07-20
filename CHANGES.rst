@@ -1,7 +1,7 @@
 Changelog
 =========
 
-6.0.1 (unreleased)
+6.0.1 (2022-07-20)
 ------------------
 
 - Add support for dexteritytextindexer in Plone 6 core.
