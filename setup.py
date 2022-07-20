@@ -5,7 +5,7 @@ from setuptools import setup
 import os
 
 
-version = "5.1.0"
+version = "5.1.1.dev0"
 widgets_require = ["plone.app.widgets"]
 test_require = [
     "plone.app.tiles",
