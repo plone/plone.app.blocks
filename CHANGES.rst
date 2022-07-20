@@ -1,7 +1,7 @@
 Changelog
 =========
 
-5.0.2 (unreleased)
+5.1.0 (2022-07-20)
 ------------------
 
 - Support for link integrity for tiles that needs it
