@@ -4,7 +4,8 @@ Changelog
 5.1.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Depend on plone.app.standardtiles
+  [ale-rt]
 
 
 5.1.0 (2022-07-20)

@@ -9,6 +9,7 @@ version = "5.1.1.dev0"
 widgets_require = ["plone.app.widgets"]
 test_require = [
     "plone.app.tiles",
+#    "plone.app.standardtiles",
     "plone.app.testing",
     "plone.app.textfield",
     "plone.testing",
