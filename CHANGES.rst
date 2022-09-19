@@ -4,6 +4,10 @@ Changelog
 5.1.1 (unreleased)
 ------------------
 
+- Moved specific tile integration for linkintegrity to ``plone.app.standardtiles``.
+  Fixes `issue 95 <https://github.com/plone/plone.app.blocks/issues/95>`_.
+  [maurits]
+
 - Fix AttributeError in linkintegrity code when pasting a page with tiles.
   Fixes `issue 97 <https://github.com/plone/plone.app.blocks/issues/97>`_.
   [maurits]

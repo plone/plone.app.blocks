@@ -4,10 +4,7 @@ from Acquisition import aq_parent
 from plone.app.blocks.layoutbehavior import ILayoutBehaviorAdaptable
 from plone.app.blocks import utils
 from plone.app.linkintegrity.interfaces import IRetriever
-from plone.app.linkintegrity.parser import extractLinks
 from plone.app.linkintegrity.retriever import DXGeneral
-from plone.app.standardtiles import html
-from plone.app.standardtiles import existingcontent
 from plone.tiles.interfaces import ITile
 from repoze.xmliter.utils import getHTMLSerializer
 from zope.component import adapter
@@ -86,32 +83,3 @@ class TileGeneral(object):
 
     def retrieveLinks(self):
         return set()
-
-
-@implementer(IRetriever)
-@adapter(html.HTMLTile)
-class HTMLTile(object):
-
-    def __init__(self, context):
-        self.context = context
-
-    def retrieveLinks(self):
-        content = self.context.data['content']
-        # layout behavior tile storage hard codes 'utf-8' encoding
-        # thus we do the same.
-        links = set(extractLinks(content, 'utf-8'))
-        return links
-
-
-@implementer(IRetriever)
-@adapter(existingcontent.ExistingContentTile)
-class ExistingContentTile(object):
-
-    def __init__(self, context):
-        self.context = context
-
-    def retrieveLinks(self):
-        content_uid = self.context.data['content_uid']
-        links = set(['../resolveuid/%s' % content_uid])
-        return links
-
