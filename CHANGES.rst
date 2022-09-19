@@ -1,8 +1,8 @@
 Changelog
 =========
 
-5.1.1 (unreleased)
-------------------
+5.1.1.dev0+zest0 (2022-09-19)
+-----------------------------
 
 - Fix AttributeError in linkintegrity code when pasting a page with tiles.
   Fixes `issue 97 <https://github.com/plone/plone.app.blocks/issues/97>`_.
