@@ -4,7 +4,9 @@ Changelog
 5.1.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix AttributeError in linkintegrity code when pasting a page with tiles.
+  Fixes `issue 97 <https://github.com/plone/plone.app.blocks/issues/97>`_.
+  [maurits]
 
 
 5.1.0 (2022-07-20)

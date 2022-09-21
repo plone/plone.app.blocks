@@ -1,5 +1,6 @@
 import re
 
+from Acquisition import aq_parent
 from plone.app.blocks.layoutbehavior import ILayoutBehaviorAdaptable
 from plone.app.blocks import utils
 from plone.app.linkintegrity.interfaces import IRetriever
@@ -40,6 +41,14 @@ class BlocksDXGeneral(DXGeneral):
         links = set()
 
         if self.context.customContentLayout is None:
+            return links
+
+        if aq_parent(self.context) is None:
+            # context has not been added to a container yet.
+            # This happens when pasting an item.
+            # This easily leads to errors traversing to tiles.
+            # Return the empty set for now.
+            # This code will be triggered again shortly after by another event.
             return links
 
         iterable = [
