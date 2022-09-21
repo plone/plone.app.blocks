@@ -4,7 +4,8 @@ Changelog
 6.0.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Implement support for link integrity (see version 5.2.0).
+  [petschki]
 
 
 6.0.1 (2022-07-20)
