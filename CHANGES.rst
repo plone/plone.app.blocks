@@ -1,7 +1,7 @@
 Changelog
 =========
 
-5.1.1 (unreleased)
+5.2.0 (2022-09-21)
 ------------------
 
 - Moved specific tile integration for linkintegrity to ``plone.app.standardtiles``.
