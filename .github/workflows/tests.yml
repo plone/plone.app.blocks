@@ -16,9 +16,10 @@ jobs:
         # [Python version, tox env]
         - ["3.7",   "plone52-py37"]
         - ["3.8",   "plone52-py38"]
-        # - ["3.7",   "plone60-py37"]
         - ["3.8",   "plone60-py38"]
         - ["3.9",   "plone60-py39"]
+        - ["3.10",   "plone60-py310"]
+        - ["3.11",   "plone60-py311"]
     runs-on: ubuntu-latest
     name: ${{ matrix.config[1] }}
     steps:
