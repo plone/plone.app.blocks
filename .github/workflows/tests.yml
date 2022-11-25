@@ -14,15 +14,15 @@ jobs:
       fail-fast: false
       matrix:
         config:
-        # [Python version, tox env]
-        - ["3.7",   "plone52-py37"]
-        - ["3.8",   "plone52-py38"]
-        - ["3.8",   "plone60-py38"]
-        - ["3.9",   "plone60-py39"]
-        - ["3.10",   "plone60-py310"]
-        - ["3.11",   "plone60-py311"]
+        # [Python version, Plone version]
+        - ["3.7",   "5.2"]
+        - ["3.8",   "5.2"]
+        - ["3.8",   "6.0"]
+        - ["3.9",   "6.0"]
+        - ["3.10",   "6.0"]
+        - ["3.11",   "6.0"]
     runs-on: ubuntu-latest
-    name: ${{ matrix.config[1] }}
+    name: plone${{ matrix.config[1] }}-py{{ matrix.config[0]}}
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
@@ -33,7 +33,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ matrix.config[0] }}-${{ matrix.config[1] }}-${{ hashFiles('setup.*', 'tox.ini') }}
+        key: ${{ runner.os }}-pip-${{ matrix.config[0] }}-plone${{ matrix.config[1] }}-${{ hashFiles('setup.*', 'tox.ini') }}
         restore-keys: |
           ${{ runner.os }}-pip-${{ matrix.config[0] }}-
           ${{ runner.os }}-pip-
@@ -42,4 +42,4 @@ jobs:
         python -m pip install --upgrade pip
         pip install tox
     - name: Test
-      run: tox -e ${{ matrix.config[1] }}
+      run: tox -e plone${{ matrix.config[1] }}-py{{ matrix.config[0]}}
