@@ -15,8 +15,8 @@ class BlocksLayer(PloneSandboxLayer):
     def setUpZope(self, app, configurationContext):
         # load ZCML
         import plone.app.blocks
-        import plone.app.tiles
         import plone.app.contenttypes
+        import plone.app.tiles
 
         self.loadZCML(package=plone.app.tiles, name="demo.zcml")
         self.loadZCML(package=plone.app.blocks)

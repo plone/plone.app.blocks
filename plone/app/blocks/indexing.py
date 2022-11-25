@@ -13,17 +13,19 @@ from zope.interface import implementer
 HAS_DEXTERITYTEXTINDEXER = False
 
 try:
-    from collective.dexteritytextindexer.interfaces import (
+    from collective.dexteritytextindexer.interfaces import (  # noqa
         IDynamicTextIndexExtender,
-    )  # noqa
+    )
+
     HAS_DEXTERITYTEXTINDEXER = True
 except ImportError:
     pass
 
 try:
-    from plone.app.dexterity.textindexer.interfaces import (
+    from plone.app.dexterity.textindexer.interfaces import (  # noqa
         IDynamicTextIndexExtender,
-    )  # noqa
+    )
+
     HAS_DEXTERITYTEXTINDEXER = True
 except ImportError:
     pass
