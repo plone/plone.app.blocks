@@ -5,6 +5,7 @@
 .coverage
 .installed.cfg
 .mr.developer.cfg
+.python-version
 .tox
 bin/
 coverage/
@@ -19,3 +20,12 @@ parts/
 var/
 src/
 /pip-selfcheck.json
+
+# mxdev
+/instance/
+/.make-sentinels/
+/*-mxdev.txt
+/reports/
+/sources/
+/venv/
+.installed.txt
