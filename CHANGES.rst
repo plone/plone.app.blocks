@@ -1,7 +1,7 @@
 Changelog
 =========
 
-6.0.2 (unreleased)
+7.0.0 (unreleased)
 ------------------
 
 - Implement support for link integrity (see version 5.2.0).
