@@ -4,7 +4,10 @@ Changelog
 6.0.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix ``layout_view`` and ``tile_layout_view`` to work with the Zope security fix.
+  Needed when you use Plone 5.2.10.1 or Plone 6.0.0.1.
+  Fixes `issue 101 <https://github.com/plone/plone.app.blocks/issues/101>_`.
+  [maurits]
 
 
 6.0.1 (2022-07-20)
