@@ -2,5 +2,3 @@ include *.rst LICENSE.GPL LICENSE.txt
 recursive-include plone *
 global-exclude *.pyc
 exclude .coveragerc
-exclude bootstrap.py
-exclude *.cfg
