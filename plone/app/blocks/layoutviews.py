@@ -57,7 +57,11 @@ class ContentLayoutView(DefaultView):
         # Here we skip legacy portal_transforms and call plone.outputfilters
         # directly by purpose
         filters = [f for _, f in getAdapters((self.context, self.request), IFilter)]
-        return apply_filters(filters, layout)
+        result = apply_filters(filters, layout)
+        if not self.request.response.getHeader('Content-Type'):
+            # Needed since Plone 5.2.10.1/6.0.0.1 with Zope security fix.
+            self.request.response.setHeader('Content-Type', 'text/html')
+        return result
 
 
 @implementer(IBlocksTransformEnabled)
@@ -97,4 +101,8 @@ class TileLayoutView(DefaultView):
         # Here we skip legacy portal_transforms and call plone.outputfilters
         # directly by purpose
         filters = [f for _, f in getAdapters((self.context, self.request), IFilter)]
-        return apply_filters(filters, layout)
+        result = apply_filters(filters, layout)
+        if not self.request.response.getHeader('Content-Type'):
+            # Needed since Plone 5.2.10.1/6.0.0.1 with Zope security fix.
+            self.request.response.setHeader('Content-Type', 'text/html')
+        return result
