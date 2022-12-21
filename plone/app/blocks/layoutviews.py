@@ -57,9 +57,9 @@ class ContentLayoutView(DefaultView):
         # directly by purpose
         filters = [f for _, f in getAdapters((self.context, self.request), IFilter)]
         result = apply_filters(filters, layout)
-        if not self.request.response.getHeader('Content-Type'):
+        if not self.request.response.getHeader("Content-Type"):
             # Needed since Plone 5.2.10.1/6.0.0.1 with Zope security fix.
-            self.request.response.setHeader('Content-Type', 'text/html')
+            self.request.response.setHeader("Content-Type", "text/html")
         return result
 
 
@@ -101,7 +101,7 @@ class TileLayoutView(DefaultView):
         # directly by purpose
         filters = [f for _, f in getAdapters((self.context, self.request), IFilter)]
         result = apply_filters(filters, layout)
-        if not self.request.response.getHeader('Content-Type'):
+        if not self.request.response.getHeader("Content-Type"):
             # Needed since Plone 5.2.10.1/6.0.0.1 with Zope security fix.
-            self.request.response.setHeader('Content-Type', 'text/html')
+            self.request.response.setHeader("Content-Type", "text/html")
         return result
