@@ -1,7 +1,7 @@
 Changelog
 =========
 
-7.0.0 (unreleased)
+7.0.0 (2022-12-21)
 ------------------
 
 - Fix ``layout_view`` and ``tile_layout_view`` to work with the Zope security fix.
