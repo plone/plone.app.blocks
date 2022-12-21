@@ -4,11 +4,17 @@ Changelog
 7.0.0 (unreleased)
 ------------------
 
+- Fix ``layout_view`` and ``tile_layout_view`` to work with the Zope security fix.
+  Needed when you use Plone 5.2.10.1 or Plone 6.0.0.1.
+  Fixes `issue 101 <https://github.com/plone/plone.app.blocks/issues/101>_`.
+  [maurits]
+
 - Implement support for link integrity (see version 5.2.0).
   [petschki]
 
 - Drop support for Plone < 6.
   [petschki]
+
 
 6.0.1 (2022-07-20)
 ------------------
