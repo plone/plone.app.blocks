@@ -2,9 +2,9 @@ from lxml.html import fromstring
 from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.app.blocks.layoutbehavior import ILayoutBehaviorAdaptable
 from plone.app.contenttypes import indexers
+from plone.base.utils import safe_text
 from plone.indexer.decorator import indexer
 from plone.tiles.data import ANNOTATIONS_KEY_PREFIX
-from Products.CMFPlone.utils import safe_unicode
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapter
 from zope.interface import implementer
@@ -41,11 +41,11 @@ def LayoutSearchableText(obj):
     except AttributeError:
         pass
     try:
-        text.append(safe_unicode(obj.title))
+        text.append(safe_text(obj.title))
     except AttributeError:
         pass
     try:
-        text.append(safe_unicode(obj.description))
+        text.append(safe_text(obj.description))
     except AttributeError:
         pass
 

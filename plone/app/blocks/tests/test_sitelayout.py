@@ -10,7 +10,7 @@ from plone.app.testing import TEST_USER_ID
 from plone.memoize.volatile import ATTR
 from plone.registry.interfaces import IRegistry
 from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2
-from Products.CMFPlone.utils import getToolByName
+from Products.CMFCore.utils import getToolByName
 from zExceptions import NotFound
 from zope.component import adapter
 from zope.component import getMultiAdapter

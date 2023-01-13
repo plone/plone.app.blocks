@@ -2,10 +2,10 @@ from lxml import etree
 from lxml import html
 from plone.app.blocks import panel
 from plone.app.blocks import tiles
+from plone.base.utils import safe_bytes
 from plone.tiles import esi
 from plone.tiles.interfaces import ESI_HEADER
 from plone.transformchain.interfaces import ITransform
-from Products.CMFPlone.utils import safe_bytes
 from repoze.xmliter.serializer import XMLSerializer
 from repoze.xmliter.utils import getHTMLSerializer
 from zope.interface import implementer

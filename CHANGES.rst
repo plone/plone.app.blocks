@@ -4,7 +4,8 @@ Changelog
 7.0.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix deprecated dependencies to ``Products.CMFPlone``.
+  [petschki]
 
 
 7.0.0 (2022-12-21)

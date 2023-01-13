@@ -53,10 +53,10 @@ setup(
     zip_safe=False,
     install_requires=[
         "lxml",
+        "plone.base",
         "plone.jsonserializer",
         "plone.subrequest",
         "plone.tiles",
-        "Products.CMFPlone >= 5.2",
         "repoze.xmliter",
         "setuptools",
     ],
