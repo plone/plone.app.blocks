@@ -4,6 +4,7 @@ from plone.app.blocks.layoutbehavior import ILayoutBehaviorAdaptable
 from plone.app.linkintegrity.interfaces import IRetriever
 from plone.app.linkintegrity.retriever import DXGeneral
 from plone.base.utils import safe_bytes
+from plone.base.utils import safe_text
 from plone.tiles.interfaces import ITile
 from repoze.xmliter.utils import getHTMLSerializer
 from zope.component import adapter
@@ -43,7 +44,7 @@ class BlocksDXGeneral(DXGeneral):
 
         iterable = [
             re.sub(b"&#13;", b"\n", re.sub(b"&#13;\n", b"\n", safe_bytes(item)))
-            for item in self.context.customContentLayout
+            for item in safe_text(self.context.customContentLayout)
             if item
         ]
         result = getHTMLSerializer(
