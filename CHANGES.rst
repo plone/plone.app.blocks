@@ -7,6 +7,9 @@ Changelog
 - Fix deprecated dependencies to ``Products.CMFPlone``.
   [petschki]
 
+- Linkintegrity: convert old ``customContentLayout`` data to unicode.
+  [petschki]
+
 
 7.0.0 (2022-12-21)
 ------------------
