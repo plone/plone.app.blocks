@@ -18,6 +18,9 @@ Changelog
   Related to `issue 97 <https://github.com/plone/plone.app.blocks/issues/97>`_.
   [cillianderoiste]
 
+- Linkintegrity: convert old ``customContentLayout`` data to unicode.
+  [petschki]
+
 
 7.0.0 (2022-12-21)
 ------------------
