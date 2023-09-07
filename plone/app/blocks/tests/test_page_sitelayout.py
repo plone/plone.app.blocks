@@ -15,7 +15,6 @@ import unittest
 
 
 class TestPageSiteLayout(unittest.TestCase):
-
     layer = BLOCKS_FUNCTIONAL_TESTING
 
     def setUp(self):
@@ -240,7 +239,6 @@ class TestPageSiteLayout(unittest.TestCase):
 
 
 class TestPageSiteLayoutAcquisition(unittest.TestCase):
-
     layer = BLOCKS_FUNCTIONAL_TESTING
 
     def setUp(self):
