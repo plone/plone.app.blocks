@@ -26,7 +26,6 @@ class BlocksDXGeneral(DXGeneral):
         return links
 
     def retrieveLinksFromTiles(self):
-
         links = set()
 
         if self.context.customContentLayout is None:

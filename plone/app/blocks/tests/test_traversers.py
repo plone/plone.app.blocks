@@ -4,7 +4,6 @@ import unittest
 
 
 class TestTraversers(unittest.TestCase):
-
     layer = BLOCKS_INTEGRATION_TESTING
 
     def test_site_layout_traverser_registered(self):

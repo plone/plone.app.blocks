@@ -68,7 +68,6 @@ class ParseXML:
         return self.transformIterable([result], encoding)
 
     def transformIterable(self, result, encoding):
-
         if self.request.get("plone.app.blocks.disabled", False):
             return
 

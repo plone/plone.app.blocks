@@ -35,7 +35,6 @@ class TestUtils(unittest.TestCase):
 
 
 class TestUtilsFunctional(unittest.TestCase):
-
     layer = BLOCKS_FUNCTIONAL_TESTING
 
     def test_resolve_resource(self):
