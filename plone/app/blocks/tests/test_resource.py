@@ -7,7 +7,6 @@ import unittest
 
 
 class TestResource(unittest.TestCase):
-
     layer = BLOCKS_FUNCTIONAL_TESTING
 
     def setUp(self):

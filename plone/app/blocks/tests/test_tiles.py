@@ -20,7 +20,6 @@ except NameError:
 
 
 class ITestTile(Interface):
-
     magicNumber = schema.Int(title="Magic number", required=False)
 
 
@@ -81,7 +80,6 @@ class TestTileBroken(Tile):
 
 
 class TestTilesLayer(PloneSandboxLayer):
-
     defaultBases = (BLOCKS_FIXTURE,)
 
     def setUpZope(self, app, configurationContext):
@@ -225,7 +223,6 @@ testLayout4 = """\
 
 
 class TestRenderTiles(unittest.TestCase):
-
     layer = BLOCKS_TILES_INTEGRATION_TESTING
 
     def testRenderTiles(self):

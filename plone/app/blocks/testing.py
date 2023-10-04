@@ -9,7 +9,6 @@ from zope.configuration import xmlconfig
 
 
 class BlocksLayer(PloneSandboxLayer):
-
     defaultBases = (PLONE_FIXTURE,)
 
     def setUpZope(self, app, configurationContext):

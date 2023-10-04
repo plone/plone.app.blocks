@@ -6,6 +6,8 @@ Changelog
 
 - Fix deprecated dependencies to ``Products.CMFPlone``.
   [petschki]
+- Fix requirements.txt, --install-options is obsolete, use --pre instead
+  [cillianderoiste]
 
 
 7.0.0 (2022-12-21)
