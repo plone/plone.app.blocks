@@ -30,12 +30,14 @@ else:
 
 
 class ITestTile(Interface):
-    """ test marker """
+    """test marker"""
 
 
 class TestTile(Tile):
     def __call__(self):
-        return f"<a href=\"resolveuid/{self.request.form.get('uid')}\">internal link</a>"
+        return (
+            f"<a href=\"resolveuid/{self.request.form.get('uid')}\">internal link</a>"
+        )
 
 
 @implementer(IRetriever)
@@ -83,7 +85,8 @@ class TestTilesLayer(PloneSandboxLayer):
 
 BLOCKS_TILES_LINKINTEGRITY_FIXTURE = TestTilesLayer()
 BLOCKS_TILES_LINKINTEGRITY_INTEGRATION_TESTING = IntegrationTesting(
-    bases=(BLOCKS_TILES_LINKINTEGRITY_FIXTURE,), name="Blocks:Tiles:LinkIntegrity:Integration"
+    bases=(BLOCKS_TILES_LINKINTEGRITY_FIXTURE,),
+    name="Blocks:Tiles:LinkIntegrity:Integration",
 )
 
 
@@ -118,9 +121,7 @@ class TestLinkIntegrity(unittest.TestCase):
         self.doc2 = self.folder["d2"]
 
         # set customContentLayout to @@test_tile with internal Link
-        self.doc1.customContentLayout = (
-            f"<html><body><div data-tile=\"./@@test.tile?uid={IUUID(self.doc2)}\"/></body></html>"
-        )
+        self.doc1.customContentLayout = f'<html><body><div data-tile="./@@test.tile?uid={IUUID(self.doc2)}"/></body></html>'
 
     def test_linkintegrity(self):
         # TODO TEST
@@ -128,12 +129,20 @@ class TestLinkIntegrity(unittest.TestCase):
 
     def test_copy_paste(self):
         # see
-        _cp = self.folder.manage_copyObjects(["d1", ])
+        _cp = self.folder.manage_copyObjects(
+            [
+                "d1",
+            ]
+        )
         self.folder.manage_pasteObjects(_cp)
 
         self.assertTrue("copy_of_d1" in self.folder)
 
-        _cp = self.portal.manage_copyObjects(["f1", ])
+        _cp = self.portal.manage_copyObjects(
+            [
+                "f1",
+            ]
+        )
         self.portal.manage_pasteObjects(_cp)
 
         self.assertTrue("copy_of_f1" in self.portal)
