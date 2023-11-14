@@ -32,7 +32,7 @@ class BlocksDXGeneral(DXGeneral):
         if self.context.customContentLayout is None:
             return links
 
-        if not hasattr(self.context, "REQUEST") or aq_parent(self.context) is None:
+        if aq_parent(self.context) is None or not hasattr(self.context, "REQUEST"):
             # context has not been added to a container yet.
             # This happens when pasting an item.
             # This easily leads to errors traversing to tiles.
