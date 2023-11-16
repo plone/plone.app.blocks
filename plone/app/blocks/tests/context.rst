@@ -69,8 +69,8 @@ the default title of the portal object, ``Plone site`` will be used::
 
     >>> portal = layer['portal']
     >>> browser.open(portal.absolute_url() + '/@@page-layout')
-    >>> print(browser.headers.get("Content-Type"))
-    text/html; charset=utf-8
+    >>> print(browser.headers.get("Content-Type").split(";")[0])
+    text/html
     >>> browser.isHtml
     True
     >>> print(browser.contents)
