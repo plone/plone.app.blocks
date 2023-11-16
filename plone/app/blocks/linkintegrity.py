@@ -60,7 +60,6 @@ class BlocksDXGeneral(DXGeneral):
             iterable, pretty_print=False, encoding='utf-8'
         )
 
-
         for tile_node in utils.bodyTileXPath(result.tree):
             tile_url = tile_node.attrib[utils.tileAttrib]
             # assume request query parameters are always useless
