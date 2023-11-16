@@ -95,7 +95,7 @@ def resolve(url, resolved=None):
     if not resolved.strip():
         return
 
-    if isinstance(resolved, str):
+    if isinstance(resolved, six.string_types):
         resolved = resolved.encode("utf-8")
 
     try:
