@@ -1,7 +1,7 @@
 Changelog
 =========
 
-7.0.1 (unreleased)
+7.0.1 (2023-11-16)
 ------------------
 
 - Fix deprecated dependencies to ``Products.CMFPlone``.
