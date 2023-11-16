@@ -16,12 +16,8 @@ jobs:
         # [Python version, tox env]
         - ["2.7",   "plone51-py27"]
         - ["2.7",   "plone52-py27"]
-        - ["3.7",   "plone52-py37"]
         - ["3.8",   "plone52-py38"]
-        # - ["3.7",   "plone60-py37"]
-        - ["3.8",   "plone60-py38"]
-        - ["3.9",   "plone60-py39"]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     name: ${{ matrix.config[1] }}
     steps:
     - uses: actions/checkout@v2

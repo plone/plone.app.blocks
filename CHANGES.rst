@@ -4,6 +4,11 @@ Changelog
 5.2.2 (unreleased)
 ------------------
 
+- No longer test on Python 3.7 or on Plone 6.0.
+  For Plone 6 you can use version 7 or higher.
+  Plone 5.1 is officially still supported, and Python 2.7 as well.
+  [maurits]
+
 - Fix for AttributeError in linkintegrity code when pasting a folder containing a page with tiles.
   Related to `issue 97 <https://github.com/plone/plone.app.blocks/issues/97>`_.
   [cillianderoiste]
