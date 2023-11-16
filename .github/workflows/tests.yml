@@ -22,9 +22,12 @@ jobs:
     runs-on: ubuntu-20.04
     name: ${{ matrix.config[1] }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python
-      uses: actions/setup-python@v2
+      # setup-python stopped supporting Python 2.7, use https://github.com/MatteoH2O1999/setup-python
+      # This action tries to build all Python versions that actions/setup-python does not support.
+      # It caches built versions, so that after the first run, installation time is really low.
+      uses: MatteoH2O1999/setup-python@v1
       with:
         python-version: ${{ matrix.config[0] }}
     - name: Pip cache
