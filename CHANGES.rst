@@ -8,6 +8,9 @@ Changelog
   [petschki]
 - Fix requirements.txt, --install-options is obsolete, use --pre instead
   [cillianderoiste]
+- Fix for AttributeError in linkintegrity code when pasting a folder containing a page with tiles.
+  Related to `issue 97 <https://github.com/plone/plone.app.blocks/issues/97>`_.
+  [cillianderoiste]
 
 
 7.0.0 (2022-12-21)
