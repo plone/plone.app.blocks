@@ -19,3 +19,4 @@ parts/
 var/
 src/
 /pip-selfcheck.json
+.python-version
