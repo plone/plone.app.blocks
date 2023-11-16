@@ -11,6 +11,7 @@ and page layouts, respectively::
     >>> class SiteLayout(BrowserView):
     ...     __name__ = 'site-layout'
     ...	    def __call__(self):
+    ...         self.request.response.setHeader("Content-Type", "text/html")
     ...         return u"""
     ... <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     ... <html>
@@ -29,6 +30,7 @@ and page layouts, respectively::
     ... class PageLayout(BrowserView):
     ...     __name__ = 'page-layout'
     ...	    def __call__(self):
+    ...         self.request.response.setHeader("Content-Type", "text/html")
     ...         return u"""
     ... <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     ... <html data-layout="./@@site-layout">
@@ -67,6 +69,10 @@ the default title of the portal object, ``Plone site`` will be used::
 
     >>> portal = layer['portal']
     >>> browser.open(portal.absolute_url() + '/@@page-layout')
+    >>> print(browser.headers.get("Content-Type").split(";")[0])
+    text/html
+    >>> browser.isHtml
+    True
     >>> print(browser.contents)
     <!DOCTYPE html...
         <title>Plone site</title>...

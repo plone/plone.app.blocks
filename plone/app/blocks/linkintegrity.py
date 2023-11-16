@@ -40,7 +40,7 @@ class BlocksDXGeneral(DXGeneral):
         if self.context.customContentLayout is None:
             return links
 
-        if aq_parent(self.context) is None:
+        if aq_parent(self.context) is None or not hasattr(self.context, "REQUEST"):
             # context has not been added to a container yet.
             # This happens when pasting an item.
             # This easily leads to errors traversing to tiles.
@@ -59,7 +59,6 @@ class BlocksDXGeneral(DXGeneral):
             # if other encoding is needed, those are two places to change
             iterable, pretty_print=False, encoding='utf-8'
         )
-
 
         for tile_node in utils.bodyTileXPath(result.tree):
             tile_url = tile_node.attrib[utils.tileAttrib]

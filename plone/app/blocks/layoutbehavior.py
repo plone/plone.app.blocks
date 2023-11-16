@@ -31,7 +31,6 @@ from zope import schema
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapter
 from zope.component import getUtility
-from zope.component import queryUtility
 from zope.deprecation import deprecate
 from zope.interface import implementer
 from zope.interface import Interface

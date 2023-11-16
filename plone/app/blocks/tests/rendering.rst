@@ -244,6 +244,7 @@ In real life, these could be registered using the standard ``<browser:page />`` 
     ... class Page(BrowserView):
     ...     __name__ = 'test-page'
     ...     def __call__(self):
+    ...         self.request.response.setHeader("Content-Type", "text/html")
     ...         return pageHTML
 
     >>> class ITestTile(Interface):
@@ -254,6 +255,7 @@ In real life, these could be registered using the standard ``<browser:page />`` 
     ...
     ...     def __call__(self):
     ...         # fake a page template to keep things simple in the test
+    ...         self.request.response.setHeader("Content-Type", "text/html")
     ...         return """\
     ... <html>
     ...     <head>
