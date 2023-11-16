@@ -4,7 +4,9 @@ Changelog
 5.2.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix for AttributeError in linkintegrity code when pasting a folder containing a page with tiles.
+  Related to `issue 97 <https://github.com/plone/plone.app.blocks/issues/97>`_.
+  [cillianderoiste]
 
 
 5.2.1 (2022-12-21)
