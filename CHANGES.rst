@@ -1,7 +1,7 @@
 Changelog
 =========
 
-5.2.2 (unreleased)
+5.2.2 (2023-11-17)
 ------------------
 
 - No longer test on Python 3.7 or on Plone 6.0.
