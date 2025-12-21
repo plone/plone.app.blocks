@@ -1,5 +1,5 @@
 include *.rst LICENSE.GPL LICENSE.txt
-recursive-include plone *
+recursive-include src *
 global-exclude *.pyc
 exclude .coveragerc
 exclude *.txt

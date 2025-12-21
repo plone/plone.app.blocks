@@ -1,19 +1,16 @@
+from pathlib import Path
 from setuptools import find_packages
 from setuptools import setup
 
-import os
 
-
-def read(*path):
-    return open(os.path.join(*path)).read()
-
+tests_path = Path(".") / "src" / "plone" / "app" / "blocks" / "tests"
 
 long_description = "\n".join(
     [
-        open("README.rst").read(),
-        open(os.path.join("plone", "app", "blocks", "tests", "rendering.rst")).read(),
-        open(os.path.join("plone", "app", "blocks", "tests", "esi.rst")).read(),
-        open("CHANGES.rst").read(),
+        Path("README.rst").read_text(),
+        (tests_path / "rendering.rst").read_text(),
+        (tests_path / "esi.rst").read_text(),
+        Path("CHANGES.rst").read_text(),
     ]
 )
 
@@ -46,8 +43,9 @@ setup(
     maintainer_email="releaseteam@plone.org",
     license="GPLv2",
     url="https://github.com/plone/plone.app.blocks",
-    packages=find_packages(),
+    packages=find_packages("src"),
     namespace_packages=["plone", "plone.app"],
+    package_dir={"": "src"},
     include_package_data=True,
     zip_safe=False,
     python_requires=">=3.8",
