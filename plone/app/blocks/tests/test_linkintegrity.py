@@ -1,5 +1,4 @@
 from plone.app.blocks.testing import BLOCKS_FIXTURE
-from plone.app.linkintegrity.handlers import modifiedContent
 from plone.app.linkintegrity.interfaces import IRetriever
 from plone.app.linkintegrity.parser import extractLinks
 from plone.app.testing import IntegrationTesting
