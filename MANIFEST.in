@@ -2,3 +2,7 @@ include *.rst LICENSE.GPL LICENSE.txt
 recursive-include plone *
 global-exclude *.pyc
 exclude .coveragerc
+exclude *.txt
+exclude *.yaml
+exclude Makefile
+exclude sources.ini
