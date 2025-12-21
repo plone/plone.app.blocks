@@ -22,7 +22,7 @@ class BlocksDXGeneral(DXGeneral):
 
     def retrieveLinks(self):
         """Finds all links from the object and return them."""
-        links = super(BlocksDXGeneral, self).retrieveLinks()
+        links = super().retrieveLinks()
         links |= self.retrieveLinksFromTiles()
         return links
 
@@ -69,7 +69,7 @@ class BlocksDXGeneral(DXGeneral):
 
 @implementer(IRetriever)
 @adapter(ITile)
-class TileGeneral(object):
+class TileGeneral:
     def __init__(self, context):
         self.context = context
 
