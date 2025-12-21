@@ -6,3 +6,4 @@ exclude *.txt
 exclude *.yaml
 exclude Makefile
 exclude sources.ini
+recursive-exclude news *
