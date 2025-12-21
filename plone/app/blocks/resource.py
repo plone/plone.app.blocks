@@ -44,7 +44,7 @@ logger = logging.getLogger("plone.app.blocks")
 class SiteLayoutTraverser(ResourceTraverser):
     """The site layout traverser.
 
-    Allows traveral to /++sitelayout++<name> using ``plone.resource`` to fetch
+    Allows traversal to /++sitelayout++<name> using ``plone.resource`` to fetch
     things stored either on the filesystem or in the ZODB.
     """
 

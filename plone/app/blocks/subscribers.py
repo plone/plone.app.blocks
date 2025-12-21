@@ -8,7 +8,7 @@ from zope.annotation.interfaces import IAnnotations
 def onLayoutEdited(obj, event):
     """
     need to get the layout because you need to know what are
-    acceptible storage values
+    acceptable storage values
     """
     lookup = ILayoutAware(obj)
     layout = lookup.content_layout()

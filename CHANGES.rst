@@ -302,7 +302,7 @@ New:
 - Get layouts always by adapting with ``ILayoutAware``.  This introduces a
   generic adapter and a behavior adapter.  Deprecated the formerly used functions
   ``getLayout`` ``getDefaultSiteLayout`` just calls
-  ``ILayoutAware().site_layout`` and is deprected.  ``getLayout`` just calls
+  ``ILayoutAware().site_layout`` and is deprecated.  ``getLayout`` just calls
   ``ILayoutAware().content_layout`` and is deprecated.
   [jensens]
 
@@ -318,7 +318,7 @@ Fixes:
   results in a status rewriting to a 302 which results in 200 login form.
   The whole login form page then is rendered as the tile contents.
   This patch catches the 401 by providing a custom exception handler.
-  The 401 is catched and ignored. This is not pefect yet and need some work,
+  The 401 is caught and ignored. This is not perfect yet and need some work,
   but it at least does not break design and intended behavior of tiles.
   [jensens]
 
@@ -454,7 +454,7 @@ New:
   [datakurre]
 
 - Change tags with data-tiles-attrs to be completely replaced (by
-  replace_with_children instad of replace_content) to restore original
+  replace_with_children instead of replace_content) to restore original
   design and support for site layout tiles in HTML document head tag
   [datakurre]
 
@@ -553,7 +553,7 @@ New:
   [gyst, datakurre, gforcada]
 
 - Fix to set the merging request flag before testing the merge results to allow
-  staticly placed tiles in content templates to be rendered properly.
+  statically placed tiles in content templates to be rendered properly.
   [cewing]
 
 - Solve issue with VHM and tile rendering. Fixes
