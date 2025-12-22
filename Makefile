@@ -59,7 +59,7 @@ TEST_PREREQUISITES=${INSTALL_TARGET}
 RUN_PREREQUISITES=${INSTANCE_TARGET}
 
 ##############################################################################
-# CONVINIENCE
+# CONVENIENCE
 
 # install and run
 .PHONY: all # full install, test and run
@@ -73,7 +73,7 @@ help: ## This help message
 	@echo
 	@echo "${WARN_COLOR}Additional parameters:${NO_COLOR}"
 	@echo "${MARK_COLOR}PYTHON${NO_COLOR}:       python interpreter to be used (default: python3)"
-	@echo "${MARK_COLOR}VENV${NO_COLOR}:        [on|off] wether to create a Python virtual environment or not (default: on)"
+	@echo "${MARK_COLOR}VENV${NO_COLOR}:        [on|off] whether to create a Python virtual environment or not (default: on)"
 	@echo "${MARK_COLOR}VENV_FOLDER${NO_COLOR}: location of the virtual environment (default: ./venv)"
 	@echo
 	@echo "${WARN_COLOR}Targets:${NO_COLOR}"
@@ -156,7 +156,7 @@ ${MXDEV_SENTINEL}: ${PIP_SENTINEL}
 	@touch ${MXDEV_SENTINEL}
 
 .PHONY: prepare
-prepare: ${PREPARE_TARGET} ## prepare soures and dependencies
+prepare: ${PREPARE_TARGET} ## prepare sources and dependencies
 
 ${PREPARE_PREREQUISITES}:
 	@touch $@
@@ -206,7 +206,7 @@ test: ${TEST_PREREQUISITES} ${TESTRUNNER_SENTINEL} ## run tests
 	@${PYBIN}zope-testrunner --auto-color --auto-progress --test-path=${ADDONFOLDER}
 
 .PHONY: test-ignore-warnings
-test-ignore-warnings: ${TEST_PREREQUISITES} ${TESTRUNNER_SENTINEL}  ## run tests (hide warnins)
+test-ignore-warnings: ${TEST_PREREQUISITES} ${TESTRUNNER_SENTINEL}  ## run tests (hide warnings)
 	@echo "$(OK_COLOR)Run addon tests$(NO_COLOR)"
 	@PYTHONWARNINGS=ignore ${PYBIN}zope-testrunner --auto-color --auto-progress --test-path=${ADDONFOLDER}
 

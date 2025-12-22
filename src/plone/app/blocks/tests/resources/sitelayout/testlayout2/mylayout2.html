@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <title>My Layout 2 Title</title>
+    <link href="/layout/style.css"
+          rel="stylesheet"
+    />
+    <script type="text/javascript">alert('layout');</script>
+
+    <link rel="panel"
+          rev="panel1"
+          target="panel1"
+    />
+    <link rel="panel"
+          rev="panel2"
+          target="panel2"
+    />
+    <link rel="panel"
+          rev="panel3"
+          target="panel3"
+    />
+
+    <link href="./@@test.tile_nobody/tile_css"
+          rel="tile"
+    />
+  </head>
+  <body>
+    <h1>Welcome to my layout 2!</h1>
+    <div id="panel1">Layout panel 1</div>
+    <div id="panel2">
+            Layout panel 2
+      <div class="tile-placeholder"
+           id="layout-tile1"
+           data-tile="./@@test.tile1/tile1"
+      >My Layout 2 tile 1 placeholder</div>
+    </div>
+    <div id="panel3">
+            Layout panel 3
+      <div class="tile-placeholder"
+           id="layout-tile2"
+           data-tile="./@@test.tile1/tile2"
+      >My Layout 2 tile 2 placeholder</div>
+    </div>
+  </body>
+</html>

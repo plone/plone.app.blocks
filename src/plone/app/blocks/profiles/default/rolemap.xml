@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rolemap>
+  <permissions>
+    <permission acquire="False"
+                name="Plone: Manage Site Layouts"
+    >
+      <role name="Manager" />
+      <role name="Site Administrator" />
+      <role name="Owner" />
+      <role name="Editor" />
+    </permission>
+    <permission acquire="False"
+                name="Plone: Manage Content Layouts"
+    >
+      <role name="Manager" />
+      <role name="Site Administrator" />
+    </permission>
+    <permission acquire="False"
+                name="Plone: Customize Content Layouts"
+    >
+      <role name="Manager" />
+      <role name="Site Administrator" />
+      <role name="Owner" />
+      <role name="Editor" />
+    </permission>
+  </permissions>
+</rolemap>

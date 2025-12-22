@@ -1,0 +1,252 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:meta="http://namespaces.zope.org/meta"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    i18n_domain="plone"
+    >
+
+  <include
+      package="plone.behavior"
+      file="meta.zcml"
+      />
+  <include
+      package="plone.resource"
+      file="meta.zcml"
+      />
+
+  <include package="plone.resource" />
+  <include package="plone.tiles" />
+  <include package="plone.subrequest" />
+  <include package="plone.transformchain" />
+  <include package="plone.jsonserializer" />
+
+  <include package="plone.app.registry" />
+
+  <permission
+      id="plone.ManageSiteLayouts"
+      title="Plone: Manage Site Layouts"
+      />
+  <permission
+      id="plone.ManageContentLayouts"
+      title="Plone: Manage Content Layouts"
+      />
+  <permission
+      id="plone.CustomizeContentLayouts"
+      title="Plone: Customize Content Layouts"
+      />
+
+  <genericsetup:registerProfile
+      name="default"
+      title="Blocks rendering engine"
+      description="Installs transformation steps to apply the Blocks rendering algorithm for Plone pages."
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      directory="profiles/default"
+      />
+
+  <genericsetup:importStep
+      name="plone.app.blocks_default"
+      title="Blocks rendering engine setup"
+      description="Initializes registry values for default site layouts"
+      handler=".setuphandlers.step_setup_various"
+      />
+
+  <!-- Register the layout adapter and behavior -->
+  <adapter factory=".layoutbehavior.LayoutAwareDefault" />
+  <plone:behavior
+      name="plone.layoutaware"
+      title="Layout support"
+      description="Adds layout support to your content type"
+      factory=".layoutbehavior.LayoutAwareBehavior"
+      provides=".layoutbehavior.ILayoutAware"
+      marker=".layoutbehavior.ILayoutBehaviorAdaptable"
+      />
+  <adapter factory=".layoutbehavior.layoutAwareTileDataStorage" />
+  <adapter
+      factory="plone.tiles.data.defaultPersistentTileDataStorage"
+      for=".layoutbehavior.ILayoutBehaviorAdaptable
+           *
+           plone.tiles.interfaces.IPersistentTile"
+      />
+  <adapter
+      factory=".drafting.LayoutAwareDataStorageSyncher"
+      name="plone.app.blocks.layoutbehavior"
+      zcml:condition="installed plone.app.drafts"
+      />
+
+  <!-- Register the default views for the layout behavior -->
+  <browser:page
+      name="tile_layout_view"
+      for=".layoutbehavior.ILayoutBehaviorAdaptable"
+      class=".layoutviews.TileLayoutView"
+      permission="cmf.ModifyPortalContent"
+      />
+  <browser:page
+      name="layout_view"
+      for=".layoutbehavior.ILayoutBehaviorAdaptable"
+      class=".layoutviews.ContentLayoutView"
+      permission="zope2.View"
+      />
+  <browser:page
+      name="layout_preview"
+      for=".layoutbehavior.ILayoutBehaviorAdaptable"
+      class=".layoutviews.ContentLayoutPreview"
+      permission="cmf.ModifyPortalContent"
+      zcml:condition="installed plone.app.drafts"
+      />
+
+  <!-- Register the resource traverser -->
+  <adapter
+      factory=".resource.SiteLayoutTraverser"
+      provides="zope.traversing.interfaces.ITraversable"
+      for="*
+           zope.publisher.interfaces.IRequest"
+      name="sitelayout"
+      />
+
+  <!-- Register resource traverser for content layouts -->
+  <adapter
+      factory=".resource.ContentLayoutTraverser"
+      provides="zope.traversing.interfaces.ITraversable"
+      for="*
+           zope.publisher.interfaces.IRequest"
+      name="contentlayout"
+      />
+
+  <!-- Register vocabulary -->
+  <utility
+      name="plone.availableSiteLayouts"
+      component=".resource.AvailableSiteLayoutsVocabularyFactory"
+      />
+
+  <!-- Register vocabulary all available content layouts-->
+  <utility
+      name="plone.availableContentLayouts"
+      component=".resource.AvailableContentLayoutsVocabularyFactory"
+      />
+
+  <!-- Cache invalidation when global site layout changes -->
+  <subscriber handler=".resource.globalSiteLayoutModified" />
+
+  <!-- Register indirection views for looking up the layout -->
+  <browser:view
+      name="default-site-layout"
+      for="*"
+      class=".resource.DefaultSiteLayout"
+      permission="zope.Public"
+      />
+
+  <browser:view
+      name="page-site-layout"
+      for="*"
+      class=".resource.PageSiteLayout"
+      permission="zope.Public"
+      />
+
+  <!-- The transform pipeline -->
+
+  <!-- 8000: Turn the response into an lxml tree for further manipulation -->
+  <adapter
+      factory=".transform.ParseXML"
+      for="*
+           .interfaces.IBlocksTransformEnabled"
+      name="plone.app.blocks.parsexml"
+      />
+
+  <adapter
+      factory=".transform.ParseXML"
+      for=".interfaces.IBlocksTransformEnabled
+           .interfaces.IBlocksLayer"
+      name="plone.app.blocks.parsexml"
+      />
+
+  <!-- 8100: Locate the site layout and merge panels -->
+  <adapter
+      factory=".transform.MergePanels"
+      for="*
+           .interfaces.IBlocksTransformEnabled"
+      name="plone.app.blocks.mergepanels"
+      />
+
+  <adapter
+      factory=".transform.MergePanels"
+      for=".interfaces.IBlocksTransformEnabled
+           .interfaces.IBlocksLayer"
+      name="plone.app.blocks.mergepanels"
+      />
+
+  <!-- 8500: Finds and includes tiles in the output -->
+  <adapter
+      factory=".transform.IncludeTiles"
+      for="*
+           .interfaces.IBlocksTransformEnabled"
+      name="plone.app.blocks.tiles"
+      />
+
+  <adapter
+      factory=".transform.IncludeTiles"
+      for=".interfaces.IBlocksTransformEnabled
+           .interfaces.IBlocksLayer"
+      name="plone.app.blocks.tiles"
+      />
+
+  <!-- 9900: ESI post-processing if required -->
+  <adapter
+      factory=".transform.ESIRender"
+      for="*
+           .interfaces.IBlocksTransformEnabled"
+      name="plone.app.blocks.esirender"
+      />
+
+  <adapter
+      factory=".transform.ESIRender"
+      for=".interfaces.IBlocksTransformEnabled
+           .interfaces.IBlocksLayer"
+      name="plone.app.blocks.esirender"
+      />
+
+  <!-- 8000: Off switch for ESI tiles -->
+  <adapter
+      factory=".transform.DisableParsing"
+      for="plone.tiles.esi.ESIHead
+           .interfaces.IBlocksLayer"
+      name="plone.app.blocks.parsexml"
+      />
+
+  <adapter
+      factory=".transform.DisableParsing"
+      for="plone.tiles.esi.ESIBody
+           .interfaces.IBlocksLayer"
+      name="plone.app.blocks.parsexml"
+      />
+
+  <subscriber
+      for=".layoutbehavior.ILayoutAware
+           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+      handler=".subscribers.onLayoutEdited"
+      />
+
+  <meta:provides
+      feature="textindexer"
+      zcml:condition="installed plone.app.dexterity.textindexer"
+      />
+
+  <adapter
+      factory=".indexing.LayoutSearchableText"
+      name="SearchableText"
+      zcml:condition="not-have textindexer"
+      />
+
+  <adapter
+      factory=".indexing.LayoutSearchableTextIndexExtender"
+      name="content"
+      />
+
+  <adapter factory=".linkintegrity.BlocksDXGeneral" />
+  <adapter factory=".linkintegrity.TileGeneral" />
+
+</configure>

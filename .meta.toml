@@ -1,0 +1,12 @@
+# Generated from:
+# https://github.com/plone/meta/tree/main/src/plone/meta/default
+# See the inline comments on how to expand/tweak this configuration file
+[meta]
+template = "default"
+commit-id = "2.3.1"
+
+[tox]
+test_matrix = {"6.2" = ["*"]}
+
+[pyproject]
+codespell_ignores = "subtiles,subtile"
