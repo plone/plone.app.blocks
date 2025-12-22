@@ -10,4 +10,3 @@ test_matrix = {"6.2" = ["*"]}
 
 [pyproject]
 codespell_ignores = "subtiles,subtile"
-dependencies_ignores = "['collective.dexteritytextindexer']"

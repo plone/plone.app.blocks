@@ -235,11 +235,6 @@
       zcml:condition="installed plone.app.dexterity.textindexer"
       />
 
-  <meta:provides
-      feature="textindexer"
-      zcml:condition="installed collective.dexteritytextindexer"
-      />
-
   <adapter
       factory=".indexing.LayoutSearchableText"
       name="SearchableText"
@@ -249,7 +244,6 @@
   <adapter
       factory=".indexing.LayoutSearchableTextIndexExtender"
       name="content"
-      zcml:condition="installed collective.dexteritytextindexer"
       />
 
   <adapter factory=".linkintegrity.BlocksDXGeneral" />
