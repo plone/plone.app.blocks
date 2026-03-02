@@ -47,19 +47,7 @@ INSTANCE_FOLDER=instance
 PIP_PARAMS= --pre
 
 ##############################################################################
-# targets and prerequisites
-# target has to be one file, otherwise step gets executes for each file separate
-PREPARE_PREREQUISITES=${PIP_REQUIREMENTS_IN_FILE} ${CONSTRAINTS_IN} sources.ini ${ADDONBASE}setup.cfg
-PREPARE_TARGET=requirements-mxdev.txt
-INSTALL_PREREQUSISTES=${PREPARE_TARGET}
-INSTALL_TARGET=.installed.txt
-INSTANCE_PREREQUISITES=${INSTALL_TARGET} ${INSTANCE_YAML}
-INSTANCE_TARGET=${INSTANCE_FOLDER}/etc/zope.ini ${INSTANCE_FOLDER}/etc/zope.conf ${INSTANCE_FOLDER}/etc/site.zcml
-TEST_PREREQUISITES=${INSTALL_TARGET}
-RUN_PREREQUISITES=${INSTANCE_TARGET}
-
-##############################################################################
-# CONVINIENCE
+# CONVENIENCE
 
 # install and run
 .PHONY: all # full install, test and run
@@ -123,7 +111,7 @@ ifeq (, $(shell which $(PYTHON) ))
 endif
 
 # version ok?
-PYTHON_VERSION_MIN=3.7
+PYTHON_VERSION_MIN=3.9
 PYTHON_VERSION_OK=$(shell $(PYTHON) -c 'import sys; print(int(sys.version_info[0:2] >= tuple(map(int, "$(PYTHON_VERSION_MIN)".split(".")))))' )
 
 ifeq ($(PYTHON_VERSION_OK),0)

@@ -10,7 +10,6 @@ from zope.annotation.interfaces import IAnnotations
 from zope.component import adapter
 from zope.interface import implementer
 
-
 concat = indexers._unicode_save_string_concat
 
 

@@ -11,7 +11,6 @@ from zope.interface import Interface
 
 import unittest
 
-
 try:
     # Python 2: "unicode" is built-in
     unicode
@@ -68,9 +67,7 @@ class TestTile3(Tile):
     def __call__(self):
         return """\
 <title>structureless in %s</title>
-""" % self.request.form.get(
-            "title", ""
-        )
+""" % self.request.form.get("title", "")
 
 
 @implementer(ITestTile)

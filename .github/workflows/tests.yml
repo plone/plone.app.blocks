@@ -13,13 +13,11 @@ jobs:
       fail-fast: false
       matrix:
         python:
-          - "3.9"
           - "3.10"
-          - "3.11"
-          - "3.12"
           - "3.13"
         plone:
           - "6.0-latest"
+          - "6.1-latest"
 
     steps:
       - uses: actions/checkout@v6
