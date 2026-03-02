@@ -4,7 +4,8 @@ Changelog
 7.0.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix ``SearchableText`` indexer registration and remove obsolete ``collective.textindexer`` checks.
+  [petschki]
 
 
 7.0.1 (2023-11-16)
