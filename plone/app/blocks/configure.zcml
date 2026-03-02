@@ -215,24 +215,9 @@
              zope.lifecycleevent.interfaces.IObjectModifiedEvent"
         handler=".subscribers.onLayoutEdited" />
 
-    <meta:provides feature="textindexer"
-       zcml:condition="installed plone.app.dexterity.textindexer"
-    />
-
-    <meta:provides feature="textindexer"
-       zcml:condition="installed collective.dexteritytextindexer"
-    />
-
     <adapter
         name="SearchableText"
         factory=".indexing.LayoutSearchableText"
-        zcml:condition="not-have textindexer"
-        />
-
-    <adapter
-        name="content"
-        factory=".indexing.LayoutSearchableTextIndexExtender"
-        zcml:condition="installed collective.dexteritytextindexer"
         />
 
     <adapter factory=".linkintegrity.BlocksDXGeneral" />

@@ -2,6 +2,7 @@ from lxml.html import fromstring
 from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.app.blocks.layoutbehavior import ILayoutBehaviorAdaptable
 from plone.app.contenttypes import indexers
+from plone.app.dexterity.textindexer.interfaces import IDynamicTextIndexExtender
 from plone.base.utils import safe_text
 from plone.indexer.decorator import indexer
 from plone.tiles.data import ANNOTATIONS_KEY_PREFIX
@@ -9,26 +10,6 @@ from zope.annotation.interfaces import IAnnotations
 from zope.component import adapter
 from zope.interface import implementer
 
-
-HAS_DEXTERITYTEXTINDEXER = False
-
-try:
-    from collective.dexteritytextindexer.interfaces import (  # noqa
-        IDynamicTextIndexExtender,
-    )
-
-    HAS_DEXTERITYTEXTINDEXER = True
-except ImportError:
-    pass
-
-try:
-    from plone.app.dexterity.textindexer.interfaces import (  # noqa
-        IDynamicTextIndexExtender,
-    )
-
-    HAS_DEXTERITYTEXTINDEXER = True
-except ImportError:
-    pass
 
 concat = indexers._unicode_save_string_concat
 
@@ -77,13 +58,11 @@ def LayoutSearchableText(obj):
     return concat(*set(text))
 
 
-if HAS_DEXTERITYTEXTINDEXER:
+@implementer(IDynamicTextIndexExtender)
+@adapter(ILayoutBehaviorAdaptable)
+class LayoutSearchableTextIndexExtender:
+    def __init__(self, context):
+        self.context = context
 
-    @implementer(IDynamicTextIndexExtender)
-    @adapter(ILayoutBehaviorAdaptable)
-    class LayoutSearchableTextIndexExtender:
-        def __init__(self, context):
-            self.context = context
-
-        def __call__(self):
-            return LayoutSearchableText(self.context)()
+    def __call__(self):
+        return LayoutSearchableText(self.context)()
