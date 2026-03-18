@@ -216,8 +216,8 @@
         handler=".subscribers.onLayoutEdited" />
 
     <adapter
-        name="SearchableText"
-        factory=".indexing.LayoutSearchableText"
+        name="content"
+        factory=".indexing.LayoutSearchableTextIndexExtender"
         />
 
     <adapter factory=".linkintegrity.BlocksDXGeneral" />
