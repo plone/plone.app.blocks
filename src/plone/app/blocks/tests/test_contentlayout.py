@@ -134,11 +134,22 @@ class TestContentLayout(unittest.TestCase):
         annotations[ANNOTATIONS_KEY_PREFIX + ".rawhtml-1"] = {
             "content": "<p>Foobar inserted raw tile</p>"
         }
+
+        # functional indexer test
         from plone.app.blocks.indexing import LayoutSearchableText
 
-        indexed_data = LayoutSearchableText(obj)()
+        indexed_data = LayoutSearchableText(obj)
         self.assertTrue("Foobar inserted text tile" in indexed_data)
         self.assertTrue("Foobar inserted raw tile" in indexed_data)
+
+        obj.reindexObject()
+        catalog = self.portal["portal_catalog"]
+        result = catalog(SearchableText="text tile")
+        self.assertEqual(len(result), 1)
+        result = catalog(SearchableText="raw tile")
+        self.assertEqual(len(result), 1)
+        result = catalog(SearchableText="Foo*")
+        self.assertEqual(len(result), 1)
 
     def test_on_save_tile_data_is_cleaned(self):
         self.behavior.customContentLayout = """

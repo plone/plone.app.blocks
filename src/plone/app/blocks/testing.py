@@ -78,6 +78,18 @@ class BlocksLayer(PloneSandboxLayer):
         # install into the Plone site
         self.applyProfile(portal, "plone.app.blocks:default")
 
+        # enable plone.textindexer and plone.layoutaware behavior for testing
+        doc_fti = portal.portal_types["Document"]
+        behaviors = list(doc_fti.behaviors)
+
+        if "plone.textindexer" not in behaviors:
+            behaviors.append("plone.textindexer")
+
+        if "plone.layoutaware" not in behaviors:
+            behaviors.append("plone.layoutaware")
+
+        doc_fti.behaviors = tuple(behaviors)
+
 
 class PrettyPrintLayer(Layer):
     def setUp(self):
