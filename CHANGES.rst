@@ -4,7 +4,7 @@ Changelog
 7.0.2 (unreleased)
 ------------------
 
-- Fix ``SearchableText`` indexer registration and remove obsolete ``collective.textindexer`` checks.
+- Fix ``IDynamicTextIndexExtender`` adapter registration and remove obsolete ``collective.textindexer`` checks.
   [petschki]
 
 
