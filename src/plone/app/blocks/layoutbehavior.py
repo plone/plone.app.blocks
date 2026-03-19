@@ -37,7 +37,6 @@ from zope.interface import provider
 import json
 import logging
 
-
 logger = logging.getLogger("plone.app.blocks")
 
 

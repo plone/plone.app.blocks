@@ -37,7 +37,6 @@ from zope.schema.vocabulary import SimpleVocabulary
 
 import logging
 
-
 logger = logging.getLogger("plone.app.blocks")
 
 

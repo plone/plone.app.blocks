@@ -11,7 +11,6 @@ from zope.interface import Interface
 
 import unittest
 
-
 try:
     # Python 2: "unicode" is built-in
     unicode

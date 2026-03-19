@@ -19,7 +19,6 @@ from zope.interface import Interface
 import pkg_resources
 import unittest
 
-
 try:
     pkg_resources.get_distribution("plone.app.contenttypes")
 except pkg_resources.DistributionNotFound:
