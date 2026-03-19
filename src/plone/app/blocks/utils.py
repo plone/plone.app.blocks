@@ -21,7 +21,6 @@ from zope.security.interfaces import IPermission
 
 import logging
 
-
 headXPath = etree.XPath("/html/head")
 layoutAttrib = "data-layout"
 layoutXPath = etree.XPath("/html/@" + layoutAttrib)
@@ -72,9 +71,7 @@ def resolve(url, resolved=None):
     </dl>
 </body>
 </html>
-""".format(
-                **tile_parts
-            )
+""".format(**tile_parts)
 
     if not resolved.strip():
         return

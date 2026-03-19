@@ -1,7 +1,6 @@
 from pathlib import Path
 from setuptools import setup
 
-
 tests_path = Path(".") / "src" / "plone" / "app" / "blocks" / "tests"
 
 long_description = "\n".join(
