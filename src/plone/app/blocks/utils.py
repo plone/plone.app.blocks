@@ -11,15 +11,49 @@ from lxml import html
 from plone.memoize import ram
 from plone.memoize.volatile import DontCache
 from plone.resource.utils import queryResourceDirectory
+from plone.restapi.interfaces import IJsonCompatible
 from plone.subrequest import subrequest
 from urllib import parse
 from zExceptions import NotFound
 from zExceptions import Unauthorized
+from zope.component import adapter
 from zope.component import queryUtility
 from zope.component.hooks import getSite
+from zope.interface import implementer
+from zope.schema._bootstrapinterfaces import IFromUnicode
+from zope.schema.interfaces import IBool
+from zope.schema.interfaces import IDict
+from zope.schema.interfaces import IField
+from zope.schema.interfaces import IFrozenSet
+from zope.schema.interfaces import IList
+from zope.schema.interfaces import ISet
+from zope.schema.interfaces import ITuple
 from zope.security.interfaces import IPermission
 
 import logging
+
+try:
+    from plone.app.textfield import IRichText
+    from plone.app.textfield import RichTextValue
+    from plone.app.textfield.interfaces import IRichTextValue
+
+    HAS_RICH_TEXT_VALUE = True
+except ImportError:
+    HAS_RICH_TEXT_VALUE = False
+
+
+if HAS_RICH_TEXT_VALUE:
+
+    @adapter(IRichTextValue)
+    @implementer(IJsonCompatible)
+    def richtext_json_compatible(value):
+        return {
+            "data": value.raw,
+            "content-type": value.mimeType,
+            "output-content-type": value.outputMimeType,
+            "encoding": value.encoding,
+        }
+
 
 headXPath = etree.XPath("/html/head")
 layoutAttrib = "data-layout"
@@ -32,6 +66,78 @@ panelXPath = etree.XPath("//*[@data-panel]")
 gridDataAttrib = "data-grid"
 gridDataXPath = etree.XPath("//*[@" + gridDataAttrib + "]")
 logger = logging.getLogger("plone.app.blocks")
+
+
+def schema_compatible(value, schema_or_field):
+    """Convert a value to zope.schema compatible data.
+
+    Replacement for plone.jsonserializer's schema_compatible function.
+    """
+    if value is None:
+        return value
+
+    # dict + schema interface: convert each field value
+    if isinstance(value, dict) and not IField.providedBy(schema_or_field):
+        if not value:
+            return {}
+        result = {}
+        for key, val in value.items():
+            if key not in schema_or_field:
+                continue
+            result[str(key)] = schema_compatible(val, schema_or_field[key])
+        return result
+
+    # dict + IDict field: convert keys and values
+    if isinstance(value, dict) and IDict.providedBy(schema_or_field):
+        if not value:
+            return {}
+        keys = [schema_compatible(k, schema_or_field.key_type) for k in value.keys()]
+        values = [
+            schema_compatible(v, schema_or_field.value_type) for v in value.values()
+        ]
+        return dict(zip(keys, values))
+
+    # list + collection fields: convert items
+    if isinstance(value, list):
+        if IList.providedBy(schema_or_field):
+            return [schema_compatible(v, schema_or_field.value_type) for v in value]
+        if ITuple.providedBy(schema_or_field):
+            return tuple(
+                schema_compatible(v, schema_or_field.value_type) for v in value
+            )
+        if ISet.providedBy(schema_or_field):
+            return {schema_compatible(v, schema_or_field.value_type) for v in value}
+        if IFrozenSet.providedBy(schema_or_field):
+            return frozenset(
+                schema_compatible(v, schema_or_field.value_type) for v in value
+            )
+
+    # RichText field
+    if HAS_RICH_TEXT_VALUE and IRichText.providedBy(schema_or_field):
+        if isinstance(value, dict):
+            encoding = value.get("encoding", "utf-8")
+            raw = value.get("data", "")
+            mimeType = value.get("content-type", "text/html")
+            outputMimeType = value.get("output-content-type", "text/x-html-safe")
+            return RichTextValue(
+                raw=raw,
+                mimeType=mimeType,
+                outputMimeType=outputMimeType,
+                encoding=encoding,
+            )
+
+    # Bool field
+    if IBool.providedBy(schema_or_field):
+        return bool(value)
+
+    # IFromUnicode: use fromUnicode for string values
+    if isinstance(value, str) and IFromUnicode.providedBy(schema_or_field):
+        try:
+            return schema_or_field.fromUnicode(value)
+        except Exception:
+            return value
+
+    return value
 
 
 def extractCharset(response, default="utf-8"):
