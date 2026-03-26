@@ -2,10 +2,10 @@ from plone.app.blocks.testing import BLOCKS_FUNCTIONAL_TESTING
 from plone.app.blocks.utils import resolve
 from plone.app.blocks.utils import resolveResource
 from plone.app.blocks.utils import schema_compatible
+from zope.interface import Interface
 
 import unittest
 import zope.schema
-from zope.interface import Interface
 
 
 class TestUtils(unittest.TestCase):
