@@ -71,6 +71,7 @@ setup(
     ],
     extras_require={
         "test": [
+            "plone.api",
             "plone.app.textfield",
             "plone.app.tiles",
             "plone.app.testing",
