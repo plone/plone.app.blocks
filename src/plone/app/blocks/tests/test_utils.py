@@ -9,9 +9,11 @@ import unittest
 import zope.schema
 
 try:
+    from plone.app.textfield import RichText
     from plone.app.textfield import RichTextValue
 except ImportError:
     RichTextValue = None
+    RichText = None
 
 
 class TestUtils(unittest.TestCase):
@@ -163,11 +165,6 @@ class TestSchemaCompatibleIntegration(unittest.TestCase):
 
     @unittest.skipUnless(RichTextValue, "plone.app.textfield not available")
     def test_richtext_field_creates_richtext_value(self):
-        try:
-            from plone.app.textfield import RichText
-        except ImportError:
-            self.skipTest("plone.app.textfield not available")
-
         field = RichText()
         data = {
             "data": "<p>Hello</p>",
@@ -185,11 +182,7 @@ class TestSchemaCompatibleIntegration(unittest.TestCase):
 
     """Tests for richtext_json_compatible from plone.app.blocks.utils."""
 
-    @classmethod
-    def setUpClass(cls):
-        if RichTextValue is None:
-            raise unittest.SkipTest("plone.app.textfield not available")
-
+    @unittest.skipUnless(RichTextValue, "plone.app.textfield not available")
     def test_converts_richtext_value_to_dict(self):
         from plone.app.blocks.utils import richtext_json_compatible
 
