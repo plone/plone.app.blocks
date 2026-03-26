@@ -55,10 +55,10 @@ setup(
         "plone.base",
         "plone.behavior",
         "plone.dexterity",
-        "plone.jsonserializer",
         "plone.memoize",
         "plone.outputfilters",
         "plone.resource",
+        "plone.restapi",
         "plone.rfc822",
         "plone.subrequest",
         "plone.supermodel",
@@ -70,6 +70,7 @@ setup(
     ],
     extras_require={
         "test": [
+            "plone.api",
             "plone.app.textfield",
             "plone.app.tiles",
             "plone.app.testing",

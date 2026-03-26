@@ -22,7 +22,12 @@
   <include package="plone.tiles" />
   <include package="plone.subrequest" />
   <include package="plone.transformchain" />
-  <include package="plone.jsonserializer" />
+  <include package="plone.restapi" />
+
+  <adapter
+      factory=".utils.richtext_json_compatible"
+      zcml:condition="installed plone.app.textfield"
+      />
 
   <include package="plone.app.registry" />
 

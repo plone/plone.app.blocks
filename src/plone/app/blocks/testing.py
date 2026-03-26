@@ -16,10 +16,12 @@ class BlocksLayer(PloneSandboxLayer):
         import plone.app.blocks
         import plone.app.contenttypes
         import plone.app.tiles
+        import plone.restapi
 
         self.loadZCML(package=plone.app.tiles, name="demo.zcml")
         self.loadZCML(package=plone.app.blocks)
         self.loadZCML(package=plone.app.contenttypes)
+        self.loadZCML(package=plone.restapi)
 
         # Register directory for testing
         xmlconfig.string(
@@ -73,8 +75,10 @@ class BlocksLayer(PloneSandboxLayer):
         key = "plone.app.theming.interfaces.IThemeSettings.enabled"
         if key in registry:
             registry[key] = False
-        # install plone.app.contenttypes on Plone 5
+        # install plone.app.contenttypes
         self.applyProfile(portal, "plone.app.contenttypes:default")
+        # install plone.app.contenttypes
+        self.applyProfile(portal, "plone.restapi:default")
         # install into the Plone site
         self.applyProfile(portal, "plone.app.blocks:default")
 

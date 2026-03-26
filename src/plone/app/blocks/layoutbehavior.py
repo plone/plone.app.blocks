@@ -10,13 +10,13 @@ from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.interfaces import ILayoutField
 from plone.app.blocks.utils import applyTilePersistent
 from plone.app.blocks.utils import resolveResource
+from plone.app.blocks.utils import schema_compatible
 from plone.autoform.directives import omitted
 from plone.autoform.directives import write_permission
 from plone.autoform.interfaces import IFormFieldProvider
-from plone.jsonserializer.deserializer.converters import schema_compatible
-from plone.jsonserializer.serializer.converters import json_compatible
 from plone.memoize import view
 from plone.registry.interfaces import IRegistry
+from plone.restapi.serializer.converters import json_compatible
 from plone.rfc822.interfaces import IPrimaryField
 from plone.supermodel import model
 from plone.supermodel.directives import fieldset
