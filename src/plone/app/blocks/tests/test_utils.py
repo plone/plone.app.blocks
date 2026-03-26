@@ -217,6 +217,7 @@ class TestRichtextJsonCompatible(unittest.TestCase):
             },
         )
 
+    @unittest.skipUnless(RichTextValue, "plone.app.textfield not available")
     def test_preserves_custom_mime_type(self):
         from plone.app.blocks.utils import richtext_json_compatible
 
