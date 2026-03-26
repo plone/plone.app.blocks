@@ -193,9 +193,7 @@ data-tiledata='{"content-type": "text/html"}'>
         saved_request = self.layer["request"]
         clearRequest()
         try:
-            storage = LayoutAwareTileDataStorage(
-                self.portal["f1"]["d1"], saved_request
-            )
+            storage = LayoutAwareTileDataStorage(self.portal["f1"]["d1"], saved_request)
             data = storage["@@plone.app.blocks.richtext.norequest/demo"]
         finally:
             setRequest(saved_request)

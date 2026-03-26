@@ -183,8 +183,6 @@ class TestSchemaCompatibleIntegration(unittest.TestCase):
         field = zope.schema.TextLine()
         self.assertIsNone(schema_compatible(None, field))
 
-
-
     """Tests for richtext_json_compatible from plone.app.blocks.utils."""
 
     @classmethod
