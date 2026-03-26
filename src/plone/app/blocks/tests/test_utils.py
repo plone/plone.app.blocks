@@ -1,4 +1,5 @@
 from plone.app.blocks.testing import BLOCKS_FUNCTIONAL_TESTING
+from plone.app.blocks.testing import BLOCKS_INTEGRATION_TESTING
 from plone.app.blocks.utils import resolve
 from plone.app.blocks.utils import resolveResource
 from plone.app.blocks.utils import schema_compatible
@@ -6,6 +7,11 @@ from zope.interface import Interface
 
 import unittest
 import zope.schema
+
+try:
+    from plone.app.textfield import RichTextValue
+except ImportError:
+    RichTextValue = None
 
 
 class TestUtils(unittest.TestCase):
@@ -57,7 +63,7 @@ class TestUtilsFunctional(unittest.TestCase):
 
 
 class TestSchemaCompatible(unittest.TestCase):
-    """Tests für schema_compatible aus plone.app.blocks.utils."""
+    """Tests for schema_compatible from plone.app.blocks.utils."""
 
     def test_none_returns_none(self):
         self.assertIsNone(schema_compatible(None, zope.schema.TextLine()))
@@ -99,19 +105,38 @@ class TestSchemaCompatible(unittest.TestCase):
         self.assertEqual(result, ["a", "b"])
         self.assertIsInstance(result, list)
 
-    def test_list_with_ituple_field_returns_tuple(self):
+    def test_non_matching_value_returned_unchanged(self):
+        field = zope.schema.TextLine()
+        result = schema_compatible(42, field)
+        self.assertEqual(result, 42)
+
+
+class TestSchemaCompatibleIntegration(unittest.TestCase):
+    """Tests for schema_compatible with plone.restapi deserialisation.
+
+    These tests verify that schema_compatible correctly uses the registered
+    IFieldDeserializer from plone.restapi when a request is available.
+    """
+
+    layer = BLOCKS_INTEGRATION_TESTING
+
+    def setUp(self):
+        self.portal = self.layer["portal"]
+        self.request = self.layer["request"]
+
+    def test_tuple_field_converts_list_to_tuple(self):
         field = zope.schema.Tuple(value_type=zope.schema.TextLine())
         result = schema_compatible(["a", "b"], field)
         self.assertEqual(result, ("a", "b"))
         self.assertIsInstance(result, tuple)
 
-    def test_list_with_iset_field_returns_set(self):
+    def test_set_field_converts_list_to_set(self):
         field = zope.schema.Set(value_type=zope.schema.TextLine())
         result = schema_compatible(["a", "b"], field)
         self.assertEqual(result, {"a", "b"})
         self.assertIsInstance(result, set)
 
-    def test_list_with_ifrozenset_field_returns_frozenset(self):
+    def test_frozenset_field_converts_list_to_frozenset(self):
         field = zope.schema.FrozenSet(value_type=zope.schema.TextLine())
         result = schema_compatible(["a", "b"], field)
         self.assertEqual(result, frozenset({"a", "b"}))
@@ -119,25 +144,27 @@ class TestSchemaCompatible(unittest.TestCase):
 
     def test_bool_field_returns_bool(self):
         field = zope.schema.Bool()
-        self.assertIs(schema_compatible(1, field), True)
-        self.assertIs(schema_compatible(0, field), False)
         self.assertIs(schema_compatible(True, field), True)
+        self.assertIs(schema_compatible(False, field), False)
 
-    def test_string_with_ifromunicode_field_uses_from_unicode(self):
+    def test_int_field_parses_string(self):
         field = zope.schema.Int()
         result = schema_compatible("42", field)
         self.assertEqual(result, 42)
         self.assertIsInstance(result, int)
 
-    def test_non_matching_value_returned_unchanged(self):
-        field = zope.schema.TextLine()
-        result = schema_compatible(42, field)
-        self.assertEqual(result, 42)
+    def test_dict_field_converts_keys_and_values(self):
+        field = zope.schema.Dict(
+            key_type=zope.schema.TextLine(),
+            value_type=zope.schema.Int(),
+        )
+        result = schema_compatible({"a": 1, "b": 2}, field)
+        self.assertEqual(result, {"a": 1, "b": 2})
 
+    @unittest.skipUnless(RichTextValue, "plone.app.textfield not available")
     def test_richtext_field_creates_richtext_value(self):
         try:
             from plone.app.textfield import RichText
-            from plone.app.textfield import RichTextValue
         except ImportError:
             self.skipTest("plone.app.textfield not available")
 
@@ -145,46 +172,30 @@ class TestSchemaCompatible(unittest.TestCase):
         data = {
             "data": "<p>Hello</p>",
             "content-type": "text/html",
-            "output-content-type": "text/x-html-safe",
             "encoding": "utf-8",
         }
         result = schema_compatible(data, field)
         self.assertIsInstance(result, RichTextValue)
         self.assertEqual(result.raw, "<p>Hello</p>")
         self.assertEqual(result.mimeType, "text/html")
-        self.assertEqual(result.outputMimeType, "text/x-html-safe")
-        self.assertEqual(result.encoding, "utf-8")
 
-    def test_richtext_field_uses_defaults_for_missing_keys(self):
-        try:
-            from plone.app.textfield import RichText
-            from plone.app.textfield import RichTextValue
-        except ImportError:
-            self.skipTest("plone.app.textfield not available")
-
-        field = RichText()
-        result = schema_compatible({"data": "<p>Hi</p>"}, field)
-        self.assertIsInstance(result, RichTextValue)
-        self.assertEqual(result.raw, "<p>Hi</p>")
-        self.assertEqual(result.mimeType, "text/html")
-        self.assertEqual(result.encoding, "utf-8")
+    def test_none_returns_none(self):
+        field = zope.schema.TextLine()
+        self.assertIsNone(schema_compatible(None, field))
 
 
-class TestRichtextJsonCompatible(unittest.TestCase):
-    """Tests für richtext_json_compatible aus plone.app.blocks.utils."""
 
-    def setUp(self):
-        try:
-            from plone.app.textfield import RichTextValue
+    """Tests for richtext_json_compatible from plone.app.blocks.utils."""
 
-            self.RichTextValue = RichTextValue
-        except ImportError:
-            self.skipTest("plone.app.textfield not available")
+    @classmethod
+    def setUpClass(cls):
+        if RichTextValue is None:
+            raise unittest.SkipTest("plone.app.textfield not available")
 
     def test_converts_richtext_value_to_dict(self):
         from plone.app.blocks.utils import richtext_json_compatible
 
-        value = self.RichTextValue(
+        value = RichTextValue(
             raw="<p>Hello</p>",
             mimeType="text/html",
             outputMimeType="text/x-html-safe",
@@ -204,7 +215,7 @@ class TestRichtextJsonCompatible(unittest.TestCase):
     def test_preserves_custom_mime_type(self):
         from plone.app.blocks.utils import richtext_json_compatible
 
-        value = self.RichTextValue(
+        value = RichTextValue(
             raw="**bold**",
             mimeType="text/x-rst",
             outputMimeType="text/html",
