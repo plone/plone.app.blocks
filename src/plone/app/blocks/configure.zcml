@@ -235,17 +235,6 @@
       handler=".subscribers.onLayoutEdited"
       />
 
-  <meta:provides
-      feature="textindexer"
-      zcml:condition="installed plone.app.dexterity.textindexer"
-      />
-
-  <adapter
-      factory=".indexing.LayoutSearchableText"
-      name="SearchableText"
-      zcml:condition="not-have textindexer"
-      />
-
   <adapter
       factory=".indexing.LayoutSearchableTextIndexExtender"
       name="content"

@@ -143,3 +143,19 @@ To make use of the page site layout, use the following:
 
 See ``rendering.rst`` for detailed examples of how the processing is applied,
 and ``esi.rst`` for details about how Edge Side Includes can be supported.
+
+
+Indexing
+========
+
+``plone.app.blocks`` provides a ``IDynamicTextIndexExtender`` adapter that extracts text from the blocks/tiles rendered within the content layout.
+This indexer adapter is only active when **both** of the following behaviors are enabled on the content type:
+
+``plone.layoutaware``
+    Enables the layout-aware content support (see above).
+
+``plone.textindexer``
+    Enables the extensible text indexing provided by ``plone.app.dexterity``.
+
+If either behavior is missing, the ``SearchableText`` index will **not** include text from the rendered blocks.
+Make sure both behaviors are activated in the FTI (Factory Type Information) of your content type, for example via GenericSetup or the Dexterity control panel.
