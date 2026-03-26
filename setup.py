@@ -55,7 +55,6 @@ setup(
         "plone.base",
         "plone.behavior",
         "plone.dexterity",
-        "plone.indexer",
         "plone.jsonserializer",
         "plone.memoize",
         "plone.outputfilters",

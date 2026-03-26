@@ -4,7 +4,6 @@ from plone.app.blocks.layoutbehavior import ILayoutBehaviorAdaptable
 from plone.app.contenttypes import indexers
 from plone.app.dexterity.textindexer.interfaces import IDynamicTextIndexExtender
 from plone.base.utils import safe_text
-from plone.indexer.decorator import indexer
 from plone.tiles.data import ANNOTATIONS_KEY_PREFIX
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapter
@@ -13,7 +12,6 @@ from zope.interface import implementer
 concat = indexers._unicode_save_string_concat
 
 
-@indexer(ILayoutBehaviorAdaptable)
 def LayoutSearchableText(obj):
     text = [obj.id]
     try:
@@ -64,4 +62,4 @@ class LayoutSearchableTextIndexExtender:
         self.context = context
 
     def __call__(self):
-        return LayoutSearchableText(self.context)()
+        return LayoutSearchableText(self.context)
