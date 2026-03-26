@@ -28,9 +28,9 @@ class TestPageSiteLayout(unittest.TestCase):
         setRoles(self.portal, TEST_USER_ID, ("Member",))
 
         # setup default behavior
-        self.registry[
-            DEFAULT_SITE_LAYOUT_REGISTRY_KEY
-        ] = b"/++sitelayout++testlayout1/site.html"
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = (
+            b"/++sitelayout++testlayout1/site.html"
+        )
         iface = self.portal["f1"]["d1"].__class__
         sm = getGlobalSiteManager()
         sm.registerAdapter(LayoutAwareBehavior, [iface])
@@ -57,9 +57,9 @@ class TestPageSiteLayout(unittest.TestCase):
         self.assertEqual(view().split(), default_view().split())
 
     def test_page_site_layout_default(self):
-        self.registry[
-            DEFAULT_SITE_LAYOUT_REGISTRY_KEY
-        ] = b"/++sitelayout++testlayout1/site.html"
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = (
+            b"/++sitelayout++testlayout1/site.html"
+        )
         view = getMultiAdapter(
             (
                 self.portal["f1"]["d1"],
@@ -217,9 +217,9 @@ class TestPageSiteLayout(unittest.TestCase):
         self.assertTrue("My Layout 1 Title" in rendered)
 
         # Trigger invalidation by modifying the global registry key
-        self.registry[
-            DEFAULT_SITE_LAYOUT_REGISTRY_KEY
-        ] = b"/++sitelayout++testlayout2/mylayout.html"
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = (
+            b"/++sitelayout++testlayout2/mylayout.html"
+        )
 
         # Change the section value
         self.behavior.sectionSiteLayout = "/++sitelayout++testlayout1/site.html"
@@ -254,9 +254,9 @@ class TestPageSiteLayoutAcquisition(unittest.TestCase):
         sm = getGlobalSiteManager()
 
         # setup default behaviors
-        self.registry[
-            DEFAULT_SITE_LAYOUT_REGISTRY_KEY
-        ] = b"/++sitelayout++testlayout1/site.html"
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = (
+            b"/++sitelayout++testlayout1/site.html"
+        )
 
         iface = self.portal["f1"].__class__
         sm.registerAdapter(LayoutAwareBehavior, [iface])
@@ -271,9 +271,9 @@ class TestPageSiteLayoutAcquisition(unittest.TestCase):
         self.assertEqual(len(list(registrations)), 1)
 
     def test_page_site_layout_is_not_acquired(self):
-        self.registry[
-            DEFAULT_SITE_LAYOUT_REGISTRY_KEY
-        ] = b"/++sitelayout++testlayout1/site.html"
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = (
+            b"/++sitelayout++testlayout1/site.html"
+        )
 
         a1 = ILayoutAware(self.portal["f1"])
         a2 = ILayoutAware(self.portal["f1"]["d1"])

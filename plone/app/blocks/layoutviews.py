@@ -12,7 +12,6 @@ from zope.interface import implementer
 
 import os
 
-
 ERROR_LAYOUT = """
 <!DOCTYPE html>
 <html lang="en" data-layout="./@@page-site-layout">

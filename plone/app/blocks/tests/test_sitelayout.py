@@ -64,9 +64,9 @@ class TestSiteLayout(unittest.TestCase):
         if hasattr(self.portal, ATTR):
             delattr(self.portal, ATTR)
 
-        self.registry[
-            DEFAULT_SITE_LAYOUT_REGISTRY_KEY
-        ] = b"/++sitelayout++testlayout1/site.html"
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = (
+            b"/++sitelayout++testlayout1/site.html"
+        )
 
         view = getMultiAdapter(
             (
@@ -100,9 +100,9 @@ class TestSiteLayout(unittest.TestCase):
         self.assertIn("template-layout", body_tag.attrib["class"])
 
     def test_default_site_layout_section_override(self):
-        self.registry[
-            DEFAULT_SITE_LAYOUT_REGISTRY_KEY
-        ] = b"/++sitelayout++testlayout1/site.html"
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = (
+            b"/++sitelayout++testlayout1/site.html"
+        )
 
         from plone.app.blocks.layoutbehavior import ILayoutAware
 
@@ -133,9 +133,9 @@ class TestSiteLayout(unittest.TestCase):
         self.assertTrue("My Layout 1 Title" in rendered)
 
     def test_default_site_layout_section_no_override(self):
-        self.registry[
-            DEFAULT_SITE_LAYOUT_REGISTRY_KEY
-        ] = b"/++sitelayout++testlayout1/site.html"
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = (
+            b"/++sitelayout++testlayout1/site.html"
+        )
 
         view = getMultiAdapter(
             (
@@ -166,9 +166,9 @@ class TestSiteLayout(unittest.TestCase):
             ),
         )
 
-        self.registry[
-            DEFAULT_SITE_LAYOUT_REGISTRY_KEY
-        ] = b"/++sitelayout++testlayout3/site.html"
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = (
+            b"/++sitelayout++testlayout3/site.html"
+        )
 
         view = getMultiAdapter(
             (
@@ -231,9 +231,9 @@ class TestSiteLayout(unittest.TestCase):
             ),
         )
 
-        self.registry[
-            DEFAULT_SITE_LAYOUT_REGISTRY_KEY
-        ] = b"/++sitelayout++testlayout3/site.html"
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = (
+            b"/++sitelayout++testlayout3/site.html"
+        )
 
         view = getMultiAdapter(
             (
@@ -278,9 +278,9 @@ class TestSiteLayout(unittest.TestCase):
         if hasattr(self.portal, ATTR):
             delattr(self.portal, ATTR)
 
-        self.registry[
-            DEFAULT_SITE_LAYOUT_REGISTRY_KEY
-        ] = b"/++sitelayout++testlayout1/site.html"
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = (
+            b"/++sitelayout++testlayout1/site.html"
+        )
 
         view = getMultiAdapter(
             (
@@ -294,9 +294,9 @@ class TestSiteLayout(unittest.TestCase):
         self.assertTrue("Layout title" in rendered)
 
         # Trigger invalidation by modifying the global site layout selection
-        self.registry[
-            DEFAULT_SITE_LAYOUT_REGISTRY_KEY
-        ] = b"/++sitelayout++testlayout2/mylayout.html"
+        self.registry[DEFAULT_SITE_LAYOUT_REGISTRY_KEY] = (
+            b"/++sitelayout++testlayout2/mylayout.html"
+        )
 
         view = getMultiAdapter(
             (
