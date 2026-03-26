@@ -10,3 +10,5 @@ test_matrix = {"6.2" = ["*"]}
 
 [pyproject]
 codespell_ignores = "subtiles,subtile"
+# this is a conditional import, so we can ignore it for dependencychecker
+dependencies_ignores = "['plone.app.textfield', 'plone.api']"
