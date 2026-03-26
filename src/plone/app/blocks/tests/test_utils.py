@@ -169,17 +169,31 @@ class TestSchemaCompatibleIntegration(unittest.TestCase):
         data = {
             "data": "<p>Hello</p>",
             "content-type": "text/html",
+            "output-content-type": "text/x-html-safe",
             "encoding": "utf-8",
         }
         result = schema_compatible(data, field)
         self.assertIsInstance(result, RichTextValue)
         self.assertEqual(result.raw, "<p>Hello</p>")
         self.assertEqual(result.mimeType, "text/html")
+        self.assertEqual(result.outputMimeType, "text/x-html-safe")
+        self.assertEqual(result.encoding, "utf-8")
+
+    @unittest.skipUnless(RichTextValue, "plone.app.textfield not available")
+    def test_richtext_field_uses_defaults_for_missing_keys(self):
+        field = RichText()
+        result = schema_compatible({"data": "<p>Hi</p>"}, field)
+        self.assertIsInstance(result, RichTextValue)
+        self.assertEqual(result.raw, "<p>Hi</p>")
+        self.assertEqual(result.mimeType, "text/html")
+        self.assertEqual(result.encoding, "utf8")
 
     def test_none_returns_none(self):
         field = zope.schema.TextLine()
         self.assertIsNone(schema_compatible(None, field))
 
+
+class TestRichtextJsonCompatible(unittest.TestCase):
     """Tests for richtext_json_compatible from plone.app.blocks.utils."""
 
     @unittest.skipUnless(RichTextValue, "plone.app.textfield not available")
