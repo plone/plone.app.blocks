@@ -15,6 +15,8 @@ from plone.tiles.type import TileType
 from plone.uuid.interfaces import IUUID
 from zope.component import getUtility
 from zope.component import provideUtility
+from zope.globalrequest import clearRequest
+from zope.globalrequest import setRequest
 from zope.interface import alsoProvides
 
 import pkg_resources
@@ -150,3 +152,56 @@ data-tiledata='{"content-type": "text/html"}'>
         self.assertIn('"html-content-type": "text/html"', output)
         self.assertIn('"html-output-content-type": "text/x-html-safe"', output)
         self.assertIn("<p>Foo bar!</p>", output)
+
+    def test_content_richtext_without_request(self):
+        """Without a global request, schema_compatible returns the raw value.
+
+        This documents the fallback behaviour for contexts such as migration
+        scripts that use LayoutAwareTileDataStorage without an HTTP request.
+        In that case plone.restapi cannot provide a deserializer and the raw
+        value is returned unchanged.
+        """
+
+        class IRichTextTile(Schema):
+            html = RichText()
+
+        alsoProvides(IRichTextTile["html"], IPrimaryField)
+
+        provideUtility(
+            TileType(
+                name="plone.app.blocks.richtext.norequest",
+                title="plone.app.blocks.richtext.norequest",
+                add_permission="cmf.ModifyPortalContent",
+                view_permission="zope2.View",
+                schema=IRichTextTile,
+            ),
+            provides=ITileType,
+            name="plone.app.blocks.richtext.norequest",
+        )
+
+        self.behavior.content = """\
+<html>
+<body>
+<div data-tile="@@plone.app.blocks.richtext.norequest/demo"
+data-tiledata='{"content-type": "text/html"}'>
+<div><p>Hello World!</p></div>
+</div>
+</body>
+</html>
+"""
+        # Remove the global request to simulate a context without an HTTP request
+        saved_request = self.layer["request"]
+        clearRequest()
+        try:
+            storage = LayoutAwareTileDataStorage(self.portal["f1"]["d1"], saved_request)
+            data = storage["@@plone.app.blocks.richtext.norequest/demo"]
+        finally:
+            setRequest(saved_request)
+
+        # Without a request, schema_compatible cannot find a deserializer and
+        # returns the raw value instead of a RichTextValue.
+        # The primary field is read as a plain string from the HTML element.
+        self.assertIn("html", data)
+        self.assertNotIsInstance(data["html"], RichTextValue)
+        self.assertIsInstance(data["html"], str)
+        self.assertIn("Hello World!", data["html"])

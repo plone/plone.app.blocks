@@ -159,3 +159,52 @@ This indexer adapter is only active when **both** of the following behaviors are
 
 If either behavior is missing, the ``SearchableText`` index will **not** include text from the rendered blocks.
 Make sure both behaviors are activated in the FTI (Factory Type Information) of your content type, for example via GenericSetup or the Dexterity control panel.
+
+
+Field serialization and deserialization
+========================================
+
+``plone.app.blocks`` uses ``plone.restapi`` for converting field values between
+their Python representation and JSON-compatible data.
+
+Deserialization
+---------------
+
+The utility function ``plone.app.blocks.utils.schema_compatible`` converts raw
+JSON data (as read from tile storage) into proper Python field values.
+It delegates to ``plone.restapi``'s ``IFieldDeserializer`` multi-adapter when a
+global HTTP request is available:
+
+.. code-block:: python
+
+    from plone.app.blocks.utils import schema_compatible
+
+    value = schema_compatible(json_data, field_or_schema_interface)
+
+The lookup follows this logic:
+
+1. If ``schema_or_field`` is a ``zope.schema`` field and a global request is
+   present, ``queryMultiAdapter((field, getSite(), request), IFieldDeserializer)``
+   is called.  All field types registered by ``plone.restapi`` (``IInt``,
+   ``IBool``, ``ICollection``, ``IDict``, ``IRichText``, …) are handled this way.
+2. If ``schema_or_field`` is a schema interface (not a field), the dict is
+   filtered to known fields and the function recurses per field.
+3. If no request is available (e.g. in migration scripts), the raw value is
+   returned unchanged.
+
+Serialization
+-------------
+
+Serializing Python field values to JSON uses ``plone.restapi``'s
+``IJsonCompatible`` adapter machinery via
+``plone.restapi.serializer.converters.json_compatible``.
+
+For ``RichTextValue`` objects, ``plone.app.blocks`` additionally registers its
+own ``IJsonCompatible`` adapter (``plone.app.blocks.utils.richtext_json_compatible``)
+as a single-adapter fallback (without a Dexterity context).
+This covers serialization outside the standard Dexterity content pipeline,
+for example when tile data is written back to storage.
+
+The ``plone.restapi`` serializer registers a context-aware adapter
+``(IRichTextValue, IDexterityContent)`` that renders the output relative to the
+content object — this takes precedence when the context is available.
