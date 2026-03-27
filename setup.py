@@ -15,7 +15,7 @@ long_description = "\n".join(
 
 setup(
     name="plone.app.blocks",
-    version="8.0.0a2.dev0",
+    version="8.0.0a2",
     description="Implements the in-Plone blocks rendering process",
     long_description=long_description,
     classifiers=[

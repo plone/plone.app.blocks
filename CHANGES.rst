@@ -8,6 +8,30 @@ Changelog
 
 .. towncrier release notes start
 
+8.0.0a2 (2026-03-27)
+--------------------
+
+New features:
+
+
+- Remove `plone.jsonserializer` and use `json_compatible` from plone.restapi. `schema_compatible` now delegates field deserialization to `plone.restapi`'s `IFieldDeserializer` adapters when a global HTTP request is available, falling back to returning the raw value unchanged (e.g. in migration scripts without a request).
+  @petschki (#92)
+
+
+Bug fixes:
+
+
+- Use `IDynamicTextIndexExtender` adapter registration only and remove `SearchableText` indexer. You have to explicitly activate `plone.layoutaware` and `plone.textindexer` behaviors to index block/tiles content.
+  @petschki
+
+
+Internal:
+
+
+- Update configuration files.
+  [plone devs]
+
+
 8.0.0a1 (2025-12-23)
 --------------------
 
