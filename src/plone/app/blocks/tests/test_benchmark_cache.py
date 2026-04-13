@@ -45,9 +45,9 @@ class BenchTile(Tile):
     def __call__(self):
         return """\
 <html>
-<head><meta name="tile-name" content="%s" /></head>
-<body><p>Tile %s rendered</p></body>
-</html>""" % (self.id, self.id)
+<head><meta name="tile-name" content="{}" /></head>
+<body><p>Tile {} rendered</p></body>
+</html>""".format(self.id, self.id)
 
 
 class BenchTileWithSubtile(Tile):
