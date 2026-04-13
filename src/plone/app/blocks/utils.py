@@ -39,10 +39,10 @@ except ImportError:
 def _get_request_cache(request, key):
     """Get or create a per-request cache dict using annotations (preferred)
     or environ as fallback for requests that lack annotations support."""
-    try:
-        return request.annotations.setdefault(key, {})
-    except AttributeError:
-        return request.environ.setdefault(key, {})
+    store = getattr(request, "annotations", None)
+    if store is None:
+        store = request.environ
+    return store.setdefault(key, {})
 
 
 if HAS_RICH_TEXT_VALUE:
