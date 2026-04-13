@@ -5,6 +5,7 @@ Run with: bin/test -s plone.app.blocks -t benchmark -v
 This is not a regular unit test — it measures timing to visualize
 the performance impact of the caching changes.
 """
+
 from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.app.blocks.layoutbehavior import ILayoutBehaviorAdaptable
 from plone.app.blocks.layoutbehavior import LAYOUT_STORAGE_CACHE_KEY
@@ -132,7 +133,11 @@ def _measure(func, iterations=20):
         func()
         elapsed = (time.perf_counter() - start) * 1000  # ms
         times.append(elapsed)
-    return statistics.mean(times), statistics.stdev(times) if len(times) > 1 else 0, times
+    return (
+        statistics.mean(times),
+        statistics.stdev(times) if len(times) > 1 else 0,
+        times,
+    )
 
 
 def _bar(value, max_value, width=40):
@@ -171,8 +176,10 @@ class TestBenchmarkTileRendering(unittest.TestCase):
         print(f"  Layout: N unique tiles + N duplicate references = 2N total")
         print(f"  Iterations per measurement: {iterations}")
         print()
-        print(f"  {'Tiles':>6}  {'No Cache (ms)':>14}  {'With Cache (ms)':>16}  "
-              f"{'Speedup':>8}  Chart")
+        print(
+            f"  {'Tiles':>6}  {'No Cache (ms)':>14}  {'With Cache (ms)':>16}  "
+            f"{'Speedup':>8}  Chart"
+        )
         print(f"  {'─' * 6}  {'─' * 14}  {'─' * 16}  {'─' * 8}  {'─' * 40}")
 
         # Warmup
@@ -189,11 +196,13 @@ class TestBenchmarkTileRendering(unittest.TestCase):
 
             # WITHOUT cache: patch resolveResource to skip cache
             from plone.app.blocks import utils as utils_mod
+
             _original_resolveResource = utils_mod.resolveResource
 
             def resolveResource_no_cache(url):
                 """Bypass per-request cache to simulate old behavior."""
                 from urllib import parse as urlparse
+
                 url = urlparse.unquote(url)
                 scheme, netloc, path, params, query, fragment = urlparse.urlparse(url)
                 if path.count("++") == 2:
@@ -210,9 +219,11 @@ class TestBenchmarkTileRendering(unittest.TestCase):
                             pass
                 if url.startswith("/"):
                     from zope.component.hooks import getSite
+
                     site = getSite()
                     url = "/".join(site.getPhysicalPath()) + url
                 from plone.subrequest import subrequest
+
                 response = subrequest(url)
                 resolved = response.getBody()
                 if isinstance(resolved, bytes):
@@ -241,8 +252,10 @@ class TestBenchmarkTileRendering(unittest.TestCase):
             bar_no = _bar(mean_no_cache, max_val, 20)
             bar_ca = _bar(mean_cached, max_val, 20)
 
-            print(f"  {num_tiles * 2:>6}  {mean_no_cache:>11.2f} ms  {mean_cached:>13.2f} ms  "
-                  f"{speedup:>6.2f}x  {bar_no} no cache")
+            print(
+                f"  {num_tiles * 2:>6}  {mean_no_cache:>11.2f} ms  {mean_cached:>13.2f} ms  "
+                f"{speedup:>6.2f}x  {bar_no} no cache"
+            )
             print(f"  {'':>6}  {'':>14}  {'':>16}  {'':>8}  {bar_ca} cached")
 
         print()
@@ -285,7 +298,7 @@ class TestBenchmarkTileRendering(unittest.TestCase):
         num_tiles = 10
         tile_divs = "\n".join(
             f'<div data-tile="@@bench.storage.tile/tile{i}" '
-            f'data-tiledata=\'{{"magicNumber": {i}}}\' />'
+            f"data-tiledata='{{\"magicNumber\": {i}}}' />"
             for i in range(num_tiles)
         )
         ILayoutAware(context).content = f"""\
@@ -340,7 +353,9 @@ class TestBenchmarkTileRendering(unittest.TestCase):
         bar_no = _bar(mean_no_cache, max_val, 40)
         bar_ca = _bar(mean_cached, max_val, 40)
 
-        print(f"  No Cache:    {mean_no_cache:>8.2f} ms (±{std_no_cache:.2f})  {bar_no}")
+        print(
+            f"  No Cache:    {mean_no_cache:>8.2f} ms (±{std_no_cache:.2f})  {bar_no}"
+        )
         print(f"  With Cache:  {mean_cached:>8.2f} ms (±{std_cached:.2f})  {bar_ca}")
         print()
         print(f"  Speedup: {speedup:.2f}x")
