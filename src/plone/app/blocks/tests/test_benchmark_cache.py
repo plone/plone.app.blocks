@@ -7,7 +7,6 @@ the performance impact of the caching changes.
 """
 
 from plone.app.blocks.layoutbehavior import ILayoutAware
-from plone.app.blocks.layoutbehavior import ILayoutBehaviorAdaptable
 from plone.app.blocks.layoutbehavior import LAYOUT_STORAGE_CACHE_KEY
 from plone.app.blocks.layoutbehavior import LayoutAwareTileDataStorage
 from plone.app.blocks.testing import BLOCKS_FIXTURE
@@ -18,21 +17,18 @@ from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
 from plone.dexterity.fti import DexterityFTI
-from plone.registry.interfaces import IRegistry
 from plone.resource.utils import queryResourceDirectory
 from plone.tiles import Tile
 from plone.tiles.interfaces import ITileType
 from plone.tiles.type import TileType
 from repoze.xmliter.utils import getHTMLSerializer
 from zope import schema
-from zope.component import getUtility
 from zope.component import provideUtility
 from zope.configuration import xmlconfig
 from zope.interface import implementer
 from zope.interface import Interface
 
 import statistics
-import sys
 import time
 import unittest
 
@@ -173,7 +169,7 @@ class TestBenchmarkTileRendering(unittest.TestCase):
         print("  BENCHMARK: Tile Rendering — Per-Request Subrequest Cache")
         print("=" * 78)
         print()
-        print(f"  Layout: N unique tiles + N duplicate references = 2N total")
+        print("  Layout: N unique tiles + N duplicate references = 2N total")
         print(f"  Iterations per measurement: {iterations}")
         print()
         print(
