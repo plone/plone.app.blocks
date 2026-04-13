@@ -1,3 +1,5 @@
+from importlib.metadata import distribution
+from importlib.metadata import PackageNotFoundError
 from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.app.blocks.layoutbehavior import ILayoutBehaviorAdaptable
 from plone.app.blocks.layoutbehavior import LAYOUT_STORAGE_CACHE_KEY
@@ -20,12 +22,11 @@ from zope.globalrequest import clearRequest
 from zope.globalrequest import setRequest
 from zope.interface import alsoProvides
 
-import pkg_resources
 import unittest
 
 try:
-    pkg_resources.get_distribution("plone.app.contenttypes")
-except pkg_resources.DistributionNotFound:
+    distribution("plone.app.contenttypes")
+except PackageNotFoundError:
     HAS_PLONE_APP_CONTENTTYPES = False
 else:
     HAS_PLONE_APP_CONTENTTYPES = True

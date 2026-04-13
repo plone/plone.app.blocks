@@ -1,3 +1,5 @@
+from importlib.metadata import distribution
+from importlib.metadata import PackageNotFoundError
 from lxml import html
 from plone.app.blocks.testing import BLOCKS_FUNCTIONAL_TESTING
 from plone.app.testing import setRoles
@@ -9,12 +11,11 @@ from zope.component import getGlobalSiteManager
 from zope.component import getUtility
 from zope.schema.interfaces import IVocabularyFactory
 
-import pkg_resources
 import unittest
 
 try:
-    pkg_resources.get_distribution("plone.app.contenttypes")
-except pkg_resources.DistributionNotFound:
+    distribution("plone.app.contenttypes")
+except PackageNotFoundError:
     HAS_PLONE_APP_CONTENTTYPES = False
 else:
     HAS_PLONE_APP_CONTENTTYPES = True
