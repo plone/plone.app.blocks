@@ -1,5 +1,6 @@
 from plone.app.blocks.layoutbehavior import ILayoutAware
 from plone.app.blocks.layoutbehavior import ILayoutBehaviorAdaptable
+from plone.app.blocks.layoutbehavior import LAYOUT_STORAGE_CACHE_KEY
 from plone.app.blocks.layoutbehavior import LayoutAwareTileDataStorage
 from plone.app.blocks.testing import BLOCKS_FUNCTIONAL_TESTING
 from plone.app.testing import setRoles
@@ -205,3 +206,53 @@ data-tiledata='{"content-type": "text/html"}'>
         self.assertNotIsInstance(data["html"], RichTextValue)
         self.assertIsInstance(data["html"], str)
         self.assertIn("Hello World!", data["html"])
+
+    def test_storage_cache_reuses_parsed_html(self):
+        """Test that multiple LayoutAwareTileDataStorage instances for the
+        same context reuse the same parsed HTML storage object."""
+        self.behavior.content = """\
+<html>
+<body>
+<div data-tile="@@plone.app.tiles.demo.transient/demo"
+data-tiledata='{"message": "Hello World!"}' />
+</body>
+</html>
+"""
+        request = self.layer["request"]
+        # Clear existing cache
+        request.environ.pop(LAYOUT_STORAGE_CACHE_KEY, None)
+
+        context = self.portal["f1"]["d1"]
+        storage1 = LayoutAwareTileDataStorage(context, request)
+        storage2 = LayoutAwareTileDataStorage(context, request)
+
+        # Both instances should share the same storage object
+        self.assertIs(storage1.storage, storage2.storage)
+
+    def test_storage_cache_invalidated_on_sync(self):
+        """Test that the per-request storage cache is invalidated when
+        sync() writes changes back."""
+        tile = "plone.app.tiles.demo.transient/demo"
+        self.behavior.content = """\
+<html>
+<body>
+<div data-tile="@@plone.app.tiles.demo.transient/demo"
+data-tiledata='{"message": "Hello World!"}' />
+</body>
+</html>
+"""
+        request = self.layer["request"]
+        request.environ.pop(LAYOUT_STORAGE_CACHE_KEY, None)
+
+        context = self.portal["f1"]["d1"]
+        storage = LayoutAwareTileDataStorage(context, request)
+        data = storage[tile]
+        data["message"] = "Changed!"
+        storage[tile] = data  # triggers sync()
+
+        # After sync, the cache should no longer contain the old entry
+        from Acquisition import aq_base
+
+        context_id = id(aq_base(context))
+        cache = request.environ.get(LAYOUT_STORAGE_CACHE_KEY, {})
+        self.assertNotIn(context_id, cache)

@@ -8,6 +8,7 @@ from plone.app.blocks.interfaces import DEFAULT_AJAX_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.interfaces import DEFAULT_CONTENT_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.interfaces import ILayoutField
+from plone.app.blocks.utils import _get_request_cache
 from plone.app.blocks.utils import applyTilePersistent
 from plone.app.blocks.utils import resolveResource
 from plone.app.blocks.utils import schema_compatible
@@ -301,6 +302,9 @@ def invalidate_view_memoize(view, name, args, kwargs):
     return cache.pop(key, None)
 
 
+LAYOUT_STORAGE_CACHE_KEY = "plone.app.blocks.layoutStorageCache"
+
+
 @implementer(ITileDataStorage)
 @adapter(ILayoutBehaviorAdaptable, Interface, ITile)
 class LayoutAwareTileDataStorage:
@@ -309,14 +313,24 @@ class LayoutAwareTileDataStorage:
         self.request = request
         self.tile = tile
 
-        # Parse layout
-        data_layout = ILayoutAware(self.context).content or DATA_LAYOUT
-        self.storage = getHTMLSerializer(
-            [data_layout.encode("utf-8")], encoding="utf-8"
-        )
+        # Per-request cache: reuse parsed HTML storage for the same context
+        context_id = id(aq_base(context))
+        cache = _get_request_cache(request, LAYOUT_STORAGE_CACHE_KEY)
+        if context_id in cache:
+            self.storage = cache[context_id]
+        else:
+            data_layout = ILayoutAware(self.context).content or DATA_LAYOUT
+            self.storage = getHTMLSerializer(
+                [data_layout.encode("utf-8")], encoding="utf-8"
+            )
+            cache[context_id] = self.storage
 
     def sync(self):
         ILayoutAware(self.context).content = str(self.storage)
+        # Invalidate the per-request storage cache after write
+        context_id = id(aq_base(self.context))
+        cache = _get_request_cache(self.request, LAYOUT_STORAGE_CACHE_KEY)
+        cache.pop(context_id, None)
 
     def resolve(self, key):
         try:

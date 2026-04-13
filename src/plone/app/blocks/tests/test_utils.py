@@ -3,6 +3,7 @@ from plone.app.blocks.testing import BLOCKS_INTEGRATION_TESTING
 from plone.app.blocks.utils import resolve
 from plone.app.blocks.utils import resolveResource
 from plone.app.blocks.utils import schema_compatible
+from plone.app.blocks.utils import TILE_RESOLVE_CACHE_KEY
 from zope.interface import Interface
 
 import unittest
@@ -231,3 +232,50 @@ class TestRichtextJsonCompatible(unittest.TestCase):
         self.assertEqual(result["content-type"], "text/x-rst")
         self.assertEqual(result["output-content-type"], "text/html")
         self.assertEqual(result["data"], "**bold**")
+
+
+class TestResolveResourceCache(unittest.TestCase):
+    """Tests for the per-request cache in resolveResource."""
+
+    layer = BLOCKS_FUNCTIONAL_TESTING
+
+    def test_cache_is_populated_for_subrequests(self):
+        """Test that resolveResource populates the per-request cache
+        for URLs resolved via subrequest (not resource directories)."""
+        request = self.layer["request"]
+        # Clear any existing cache
+        request.environ.pop(TILE_RESOLVE_CACHE_KEY, None)
+
+        # Use a URL that triggers a subrequest (not a ++ resource path)
+        url = "/"
+        result = resolveResource(url)
+
+        cache = request.environ.get(TILE_RESOLVE_CACHE_KEY, {})
+        # The URL gets prepended with the site physical path in resolveResource
+        self.assertTrue(len(cache) > 0, "Cache should have at least one entry")
+        # The cached value should match the result
+        cached_values = list(cache.values())
+        self.assertIn(result, cached_values)
+
+    def test_cache_returns_cached_value(self):
+        """Test that a second call returns the cached result from cache."""
+        request = self.layer["request"]
+        request.environ.pop(TILE_RESOLVE_CACHE_KEY, None)
+
+        url = "/"
+        result1 = resolveResource(url)
+        result2 = resolveResource(url)
+
+        self.assertEqual(result1, result2)
+
+    def test_resource_directory_not_cached(self):
+        """Test that ++ resource directory lookups are not cached,
+        since they are cheap and may change within a request."""
+        request = self.layer["request"]
+        request.environ.pop(TILE_RESOLVE_CACHE_KEY, None)
+
+        url = "/++sitelayout++testlayout1/site.html"
+        resolveResource(url)
+
+        cache = request.environ.get(TILE_RESOLVE_CACHE_KEY, {})
+        self.assertNotIn(url, cache)

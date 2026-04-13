@@ -1,4 +1,5 @@
 from plone.app.blocks.testing import BLOCKS_FIXTURE
+from plone.app.blocks.tiles import MAX_TILE_RECURSION_DEPTH
 from plone.app.blocks.tiles import renderTiles
 from plone.app.testing import IntegrationTesting
 from plone.app.testing import PloneSandboxLayer
@@ -275,3 +276,24 @@ class TestRenderTiles(unittest.TestCase):
         result = str(serializer)
 
         self.assertIn("hi there!", result)
+
+    def testRecursionDepthLimit(self):
+        """Test that renderTiles respects the maximum recursion depth."""
+        serializer = getHTMLSerializer([testLayout3])
+        request = self.layer["request"]
+        tree = serializer.tree
+        # Call with depth already at the limit — should return immediately
+        renderTiles(request, tree, _depth=MAX_TILE_RECURSION_DEPTH)
+        result = str(serializer)
+        # Tiles should NOT be resolved since we're at the depth limit
+        self.assertNotIn("This is a demo tile with id subtile", result)
+
+    def testSubTilesIncrementDepth(self):
+        """Test that subtiles are resolved with incremented depth."""
+        serializer = getHTMLSerializer([testLayout3])
+        request = self.layer["request"]
+        tree = serializer.tree
+        # Normal call starts at depth 0 — subtiles should resolve fine
+        renderTiles(request, tree, _depth=0)
+        result = str(serializer)
+        self.assertIn("This is a demo tile with id subtile", result)
