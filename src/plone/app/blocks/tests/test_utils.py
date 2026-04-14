@@ -279,3 +279,4 @@ class TestResolveResourceCache(unittest.TestCase):
 
         cache = request.environ.get(TILE_RESOLVE_CACHE_KEY, {})
         self.assertNotIn(url, cache)
+        self.assertFalse(cache)
