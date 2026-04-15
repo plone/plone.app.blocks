@@ -15,6 +15,7 @@ from plone.app.blocks.utils import schema_compatible
 from plone.autoform.directives import omitted
 from plone.autoform.directives import write_permission
 from plone.autoform.interfaces import IFormFieldProvider
+from plone.base.utils import get_top_request
 from plone.memoize import view
 from plone.registry.interfaces import IRegistry
 from plone.restapi.serializer.converters import json_compatible
@@ -313,9 +314,11 @@ class LayoutAwareTileDataStorage:
         self.request = request
         self.tile = tile
 
-        # Per-request cache: reuse parsed HTML storage for the same context
+        # Per-request cache: reuse parsed HTML storage for the same context.
+        # Use the top-level request so that all tile subrequests
+        # for the same context share a single parsed HTML tree.
         context_id = id(aq_base(context))
-        cache = _get_request_cache(request, LAYOUT_STORAGE_CACHE_KEY)
+        cache = _get_request_cache(get_top_request(request), LAYOUT_STORAGE_CACHE_KEY)
         if context_id in cache:
             self.storage = cache[context_id]
         else:
@@ -329,7 +332,7 @@ class LayoutAwareTileDataStorage:
         ILayoutAware(self.context).content = str(self.storage)
         # Invalidate the per-request storage cache after write
         context_id = id(aq_base(self.context))
-        cache = _get_request_cache(self.request, LAYOUT_STORAGE_CACHE_KEY)
+        cache = _get_request_cache(get_top_request(self.request), LAYOUT_STORAGE_CACHE_KEY)
         cache.pop(context_id, None)
 
     def resolve(self, key):
