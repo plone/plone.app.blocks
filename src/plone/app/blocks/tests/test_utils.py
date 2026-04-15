@@ -264,9 +264,12 @@ class TestResolveResourceCache(unittest.TestCase):
 
         url = "/"
         result1 = resolveResource(url)
-        result2 = resolveResource(url)
 
-        self.assertEqual(result1, result2)
+        cache = request.environ.get(TILE_RESOLVE_CACHE_KEY, {})
+        self.assertTrue(self.layer["portal"].absolute_url_path() + url in cache, "URL should be in cache")
+
+        result2 = resolveResource(url)
+        self.assertEqual(result1, result2, "Second call should return same result")
 
     def test_resource_directory_not_cached(self):
         """Test that ++ resource directory lookups are not cached,
