@@ -266,7 +266,10 @@ class TestResolveResourceCache(unittest.TestCase):
         result1 = resolveResource(url)
 
         cache = request.environ.get(TILE_RESOLVE_CACHE_KEY, {})
-        self.assertTrue(self.layer["portal"].absolute_url_path() + url in cache, "URL should be in cache")
+        self.assertTrue(
+            self.layer["portal"].absolute_url_path() + url in cache,
+            "URL should be in cache",
+        )
 
         result2 = resolveResource(url)
         self.assertEqual(result1, result2, "Second call should return same result")
