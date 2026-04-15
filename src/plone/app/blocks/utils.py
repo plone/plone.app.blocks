@@ -168,6 +168,10 @@ def resolveResource(url):
     """
     url = parse.unquote(url)  # subrequest does not support quoted paths
 
+    if url.startswith("/"):
+        site = getSite()
+        url = "/".join(site.getPhysicalPath()) + url
+
     # Per-request cache to avoid duplicate subrequests for the same URL
     request = getRequest()
     if request is not None:
@@ -189,10 +193,6 @@ def resolveResource(url):
                 return res
             except (NotFound, OSError):
                 pass
-
-    if url.startswith("/"):
-        site = getSite()
-        url = "/".join(site.getPhysicalPath()) + url
 
     response = subrequest(url, exception_handler=subresponse_exception_handler)
     if response.status == 404:
