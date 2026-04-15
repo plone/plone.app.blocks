@@ -332,7 +332,9 @@ class LayoutAwareTileDataStorage:
         ILayoutAware(self.context).content = str(self.storage)
         # Invalidate the per-request storage cache after write
         context_id = id(aq_base(self.context))
-        cache = _get_request_cache(get_top_request(self.request), LAYOUT_STORAGE_CACHE_KEY)
+        cache = _get_request_cache(
+            get_top_request(self.request), LAYOUT_STORAGE_CACHE_KEY
+        )
         cache.pop(context_id, None)
 
     def resolve(self, key):
