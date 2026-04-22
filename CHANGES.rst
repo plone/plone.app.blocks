@@ -8,6 +8,16 @@ Changelog
 
 .. towncrier release notes start
 
+8.0.0a3 (2026-04-22)
+--------------------
+
+Bug fixes:
+
+
+- Improve rendering performance by adding per-request caches for tile resolution (avoiding duplicate subrequests), parsed HTML storage in LayoutAwareTileDataStorage, and a recursion depth limit for renderTiles.
+  @petschki
+
+
 8.0.0a2 (2026-03-27)
 --------------------
 
