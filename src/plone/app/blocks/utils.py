@@ -36,6 +36,15 @@ except ImportError:
     HAS_RICH_TEXT_VALUE = False
 
 
+def _get_request_cache(request, key):
+    """Get or create a per-request cache dict using annotations (preferred)
+    or environ as fallback for requests that lack annotations support."""
+    store = getattr(request, "annotations", None)
+    if store is None:
+        store = request.environ
+    return store.setdefault(key, {})
+
+
 if HAS_RICH_TEXT_VALUE:
 
     @adapter(IRichTextValue)
@@ -150,11 +159,26 @@ def subresponse_exception_handler(response, exception):
     return response.exception()
 
 
+TILE_RESOLVE_CACHE_KEY = "plone.app.blocks.resolveResource"
+
+
 def resolveResource(url):
     """Resolve the given URL to a unicode string. If the URL is an absolute
     path, it will be made relative to the Plone site root.
     """
     url = parse.unquote(url)  # subrequest does not support quoted paths
+
+    if url.startswith("/"):
+        site = getSite()
+        url = "/".join(site.getPhysicalPath()) + url
+
+    # Per-request cache to avoid duplicate subrequests for the same URL
+    request = getRequest()
+    if request is not None:
+        cache = _get_request_cache(request, TILE_RESOLVE_CACHE_KEY)
+        if url in cache:
+            return cache[url]
+
     scheme, netloc, path, params, query, fragment = parse.urlparse(url)
     if path.count("++") == 2:
         # it is a resource that can be resolved without a subrequest
@@ -169,10 +193,6 @@ def resolveResource(url):
                 return res
             except (NotFound, OSError):
                 pass
-
-    if url.startswith("/"):
-        site = getSite()
-        url = "/".join(site.getPhysicalPath()) + url
 
     response = subrequest(url, exception_handler=subresponse_exception_handler)
     if response.status == 404:
@@ -195,6 +215,8 @@ def resolveResource(url):
     elif response.status != 200:
         raise RuntimeError(resolved)
 
+    if request is not None:
+        cache[url] = resolved
     return resolved
 
 

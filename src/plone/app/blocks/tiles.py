@@ -18,6 +18,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+MAX_TILE_RECURSION_DEPTH = 10
+
 
 def errorTile(request):
     msg = PloneMessageFactory("There was an error while rendering this tile")
@@ -25,12 +27,18 @@ def errorTile(request):
     return html.fromstring(translated).getroottree()
 
 
-def renderTiles(request, tree):
+def renderTiles(request, tree, _depth=0):
     """Find all tiles in the given response, contained in the lxml element
     tree `tree`, and insert them into the output.
 
     Assumes panel merging has already happened.
     """
+    if _depth >= MAX_TILE_RECURSION_DEPTH:
+        logger.warning(
+            "Maximum tile recursion depth (%d) reached, aborting.",
+            MAX_TILE_RECURSION_DEPTH,
+        )
+        return tree
     # Optionally enable ESI rendering in tiles that support this
     if not request.getHeader(ESI_HEADER):
         registry = queryUtility(IRegistry)
@@ -132,8 +140,9 @@ def renderTiles(request, tree):
 
         notify(events.AfterTileRenderEvent(tileHref, tileNode))
 
+    # Check if new tile references were introduced (e.g. by subtiles)
+    # and recursively render them with depth tracking.
     if utils.headTileXPath(tree) or utils.bodyTileXPath(tree):
-        # Recursively render tiles, as long as they are referenced
-        tree = renderTiles(request, tree)
+        tree = renderTiles(request, tree, _depth=_depth + 1)
 
     return tree
