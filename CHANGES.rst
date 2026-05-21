@@ -1,7 +1,7 @@
 Changelog
 =========
 
-7.0.2 (unreleased)
+7.0.2 (2026-05-21)
 ------------------
 
 - Fix ``IDynamicTextIndexExtender`` adapter registration and remove obsolete ``collective.textindexer`` checks.
