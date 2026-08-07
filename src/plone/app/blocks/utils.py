@@ -12,28 +12,18 @@ from plone.memoize import ram
 from plone.memoize.volatile import DontCache
 from plone.resource.utils import queryResourceDirectory
 from plone.restapi.interfaces import IFieldDeserializer
-from plone.restapi.interfaces import IJsonCompatible
 from plone.subrequest import subrequest
 from urllib import parse
 from zExceptions import NotFound
 from zExceptions import Unauthorized
-from zope.component import adapter
 from zope.component import queryMultiAdapter
 from zope.component import queryUtility
 from zope.component.hooks import getSite
 from zope.globalrequest import getRequest
-from zope.interface import implementer
 from zope.schema.interfaces import IField
 from zope.security.interfaces import IPermission
 
 import logging
-
-try:
-    from plone.app.textfield.interfaces import IRichTextValue
-
-    HAS_RICH_TEXT_VALUE = True
-except ImportError:
-    HAS_RICH_TEXT_VALUE = False
 
 
 def _get_request_cache(request, key):
@@ -43,19 +33,6 @@ def _get_request_cache(request, key):
     if store is None:
         store = request.environ
     return store.setdefault(key, {})
-
-
-if HAS_RICH_TEXT_VALUE:
-
-    @adapter(IRichTextValue)
-    @implementer(IJsonCompatible)
-    def richtext_json_compatible(value):
-        return {
-            "data": value.raw,
-            "content-type": value.mimeType,
-            "output-content-type": value.outputMimeType,
-            "encoding": value.encoding,
-        }
 
 
 headXPath = etree.XPath("/html/head")
