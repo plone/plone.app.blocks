@@ -1,0 +1,1 @@
+Do not provide RichTextValue converters anymore as plone.restapi already provides it @erral
