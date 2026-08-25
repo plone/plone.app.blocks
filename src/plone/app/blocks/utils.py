@@ -50,6 +50,17 @@ if HAS_RICH_TEXT_VALUE:
     @adapter(IRichTextValue)
     @implementer(IJsonCompatible)
     def richtext_json_compatible(value):
+        """Convert a RichTextValue to a json-compatible dict, keeping the
+        raw value and output mime type intact for a lossless roundtrip.
+
+        Only registered as a global adapter when plone.restapi does not
+        ship its own IJsonCompatible converter for IRichTextValue (added
+        in plone.restapi 10.0.3) — a second registration would conflict.
+        See bbb_richtext.py for the ZCML condition. Tile data
+        serialization applies this conversion explicitly either way, as
+        the plone.restapi converter renders the value instead of keeping
+        the raw source.
+        """
         return {
             "data": value.raw,
             "content-type": value.mimeType,
