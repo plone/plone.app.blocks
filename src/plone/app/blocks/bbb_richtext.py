@@ -14,7 +14,6 @@ See https://github.com/plone/plone.app.blocks/issues/124
 from plone.app.textfield.interfaces import IRichTextValue  # noqa: F401
 from plone.restapi.serializer import converters
 
-
 if hasattr(converters, "richtextvalue_converter"):
     raise ImportError(
         "plone.restapi already registers an IJsonCompatible converter "
