@@ -10,6 +10,7 @@ from plone.app.blocks.interfaces import DEFAULT_SITE_LAYOUT_REGISTRY_KEY
 from plone.app.blocks.interfaces import ILayoutField
 from plone.app.blocks.utils import _get_request_cache
 from plone.app.blocks.utils import applyTilePersistent
+from plone.app.blocks.utils import HAS_RICH_TEXT_VALUE
 from plone.app.blocks.utils import resolveResource
 from plone.app.blocks.utils import schema_compatible
 from plone.autoform.directives import omitted
@@ -38,6 +39,10 @@ from zope.interface import provider
 
 import json
 import logging
+
+if HAS_RICH_TEXT_VALUE:
+    from plone.app.blocks.utils import richtext_json_compatible
+    from plone.app.textfield.interfaces import IRichTextValue
 
 logger = logging.getLogger("plone.app.blocks")
 
@@ -426,6 +431,18 @@ class LayoutAwareTileDataStorage:
 
     def __setitem__(self, key, value):
         key, schema_ = self.resolve(key)
+        # RichTextValues are converted explicitly to keep their raw source;
+        # plone.restapi's registered IJsonCompatible converter would render
+        # them and lose the roundtrip data (see utils.richtext_json_compatible).
+        if HAS_RICH_TEXT_VALUE:
+            value = {
+                name: (
+                    richtext_json_compatible(val)
+                    if IRichTextValue.providedBy(val)
+                    else val
+                )
+                for name, val in value.items()
+            }
         data = json_compatible(value)
 
         # Store primary field as tile tag content

@@ -26,7 +26,7 @@
 
   <adapter
       factory=".utils.richtext_json_compatible"
-      zcml:condition="installed plone.app.textfield"
+      zcml:condition="installed plone.app.blocks.bbb_richtext"
       />
 
   <include package="plone.app.registry" />
