@@ -8,6 +8,19 @@ Changelog
 
 .. towncrier release notes start
 
+8.0.1 (2026-08-26)
+------------------
+
+Bug fixes:
+
+
+- Do not register a global ``IJsonCompatible`` adapter for ``IRichTextValue``:
+  it conflicts with the converter shipped by ``plone.restapi`` >= 10 and broke
+  Zope startup with a ``ConfigurationConflictError``. Tile data serialization
+  still keeps the raw rich text value by applying the conversion explicitly.
+  [petschki] (#124)
+
+
 8.0.0 (2026-05-18)
 ------------------
 
